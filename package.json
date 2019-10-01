@@ -1,0 +1,34 @@
+{
+  "name": "steward-helper",
+  "version": "1.0.0",
+  "description": "Steward Helper",
+  "scripts": {
+    "build": "webpack --config webpack.prod.js",
+    "dev": "webpack --config webpack.dev.js",
+    "watch": "webpack -w --config webpack.dev.js",
+    "lint": "tslint 'src/**/*.{ts, tsx}'"
+  },
+  "author": "tomasy",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/chrome": "0.0.60",
+    "@types/react": "^16.8.0",
+    "@types/react-dom": "^16.8.0",
+    "css-loader": "^0.28.11",
+    "sass": "^1.22.12",
+    "sass-loader": "^7.3.1",
+    "style-loader": "^0.20.3",
+    "ts-loader": "^4.0.1",
+    "tslint-config-airbnb": "^5.11.1",
+    "tslint-react": "^3.6.0",
+    "typescript": "^2.7.2",
+    "webextension-polyfill": "^0.5.0",
+    "webpack": "^4.1.1",
+    "webpack-cli": "^3.1.1",
+    "webpack-merge": "^4.1.4"
+  },
+  "dependencies": {
+    "react": "^16.8.0",
+    "react-dom": "^16.8.0"
+  }
+}

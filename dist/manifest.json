@@ -1,0 +1,36 @@
+{
+    "manifest_version": 2,
+
+    "name": "Steward Helper",
+    "description":
+        "Steward Helper",
+    "version": "1.0.0",
+
+    "browser_action": {
+        "default_icon": "icon16.png",
+        "default_popup": "popup.html"
+    },
+
+    "background": {
+        "scripts": ["js/eventPage.js"],
+        "persistent": true
+    },
+
+    "icons": {
+        "16": "icon16.png",
+        "48": "icon48.png",
+        "128": "icon128.png"
+    },
+
+    "optional_permissions": [
+        "background", "clipboardRead", "clipboardWrite"
+    ],
+
+    "permissions": [
+        "cookies",
+        "<all_urls>",
+        "history",
+        "bookmarks",
+        "management"
+    ]
+}
