@@ -16,7 +16,7 @@
         "js": ["js/content.js"],
         "run_at": "document_start"
     }],
-
+    "content_security_policy": "script-src 'self' 'unsafe-eval' https://ssl.google-analytics.com; object-src 'self'",
     "background": {
         "scripts": ["js/eventPage.js"],
         "persistent": true
@@ -35,6 +35,7 @@
     "permissions": [
         "cookies",
         "storage",
+        "contextMenus",
         "<all_urls>",
         "history",
         "bookmarks",
