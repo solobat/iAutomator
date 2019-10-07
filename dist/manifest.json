@@ -11,6 +11,12 @@
         "default_popup": "popup.html"
     },
 
+    "content_scripts": [{
+        "matches": ["<all_urls>"],
+        "js": ["js/content.js"],
+        "run_at": "document_start"
+    }],
+
     "background": {
         "scripts": ["js/eventPage.js"],
         "persistent": true
@@ -28,6 +34,7 @@
 
     "permissions": [
         "cookies",
+        "storage",
         "<all_urls>",
         "history",
         "bookmarks",
