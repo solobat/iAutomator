@@ -37,11 +37,17 @@ chrome.contextMenus.create({
 });
 
 chrome.contextMenus.create({
-    title : 'Highlight English Syntax',
+    title : 'Kill Element',
     contexts: ['all'],
     onclick : function(info, tab) {
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-            chrome.tabs.sendMessage(tabs[0].id, {method: "highlightEnglishSyntax"}, function(response) {});  
+            chrome.tabs.sendMessage(tabs[0].id, {method: "killElement"}, function(response) {});  
         });
     }
+});
+
+chrome.commands.onCommand.addListener(function(command) {
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, {method: command}, function() {});
+    });
 });

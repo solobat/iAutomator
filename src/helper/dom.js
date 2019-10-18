@@ -31,7 +31,18 @@ function start() {
     function stop() {
         $(document).off('mouseover', listenMouseover);
         $(document).off('mouseout', listenMouseout);
+        keyboardJS.bind('up');
     }
+
+    keyboardJS.bind('up', (event) => {
+      event.preventDefault()
+      const $p = $(`.${outlineCls}`).parent()
+
+      if ($p.length) {
+        $(`.${outlineCls}`).removeClass(outlineCls)
+        $p.addClass(outlineCls)
+      }
+    })
 
     return stop;
 }
@@ -61,18 +72,20 @@ function setup() {
       $(document).on(stopOutlineEvt, stopOutline);
   
       $(document).on('click', function(event) {
-          if ($(event.target).hasClass(outlineCls)) {
-              event.stopPropagation();
-              event.preventDefault();
-              if (outlinedCallback) {
-                  outlinedCallback(event.target);
-                  stopOutline();
-              } else {
-                  stop && stop();
-              }
-  
-              return false;
-          }
+        const $target = $(event.target).closest(`.${outlineCls}`)
+
+        if ($target.length) {
+            event.stopPropagation();
+            event.preventDefault();
+            if (outlinedCallback) {
+                outlinedCallback($target[0], event);
+                stopOutline();
+            } else {
+                stop && stop();
+            }
+
+            return false;
+        }
       });
   
       console.log('extension helper inited');
@@ -96,15 +109,28 @@ function resetActionCache() {
   };
 }
 
-export function readMode() {
+export function exec(fn) {
   setup()
-  startOutline(elem => {
+  startOutline(fn)
+} 
+
+export function readMode() {
+  exec((elem, event) => {
     const $elem = $(elem)
 
     actionCache.$elem = $elem;
     hideSiblings($elem);
 
     elem.scrollIntoView();
+  })
+}
+
+export function killElement() {
+  exec((elem, event) => {
+    elem.remove()
+    if (event.metaKey) {
+      requestAnimationFrame(killElement)
+    }
   })
 }
 

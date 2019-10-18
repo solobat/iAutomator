@@ -1,4 +1,4 @@
-import { readMode, highlightEnglishSyntax } from './helper/dom.js'
+import { readMode, killElement } from './helper/dom.js'
 console.log('hello steward helper...')
 
 chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
@@ -8,7 +8,7 @@ chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
     sendResponse({data: objectString});
   } else if (method === 'readMode') {
     readMode()
-  } else if (method === 'highlightEnglishSyntax') {
-    highlightEnglishSyntax()
+  } else if (method === 'killElement') {
+    killElement()
   }
 });
