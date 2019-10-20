@@ -78,8 +78,11 @@ function setup() {
             event.stopPropagation();
             event.preventDefault();
             if (outlinedCallback) {
-                outlinedCallback($target[0], event);
-                stopOutline();
+                const keep = outlinedCallback($target[0], event);
+
+                if (!keep) {
+                  stopOutline();
+                }
             } else {
                 stop && stop();
             }
@@ -181,4 +184,18 @@ function notifyBackground(msg, callback) {
   chrome.runtime.sendMessage(msg, resp => {
     callback(resp)
   });
+}
+
+function openOutline() {
+  exec(() => true)
+}
+
+export default function() {
+  const { data, action } = req
+
+  if (action === 'dom.outline') {
+    return openOutline()
+  } else {
+    return Promise.resolve({})
+  }
 }
