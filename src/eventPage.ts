@@ -53,6 +53,16 @@ chrome.contextMenus.create({
     }
 });
 
+chrome.contextMenus.create({
+    title : 'English Syntax highlighting',
+    contexts: ['all'],
+    onclick : function(info, tab) {
+        chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+            runMethod(tabs[0], 'highlightEnglishSyntax')
+        });
+    }
+});
+
 chrome.commands.onCommand.addListener(function(command) {
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
         runMethod(tabs[0], command)

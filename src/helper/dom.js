@@ -84,7 +84,7 @@ function setup() {
                   stopOutline();
                 }
             } else {
-                stop && stop();
+              stopOutline();
             }
 
             return false;
@@ -163,19 +163,18 @@ export function highlightEnglishSyntax() {
   setup()
   startOutline(elem => {
     const $elem = $(elem)
-    const text = $elem[0].innerText;
 
-    if (text) {
-      notifyBackground({
-        data: {
-          text
-        },
-        action: 'others.highlightEnglishSyntax'
-      }, resp => {
-        if (resp.data) {
-          $elem.html(resp.data);
-        }
-      })
+    if ($elem.length) {
+      const text = $elem[0].innerText;
+      if (text) {
+          appBridge.invoke('highlightEnglishSyntax', {
+              text
+          }, resp => {
+              if (resp) {
+                  $elem.html(resp);
+              }
+          });
+      }
     }
   })
 }
@@ -188,6 +187,109 @@ function notifyBackground(msg, callback) {
 
 function openOutline() {
   exec(() => true)
+}
+
+function getHtml() {
+  const popupurl = chrome.extension.getURL('helper.html');
+  const html = `
+      <div id="steward-helper" class="steward-helper">
+          <iframe style="display:none;" id="steward-helper-iframe" src="${popupurl}" name="steward-box" width="530" height="480" frameborder="0"></iframe>
+      </div>
+  `;
+
+  return html;
+}
+
+// should refactor
+const IFRAME_ID = 'steward-helper-iframe'
+export function createBridge() {
+  const callbacks = {}
+  const registerFuncs = {}
+  let cbId = 0
+
+  const bridge = {
+    inited: false,
+    ready() {
+      if (bridge.inited) {
+        return Promise.resolve()
+      } else {
+        return new Promise(resolve => {
+          $('html').append(getHtml());
+          const $iframe = $(`#${IFRAME_ID}`);
+          $iframe.on('load', () => {
+            bridge.inited = true;
+            resolve();
+          });
+        });
+      }
+    },
+    async invoke(action, data, callback) {
+        await bridge.ready()
+        cbId = cbId + 1;
+        callbacks[cbId] = callback;
+        noticeApp({
+            action,
+            ext_from: 'content',
+            data,
+            callbackId: cbId
+        })
+    },
+
+    receiveMessage(msg) {
+        const { action, data, callbackId, responstId } = msg;
+
+        if (callbackId) {
+            if (callbacks[callbackId]) {
+                callbacks[callbackId](data);
+                callbacks[callbackId] = null;
+            }
+        } else if (action) {
+            if (registerFuncs[action]) {
+                let ret = {};
+                let flag = false;
+
+                registerFuncs[action].forEach(callback => {
+                    callback(data, function(r) {
+                        flag = true;
+                        ret = Object.assign(ret, r);
+                    });
+                });
+
+                if (flag) {
+                    noticeApp({
+                        responstId: responstId,
+                        ret: ret
+                    });
+                }
+            }
+        }
+    },
+
+    register: function(action, callback) {
+        if (!registerFuncs[action]) {
+            registerFuncs[action] = [];
+        }
+        registerFuncs[action].push(callback);
+    }
+  }
+
+  return bridge;
+}
+
+export const appBridge = createBridge()
+
+window.addEventListener('message', event => {
+  const { action, callbackId } = event.data;
+
+  if (callbackId) {
+      appBridge.receiveMessage(event.data);
+  }
+});
+
+export function noticeApp(msg) {
+  const iframeWindow = document.getElementById(IFRAME_ID).contentWindow;
+
+  iframeWindow.postMessage(msg, '*');
 }
 
 export default function() {

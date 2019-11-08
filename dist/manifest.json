@@ -41,12 +41,20 @@
         "bookmarks",
         "management"
     ],
+
+    "web_accessible_resources": [
+        "helper.html"
+    ],
+
     "commands": {
         "readMode": {
             "description": "Read Mode"
         },
         "killElement": {
             "description": "Kill Elements"
+        },
+        "highlightEnglishSyntax": {
+            "description": "English Syntax hignlighting"
         }
     }
 }
