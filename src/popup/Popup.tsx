@@ -7,6 +7,7 @@ import * as recordsController from '../server/controller/records.controller'
 import { getTabMeta } from '../helper/tab'
 import Response from '../server/common/response';
 import { Table } from 'antd'
+import { PlayCircleOutlined } from '@ant-design/icons';
 
 // https://developer.chrome.com/extensions/activeTab
 function getTabs(fn) {
@@ -132,7 +133,7 @@ function RunBtn(props) {
   const { id } = state.tab
 
   return (
-    <a onClick={() => onRecordRunClick(props.record, id)}>Run</a>
+    <PlayCircleOutlined onClick={() => onRecordRunClick(props.record, id)}/>
   )
 }
 
