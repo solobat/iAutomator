@@ -1,27 +1,24 @@
-import CookiesHandler from './helper/cookies.js'
-import StoragesHandler from './helper/storage.js'
-import OthersHandler from './helper/others.js'
-import DomHelper from './helper/dom.js'
+import OthersHandler from './helper/others'
+import DomHelper from './helper/dom'
+import * as recordsController from './server/controller/records.controller'
+import { PageMsg, BackMsg } from './common/types';
 
-function msgHandler(req, sender, resp) {
-    let action: string = req.action;
+function msgHandler(req: PageMsg, sender, resp) {
+    let { action, data, callbackId } = req;
 
     function handler(results) {
-        console.log(results)
-        resp({
+        const msg: BackMsg = {
             msg: `${action} response`,
             data: results
-        })
+        }
+        resp(msg)
     }
 
-    if (action.startsWith('cookies.')) {
-        CookiesHandler(req).then(handler)
-    } else if (action.startsWith('storages.')) {
-        StoragesHandler(req).then(handler)
-    } else if (action.startsWith('others.')) {
-        OthersHandler(req).then(handler)
-    } else if (action.startsWith('dom.')) {
-        DomHelper(req).then(handler)
+    if (action === 'recordAction') {
+        const { content, url, domain } = data
+
+        recordsController.saveRecord(content, url, domain)
+        handler('')
     }
 }
 

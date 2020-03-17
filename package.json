@@ -28,7 +28,11 @@
     "webpack-merge": "^4.1.4"
   },
   "dependencies": {
+    "@types/jquery": "^3.3.33",
+    "antd": "^4.0.3",
     "axios": "^0.19.0",
+    "css-selector-generator": "^2.0.1",
+    "dexie": "^2.0.4",
     "jquery": "^3.4.1",
     "keyboardjs": "^2.5.1",
     "react": "^16.8.0",
