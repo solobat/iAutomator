@@ -2,8 +2,8 @@ import { db } from '../db/database'
 import Automation from '../model/Automation'
 import { RunAt } from '../enum/Automation';
 
-export function save(recordId: number, runAt: RunAt, pattern?: string) {
-    const automation: Automation = new Automation(recordId, runAt, pattern);
+export function save(instructions: string, runAt: RunAt, pattern?: string) {
+    const automation: Automation = new Automation(instructions, runAt, pattern);
 
     return db.automations.put(automation);
 }

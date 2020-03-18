@@ -33,7 +33,7 @@
     ],
 
     "permissions": [
-        "activeTab",
+        "tabs",
         "contextMenus"
     ],
 

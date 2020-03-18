@@ -1,54 +1,15 @@
 import * as React from 'react';
-import { createContext, useState, useEffect, useReducer, useContext } from 'react';
+import { useEffect, useReducer, useContext } from 'react';
 import './Popup.scss';
-import browser from 'webextension-polyfill'
-import Button from 'antd/es/button';
-import * as recordsController from '../server/controller/records.controller'
-import { getTabMeta } from '../helper/tab'
-import Response from '../server/common/response';
-import { Table } from 'antd'
-import { PlayCircleOutlined } from '@ant-design/icons';
-
-// https://developer.chrome.com/extensions/activeTab
-function getTabs(fn) {
-  chrome.tabs.query({ currentWindow: true, active: true }, (results) => {
-    if (results && results.length) {
-      const info = getTabMeta(results[0])
-
-      if (info) {
-        fn(info)
-      }
-    }
-  })
-}
-
-const ACTIONS = {
-  TAB_META: 'tabMeta'
-}
-
-function pageReducer(state, action) {
-  const { type, payload } = action;
-  const newState: any = {};
-
-  switch (type) {
-    case ACTIONS.TAB_META:
-      newState.tab = payload;
-      break;
-    default:
-      break;
-  }
-  return {
-    ...state,
-    ...newState
-  }
-}
-
-const PageContext = createContext(null)
+import { getTabs } from '../helper/tab'
+import Tabs from 'antd/es/tabs'
+import { ACTIONS, pageReducer, PageContext, getInitialState } from '../store/modules/popup.store'
+import { TabMeta } from '../common/types';
+import { AutomationsPanel } from './components/Automation';
+import { Records } from './components/Record';
 
 export default function (props) {
-  const [state, dispatch] = useReducer(pageReducer, {
-    tab: null
-  })
+  const [state, dispatch] = useReducer(pageReducer, getInitialState())
 
   useEffect(() => {
     getTabs((result) => {
@@ -74,84 +35,25 @@ function Popup() {
   )
 }
 
-interface TabMeta extends chrome.tabs.Tab {
-  host: string;
-  hostname: string;
-  pathname: string;
-  hash: string;
-  search: string;
-}
-
 interface TabInfoProps {
   tab: TabMeta;
 }
 
+const { TabPane } = Tabs;
 function TabInfo(props: TabInfoProps) {
   const { host } = props.tab
+  const { dispatch, state } = useContext(PageContext)
 
   return (
     <div className="tab-info">
-      <Records host={host} />
-    </div>
-  )
-}
-
-interface RecordsProps {
-  host: string;
-}
-
-function onRecordRunClick(item, tabId) {
-  chrome.tabs.executeScript(tabId, {
-    code: `window.exceAutomation("${item.content}")`
-  }, (result) => {
-  })
-}
-
-function getPath(url) {
-  const u = new URL(url)
-
-  return u.pathname
-}
-
-const RecordsColumns = [
-  { title: 'Action', dataIndex: 'content', key: 'content' },
-  {
-    title: 'Path', dataIndex: 'url', key: 'url',
-    render: (text) => <span>{ getPath(text)}</span>,
-    ellipsis: true
-  },
-  {
-    title: 'Operation',
-    dataIndex: '',
-    key: 'id',
-    render: (text, record) => <RunBtn record={record} />,
-  }
-]
-
-function RunBtn(props) {
-  const { state } = useContext(PageContext)
-  const { id } = state.tab
-
-  return (
-    <PlayCircleOutlined onClick={() => onRecordRunClick(props.record, id)}/>
-  )
-}
-
-function Records(props: RecordsProps) {
-  const { host } = props
-  const [list, setList] = useState([])
-
-  useEffect(() => {
-    recordsController.query({ domain: host }).then((res: Response) => {
-      if (res.code === 0) {
-        setList(res.data)
-      }
-    })
-  }, [host])
-  return (
-    <div>
-      <Table columns={RecordsColumns} dataSource={list} pagination={false}
-        size="small"></Table>
+      <Tabs activeKey={ state.tabKey } onChange={(activeKey) => dispatch({ type: ACTIONS.TAB_CHANGE, payload: activeKey})}>
+        <TabPane tab="Automations" key="automation">
+          <AutomationsPanel />
+        </TabPane>
+        <TabPane tab="Records" key="records">
+          <Records host={host} />
+        </TabPane>
+      </Tabs>
     </div>
   )
 }

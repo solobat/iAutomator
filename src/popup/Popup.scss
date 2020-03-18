@@ -19,3 +19,20 @@ body {
 .tab-info {
     flex: 1;
 }
+
+.record-op-btns {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.am-editor {
+    margin: 10px 0;
+}
+
+.am-editor-fields {
+    display: flex;
+}
+
+.am-editor-btns {
+    margin-top: 8px;
+}

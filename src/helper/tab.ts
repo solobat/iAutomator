@@ -1,4 +1,5 @@
 
+// https://developer.chrome.com/extensions/activeTab
 export function getTabMeta(tab: chrome.tabs.Tab) {
   if (tab) {
     const { url } = tab
@@ -16,4 +17,16 @@ export function getTabMeta(tab: chrome.tabs.Tab) {
   } else {
     return null
   }
+}
+
+export function getTabs(fn) {
+  chrome.tabs.query({ currentWindow: true, active: true }, (results) => {
+    if (results && results.length) {
+      const info = getTabMeta(results[0])
+
+      if (info) {
+        fn(info)
+      }
+    }
+  })
 }

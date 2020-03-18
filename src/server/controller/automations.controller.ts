@@ -5,9 +5,9 @@ import * as Code from '../common/code';
 import { IAutomation, db } from '../db/database';
 import { RunAt } from '../enum/Automation';
 
-export async function saveAutomation(recordId: number, runAt: RunAt = RunAt.END, pattern?: string): Promise<Response> {
-    if (recordId) {
-        const result: number = await automationService.save(recordId, runAt, pattern);
+export async function saveAutomation(instructions: string, pattern: string, runAt: RunAt = RunAt.END): Promise<Response> {
+    if (instructions) {
+        const result: number = await automationService.save(instructions, runAt, pattern);
 
         return Response.ok(result);
     } else {

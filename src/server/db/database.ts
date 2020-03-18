@@ -12,7 +12,7 @@ export class StewardHelperDatabase extends Dexie {
         this.version(1).stores({
             rules: '++id,pattern,createTime,updateTime,deleted',
             records: '++id,rid,domain,url,content,times,createTime,updateTime,deleted',
-            automations: '++id,rid,recordId,runAt,pattern,createTime,updateTime,deleted'
+            automations: '++id,rid,instructions,runAt,pattern,active,createTime,updateTime,deleted'
         });
     }
 }
@@ -40,9 +40,10 @@ export interface IRecord {
 export interface IAutomation {
     id?: number,
     rid?: number,
-    pattern?: string,
-    recordId: number,
-    runAt: RunAt,
+    pattern: string,
+    instructions: string,
+    runAt?: RunAt,
+    active?: boolean,
     createTime?: number,
     updateTime?: number,
     deleted?: boolean

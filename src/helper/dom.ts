@@ -3,10 +3,9 @@ import keyboardJS = require('keyboardjs')
 import axios from 'axios'
 import getCssSelector from 'css-selector-generator';
 import { PageMsg } from '../common/types';
+import { noticeBg } from './event';
 
 let isSetup, stop;
-
-console.log($)
 
 const outlineCls = 'ext-hp-ms-over';
 const startOutlineEvt = 'ext-hp-startoutline';
@@ -324,18 +323,10 @@ window.addEventListener('message', event => {
   }
 });
 
-export function noticeBg(msg) {
-  chrome.runtime.sendMessage(msg, resp => {
-    console.log(resp);
-  });
-}
-
 export function exceAutomation(content) {
-  console.log("exceAutomation -> content", content)
-  debugger
   const [ action, selector ] = content.split('@')
   const elem = document.querySelector(selector)
-
+  // TODO: try some times
   if (elem) {
     enterReadMode(elem, false)
   }
@@ -346,6 +337,19 @@ declare global {
 }
 
 window.exceAutomation = exceAutomation
+
+$(() => {
+  noticeBg({
+    action: 'getAutomations',
+    data: { url: window.location.href }
+  }, (result) => {
+    if (result.data && result.data.length) {
+      result.data.forEach(item => {
+        exceAutomation(item.instructions)
+      })
+    }
+  })
+})
 
 export default function (req) {
   const { data, action } = req
