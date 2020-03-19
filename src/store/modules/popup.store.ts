@@ -1,4 +1,4 @@
-import { createContext } from 'react';
+import { createContext, useContext } from 'react';
 
 export const ACTIONS = {
   TAB_META: 'tabMeta',
@@ -47,4 +47,8 @@ export function getInitialState() {
     automationForm: null,
     amFormEditing: false
   }
+}
+
+export function useModel() {
+  return useContext(PageContext)
 }

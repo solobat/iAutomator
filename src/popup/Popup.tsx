@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { useEffect, useReducer, useContext } from 'react';
+import { useEffect, useReducer } from 'react';
 import './Popup.scss';
 import { getTabs } from '../helper/tab'
 import Tabs from 'antd/es/tabs'
-import { ACTIONS, pageReducer, PageContext, getInitialState } from '../store/modules/popup.store'
+import { ACTIONS, pageReducer, PageContext, getInitialState, useModel } from '../store/modules/popup.store'
 import { TabMeta } from '../common/types';
 import { AutomationsPanel } from './components/Automation';
 import { Records } from './components/Record';
@@ -25,7 +25,7 @@ export default function (props) {
 }
 
 function Popup() {
-  const { state } = useContext(PageContext)
+  const { state } = useModel()
   console.log("Popup -> state", state)
 
   return (
@@ -42,7 +42,7 @@ interface TabInfoProps {
 const { TabPane } = Tabs;
 function TabInfo(props: TabInfoProps) {
   const { host } = props.tab
-  const { dispatch, state } = useContext(PageContext)
+  const { dispatch, state } = useModel()
 
   return (
     <div className="tab-info">
