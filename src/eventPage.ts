@@ -4,6 +4,7 @@ import * as recordsController from './server/controller/records.controller'
 import * as automationController from './server/controller/automations.controller'
 import { PageMsg, BackMsg } from './common/types';
 import { matchAutomations } from './helper/automations'
+import { BUILDIN_ACTIONS, PAGE_ACTIONS } from './common/const';
 
 let automations = []
 
@@ -20,14 +21,14 @@ function msgHandler(req: PageMsg, sender, resp) {
     resp(msg)
   }
 
-  if (action === 'recordAction') {
+  if (action === PAGE_ACTIONS.RECORD) {
     const { content, url, domain } = data
 
     recordsController.saveRecord(content, url, domain)
     handler('')
-  } else if (action === 'getAutomations') {
+  } else if (action === PAGE_ACTIONS.AUTOMATIONS) {
     handler(matchAutomations(automations, data.url))
-  } else if (action === 'refreshAutomations') {
+  } else if (action === PAGE_ACTIONS.REFRESH_AUTOMATIONS) {
     loadAutomations()
     handler('')
   }
@@ -46,7 +47,7 @@ chrome.contextMenus.create({
   contexts: ['all'],
   onclick: function (info, tab) {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      runMethod(tabs[0], 'readMode')
+      runMethod(tabs[0], BUILDIN_ACTIONS.READ_MODE)
     });
   }
 });
@@ -56,7 +57,7 @@ chrome.contextMenus.create({
   contexts: ['all'],
   onclick: function (info, tab) {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      runMethod(tabs[0], 'killElement')
+      runMethod(tabs[0], BUILDIN_ACTIONS.KILL_ELEMENT)
     });
   }
 });
@@ -66,7 +67,7 @@ chrome.contextMenus.create({
   contexts: ['all'],
   onclick: function (info, tab) {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      runMethod(tabs[0], 'highlightEnglishSyntax')
+      runMethod(tabs[0], BUILDIN_ACTIONS.HIGHLIGHT_ENGLISH_SYNTAX)
     });
   }
 });

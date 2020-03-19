@@ -3,7 +3,10 @@ import keyboardJS = require('keyboardjs')
 import axios from 'axios'
 import getCssSelector from 'css-selector-generator';
 import { PageMsg } from '../common/types';
-import { noticeBg } from './event';
+import { noticeBg, noticeIframe } from './event';
+import { NOTICE_TARGET } from '../common/enum';
+import { getHtml } from '../helper/iframe'
+import { BUILDIN_ACTIONS, IFRAME_ID, PAGE_ACTIONS } from '../common/const';
 
 let isSetup, stop;
 
@@ -129,7 +132,7 @@ function enterReadMode(elem, record: boolean = true) {
   elem.scrollIntoView();
 
   if (record) {
-    recordAction(elem, 'readMode')
+    recordAction(elem, BUILDIN_ACTIONS.READ_MODE)
   }
 }
 
@@ -148,7 +151,7 @@ function getAction(elem: HTMLElement, actionName: string) {
 function recordAction(elem: HTMLElement, actionName) {
   const action = getAction(elem, actionName)
 
-  appBridge.invoke('recordAction', {
+  appBridge.invoke(PAGE_ACTIONS.RECORD, {
     content: action, url: window.location.href, domain: window.location.host
   }, resp => {
     console.log("recordAction -> resp", resp)
@@ -158,7 +161,7 @@ function recordAction(elem: HTMLElement, actionName) {
 export function killElement() {
   exec((elem, event) => {
     elem.remove()
-    recordAction(elem, 'killElement')
+    recordAction(elem, BUILDIN_ACTIONS.KILL_ELEMENT)
     if (event.metaKey) {
       requestAnimationFrame(killElement)
     }
@@ -199,16 +202,20 @@ export function highlightEnglishSyntax() {
     if ($elem.length) {
       const text = $elem[0].innerText;
       if (text) {
-        appBridge.invoke('highlightEnglishSyntax', {
+        appBridge.invoke(BUILDIN_ACTIONS.HIGHLIGHT_ENGLISH_SYNTAX, {
           text
         }, resp => {
           if (resp) {
             $elem.html(resp);
           }
-        });
+        }, NOTICE_TARGET.IFRAME);
       }
     }
   })
+}
+
+export function hashElement() {
+
 }
 
 function notifyBackground(msg, callback) {
@@ -220,20 +227,6 @@ function notifyBackground(msg, callback) {
 function openOutline() {
   exec(() => true)
 }
-
-function getHtml() {
-  const popupurl = chrome.extension.getURL('helper.html');
-  const html = `
-      <div id="steward-helper" class="steward-helper">
-          <iframe style="display:none;" id="steward-helper-iframe" src="${popupurl}" name="steward-box" width="530" height="480" frameborder="0"></iframe>
-      </div>
-  `;
-
-  return html;
-}
-
-// should refactor
-const IFRAME_ID = 'steward-helper-iframe'
 
 export function createBridge() {
   const callbacks = {}
@@ -256,7 +249,7 @@ export function createBridge() {
         });
       }
     },
-    async invoke(action, data, callback) {
+    async invoke(action, data, callback, target: NOTICE_TARGET = NOTICE_TARGET.BACKGROUND) {
       await bridge.ready()
       cbId = cbId + 1;
       callbacks[cbId] = callback;
@@ -267,7 +260,11 @@ export function createBridge() {
         data,
         callbackId: cbId
       }
-      noticeBg(msg)
+      if (target === NOTICE_TARGET.BACKGROUND) {
+        noticeBg(msg)
+      } else {
+        noticeIframe(msg)
+      }
     },
 
     receiveMessage(msg) {
@@ -340,7 +337,7 @@ window.exceAutomation = exceAutomation
 
 $(() => {
   noticeBg({
-    action: 'getAutomations',
+    action: PAGE_ACTIONS.AUTOMATIONS,
     data: { url: window.location.href }
   }, (result) => {
     if (result.data && result.data.length) {

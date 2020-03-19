@@ -11,6 +11,7 @@ function highlightEnglish(text) {
 window.addEventListener('message', function(event) {
   if (event.data.ext_from === 'content') {
       const action = event.data.action;
+      console.log("event", event)
       const data = event.data.data;
 
       console.log(`action: ${action}`);

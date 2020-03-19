@@ -1,5 +1,5 @@
-import { readMode, killElement, highlightEnglishSyntax } from './helper/dom'
-console.log('hello steward helper...')
+import { readMode, killElement, highlightEnglishSyntax, hashElement } from './helper/dom'
+import { BUILDIN_ACTIONS } from './common/const';
 
 chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
   const { method } = req
@@ -7,11 +7,13 @@ chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
     const objectString = JSON.stringify(localStorage);
     
     sendResponse({data: objectString});
-  } else if (method === 'readMode') {
+  } else if (method === BUILDIN_ACTIONS.READ_MODE) {
     readMode()
-  } else if (method === 'killElement') {
+  } else if (method === BUILDIN_ACTIONS.KILL_ELEMENT) {
     killElement()
-  } else if (method === 'highlightEnglishSyntax') {
+  } else if (method === BUILDIN_ACTIONS.HIGHLIGHT_ENGLISH_SYNTAX) {
     highlightEnglishSyntax()
+  } else if (method === BUILDIN_ACTIONS.HASH_ELEMENT) {
+    hashElement()
   }
 });
