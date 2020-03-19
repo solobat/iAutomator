@@ -8,18 +8,22 @@ import { NOTICE_TARGET } from '../common/enum';
 import { getHtml } from '../helper/iframe'
 import { BUILDIN_ACTIONS, IFRAME_ID, PAGE_ACTIONS } from '../common/const';
 
-let isSetup, stop;
+let isSetup, stop, cssInserted;
 
 const outlineCls = 'ext-hp-ms-over';
 const startOutlineEvt = 'ext-hp-startoutline';
 const stopOutlineEvt = 'ext-hp-clearoutline';
+const hashedCls = 'ext-hp-hashed'
 
 function insertCss() {
-  const css = document.createElement("style");
-
-  css.type = "text/css";
-  css.innerHTML = `.${outlineCls} {outline: 2px dotted #ccc}`;
-  document.body.appendChild(css);
+  if (!cssInserted) {
+    const css = document.createElement("style");
+  
+    css.type = "text/css";
+    css.innerHTML = `.${outlineCls} {outline: 2px dotted #ccc} .${hashedCls} { cursor: pointer;}`;
+    document.body.appendChild(css);
+    cssInserted = true;
+  }
 }
 
 function start() {
@@ -123,7 +127,7 @@ export function exec(fn) {
   startOutline(fn)
 }
 
-function enterReadMode(elem, record: boolean = true) {
+function enterReadMode(elem, silent?) {
   const $elem = $(elem)
 
   actionCache.$elem = $elem;
@@ -131,8 +135,8 @@ function enterReadMode(elem, record: boolean = true) {
 
   elem.scrollIntoView();
 
-  if (record) {
-    recordAction(elem, BUILDIN_ACTIONS.READ_MODE)
+  if (!silent) {
+    recordAction(BUILDIN_ACTIONS.READ_MODE, elem)
   }
 }
 
@@ -142,14 +146,18 @@ export function readMode() {
   })
 }
 
-function getAction(elem: HTMLElement, actionName: string) {
-  const selector = getCssSelector(elem, { blacklist: [/ext-hp/]})
-
-  return `${actionName}@${selector}`
+function getAction(actionName: string, elem?: HTMLElement) {
+  if (elem) {
+    const selector = getCssSelector(elem, { blacklist: [/ext-hp/]})
+  
+    return `${actionName}@${selector}`
+  } else {
+    return `${actionName}@body`
+  }
 }
 
-function recordAction(elem: HTMLElement, actionName) {
-  const action = getAction(elem, actionName)
+function recordAction(actionName, elem?: HTMLElement) {
+  const action = getAction(actionName, elem)
 
   appBridge.invoke(PAGE_ACTIONS.RECORD, {
     content: action, url: window.location.href, domain: window.location.host
@@ -161,7 +169,7 @@ function recordAction(elem: HTMLElement, actionName) {
 export function killElement() {
   exec((elem, event) => {
     elem.remove()
-    recordAction(elem, BUILDIN_ACTIONS.KILL_ELEMENT)
+    recordAction(BUILDIN_ACTIONS.KILL_ELEMENT, elem)
     if (event.metaKey) {
       requestAnimationFrame(killElement)
     }
@@ -214,14 +222,17 @@ export function highlightEnglishSyntax() {
   })
 }
 
-export function hashElement() {
+const shouldHashedTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']
 
-}
+export function hashElement(silent?) {
+  insertCss()
+  $(shouldHashedTags.join(',')).filter(`[id]:not(.${hashedCls})`).on('click', function() {
+    location.hash = this.getAttribute('id')
+  }).addClass(hashedCls)
 
-function notifyBackground(msg, callback) {
-  chrome.runtime.sendMessage(msg, resp => {
-    callback(resp)
-  });
+  if (!silent) {
+    recordAction(BUILDIN_ACTIONS.HASH_ELEMENT)
+  }
 }
 
 function openOutline() {
@@ -325,7 +336,11 @@ export function exceAutomation(content) {
   const elem = document.querySelector(selector)
   // TODO: try some times
   if (elem) {
-    enterReadMode(elem, false)
+    if (action === BUILDIN_ACTIONS.READ_MODE) {
+      enterReadMode(elem, true)
+    } else if (action === BUILDIN_ACTIONS.HASH_ELEMENT) {
+      hashElement(true)
+    }
   }
 }
 

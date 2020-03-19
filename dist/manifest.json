@@ -50,6 +50,9 @@
         },
         "highlightEnglishSyntax": {
             "description": "English Syntax hignlighting"
+        },
+        "hashElement": {
+            "description": "Add anchor for elements"
         }
     }
 }

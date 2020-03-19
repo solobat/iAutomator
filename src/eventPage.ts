@@ -72,6 +72,16 @@ chrome.contextMenus.create({
   }
 });
 
+chrome.contextMenus.create({
+  title: 'Add anchor for elements',
+  contexts: ['all'],
+  onclick: function (info, tab) {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      runMethod(tabs[0], BUILDIN_ACTIONS.HASH_ELEMENT)
+    });
+  }
+});
+
 chrome.commands.onCommand.addListener(function (command) {
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
     runMethod(tabs[0], command)
