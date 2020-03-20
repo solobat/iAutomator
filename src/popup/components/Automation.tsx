@@ -9,6 +9,7 @@ import Input from 'antd/es/input'
 import { PlusSquareOutlined, DeleteOutlined } from '@ant-design/icons';
 import { matchAutomations } from '../../helper/automations';
 import { noticeBg } from '../../helper/event';
+import { PAGE_ACTIONS } from '../../common/const';
 
 export function AutomationsPanel() {
   const { state, dispatch } = useContext(PageContext)
@@ -50,7 +51,7 @@ function AutomationEditor() {
           setSaving(false)
           dispatch({ type: ACTIONS.AUTOMATION_FORM_CLOSE, payload: null})
           noticeBg({
-            action: 'refreshAutomations'
+            action: PAGE_ACTIONS.REFRESH_AUTOMATIONS
           })
         }
       })
@@ -110,7 +111,7 @@ function DeleteBtn(props) {
     automationsController.deleteItem(props.record.id).then(() => {
       fetchList(state, dispatch)
       noticeBg({
-        action: 'refreshAutomations'
+        action: PAGE_ACTIONS.REFRESH_AUTOMATIONS
       })
     })
   }, [])
