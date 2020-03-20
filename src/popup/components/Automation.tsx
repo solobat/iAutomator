@@ -109,6 +109,9 @@ function DeleteBtn(props) {
   const onClick = useCallback(() => {
     automationsController.deleteItem(props.record.id).then(() => {
       fetchList(state, dispatch)
+      noticeBg({
+        action: 'refreshAutomations'
+      })
     })
   }, [])
 
