@@ -20,7 +20,7 @@ function onRecordRunClick(item, tabId) {
 }
 
 const RecordsColumns: ColumnsType = [
-  { title: 'Action', dataIndex: 'content', key: 'content' },
+  { title: 'Action', dataIndex: 'content', key: 'content', ellipsis: true },
   {
     title: 'Path', dataIndex: 'url', key: 'url',
     render: (text) => <span>{ getPath(text)}</span>,
