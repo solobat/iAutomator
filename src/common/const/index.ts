@@ -11,5 +11,6 @@ export const BUILDIN_ACTIONS = {
   HIGHLIGHT_ENGLISH_SYNTAX: 'highlightEnglishSyntax',
   KILL_ELEMENT: 'killElement',
   READ_MODE: 'readMode',
-  HASH_ELEMENT: 'hashElement'
+  HASH_ELEMENT: 'hashElement',
+  DOWNLOAD: 'download'
 }

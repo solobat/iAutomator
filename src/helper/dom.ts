@@ -7,6 +7,7 @@ import { noticeBg, noticeIframe } from './event';
 import { NOTICE_TARGET } from '../common/enum';
 import { getHtml } from '../helper/iframe'
 import { BUILDIN_ACTIONS, IFRAME_ID, PAGE_ACTIONS } from '../common/const';
+import { getHost } from './url';
 
 let isSetup, stop, cssInserted;
 
@@ -235,6 +236,93 @@ export function hashElement(silent?) {
   }
 }
 
+function downloadURL(url, fileName?, type?) {
+  if (getHost(url) !== window.location.host) {
+    window.open(url) 
+  } else {
+    const elem = document.createElement('a');
+  
+    elem.setAttribute('href', url);
+    elem.setAttribute('download', fileName);
+    document.body.appendChild(elem);
+    elem.click();
+  
+    elem.remove();
+  }
+}
+
+function getFileNameByURL(elem, url, type = 'file', ext?) {
+  const baseName = elem.getAttribute('alt') || elem.getAttribute('title') || type
+  if (!ext) {
+    const m = url.match(/\.(\w+)$/)
+    if (m) {
+      ext = m[1]
+    } else {
+      ext = ''
+    }
+  }
+
+  return `${baseName}.${ext}`
+}
+
+function downloadSource(elem): boolean {
+  const url = elem.getAttribute('src')
+
+  if (url) {
+    const tag = elem.tagName.toLowerCase()
+
+    downloadURL(url, getFileNameByURL(elem, url, tag), tag)
+
+    return true
+  } else {
+    return false
+  } 
+}
+
+function downloadBg(elem): boolean {
+  const bgImg = window.getComputedStyle(elem).backgroundImage
+  const match = bgImg.match(/url\(["']?(.*\w)["']?\)/)
+
+  if (match) {
+    const url = match[1]
+    downloadURL(url, getFileNameByURL(elem, url, 'background'))
+
+    return true
+  } else {
+    return true
+  }
+}
+
+function downloadIt(elem, silent?): boolean {
+  const tagName = elem.tagName
+
+  function record(result) {
+    if (result && !silent) {
+      recordAction(BUILDIN_ACTIONS.DOWNLOAD, elem)
+    }
+  }
+
+  if (['VIDEO', 'IMG', 'AUDIO'].indexOf(tagName) !== -1) {
+    const result = downloadSource(elem)
+
+    record(result)
+
+    return result
+  } else {
+    const result = downloadBg(elem)
+
+    record(result)
+
+    return result
+  }
+}
+
+export function download() {
+  exec((elem, event) => {
+    downloadIt(elem)
+  })
+}
+
 function openOutline() {
   exec(() => true)
 }
@@ -331,16 +419,32 @@ window.addEventListener('message', event => {
   }
 });
 
-export function exceAutomation(content) {
+export function exceAutomation(content, times = 0) {
   const [ action, selector ] = content.split('@')
   const elem = document.querySelector(selector)
-  // TODO: try some times
+
+  function tryAgain() {
+    if (times < 5) {
+      setTimeout(() => {
+        exceAutomation(content, times + 1)
+      }, 1000)
+    }
+  }
+
   if (elem) {
     if (action === BUILDIN_ACTIONS.READ_MODE) {
       enterReadMode(elem, true)
     } else if (action === BUILDIN_ACTIONS.HASH_ELEMENT) {
       hashElement(true)
+    } else if (action === BUILDIN_ACTIONS.DOWNLOAD) {
+      const result = downloadIt(elem, true)
+
+      if (!result) {
+        tryAgain()
+      }
     }
+  } else {
+    tryAgain()
   }
 }
 

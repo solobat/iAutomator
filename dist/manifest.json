@@ -53,6 +53,9 @@
         },
         "hashElement": {
             "description": "Add anchor for elements"
+        },
+        "download": {
+            "description": "Download element"
         }
     }
 }
