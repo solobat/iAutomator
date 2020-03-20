@@ -24,5 +24,5 @@ export function deleteRecord(recordId: number) {
 }
 
 export function query(attrs = {}) {
-    return db.records.where(attrs).toArray()
+    return db.records.where(attrs).reverse().sortBy('createTime')
 }
