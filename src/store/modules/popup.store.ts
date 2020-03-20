@@ -4,7 +4,8 @@ export const ACTIONS = {
   TAB_META: 'tabMeta',
   TAB_CHANGE: 'tabChange',
   AUTOMATION_FORM_UPDATE: 'initAutomationForm',
-  AUTOMATION_FORM_CLOSE: 'automationFormClose'
+  AUTOMATION_FORM_CLOSE: 'automationFormClose',
+  AUTOMATIONS: 'AUTOMATIONS'
 }
 
 export function pageReducer(state, action) {
@@ -29,6 +30,9 @@ export function pageReducer(state, action) {
       newState.amFormEditing = false;
       newState.automationForm = null;
       break;
+    case ACTIONS.AUTOMATIONS:
+      newState.automations = payload;
+      break;
     default:
       break;
   }
@@ -45,7 +49,8 @@ export function getInitialState() {
     tab: null,
     tabKey: 'automation',
     automationForm: null,
-    amFormEditing: false
+    amFormEditing: false,
+    automations: []
   }
 }
 

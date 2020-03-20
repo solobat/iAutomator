@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { useState, useEffect, useContext } from 'react';
-import { PageContext, ACTIONS } from '../../store/modules/popup.store';
+import { useState, useEffect, useContext, useCallback } from 'react';
+import { PageContext, ACTIONS, useModel } from '../../store/modules/popup.store';
 import * as automationsController from '../../server/controller/automations.controller'
 import Response from '../../server/common/response';
 import Table from 'antd/es/table'
 import Button from 'antd/es/button';
 import Input from 'antd/es/input'
-import { PlusSquareOutlined } from '@ant-design/icons';
+import { PlusSquareOutlined, DeleteOutlined } from '@ant-design/icons';
 import { matchAutomations } from '../../helper/automations';
 import { noticeBg } from '../../helper/event';
 
@@ -86,24 +86,56 @@ function AutomationEditor() {
 const AutomationsColumns = [
   { title: 'Instructions', dataIndex: 'instructions', key: 'instructions' },
   { title: 'Pattern', dataIndex: 'pattern', key: 'pattern' },
+  {
+    title: 'Operation',
+    dataIndex: '',
+    key: 'id',
+    width: '100px',
+    render: (text, record) => <OpBtns record={record} />,
+  }
 ]
+
+function OpBtns(props) {
+
+  return (
+    <div className="op-btns">
+      <DeleteBtn record={props.record} />
+    </div>
+  )
+}
+
+function DeleteBtn(props) {
+  const { state, dispatch } = useModel()
+  const onClick = useCallback(() => {
+    automationsController.deleteItem(props.record.id).then(() => {
+      fetchList(state, dispatch)
+    })
+  }, [])
+
+  return (
+    <DeleteOutlined onClick={onClick}/>
+  )
+}
+
+function fetchList(state, dispatch) {
+  automationsController.getList().then((res: Response) => {
+    if (res.code === 0) {
+      dispatch({ type: ACTIONS.AUTOMATIONS, payload: matchAutomations(res.data, state.tab.url) })
+    }
+  })
+}
 
 function Automations(props) {
   const { host } = props
-  const [list, setList] = useState([])
-  const { state } = useContext(PageContext)
+  const { state, dispatch } = useContext(PageContext)
 
   useEffect(() => {
-    automationsController.getList().then((res: Response) => {
-      if (res.code === 0) {
-        setList(matchAutomations(res.data, state.tab.url))
-      }
-    })
+    fetchList(state, dispatch)
   }, [host, state.amFormEditing])
 
   return (
     <div>
-      <Table columns={AutomationsColumns} dataSource={list} pagination={false}
+      <Table columns={AutomationsColumns} dataSource={state.automations} pagination={false}
         size="small"></Table>
     </div>
   )

@@ -44,3 +44,9 @@ export async function getList() {
 
     return Response.ok(result);
 }
+
+export async function deleteItem(id: number) {
+    const result = await automationService.deleteAutomation(id);
+
+    return Response.ok(result);
+}
