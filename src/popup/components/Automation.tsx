@@ -85,12 +85,10 @@ function AutomationEditor() {
 }
 
 const AutomationsColumns = [
-  { title: 'Instructions', dataIndex: 'instructions', key: 'instructions' },
-  { title: 'Pattern', dataIndex: 'pattern', key: 'pattern' },
+  { title: 'Instructions', dataIndex: 'instructions' },
+  { title: 'Pattern', dataIndex: 'pattern' },
   {
     title: 'Operation',
-    dataIndex: '',
-    key: 'id',
     width: '100px',
     render: (text, record) => <OpBtns record={record} />,
   }
@@ -139,8 +137,9 @@ function Automations(props) {
 
   return (
     <div>
-      <Table columns={AutomationsColumns} dataSource={state.automations} pagination={false}
-        size="small"></Table>
+      <Table columns={AutomationsColumns} dataSource={state.automations}
+        pagination={false} size="small" rowKey="createTime">
+      </Table>
     </div>
   )
 }

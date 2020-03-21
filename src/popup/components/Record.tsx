@@ -20,16 +20,14 @@ function onRecordRunClick(item, tabId) {
 }
 
 const RecordsColumns: ColumnsType = [
-  { title: 'Action', dataIndex: 'content', key: 'content', ellipsis: true },
+  { title: 'Action', dataIndex: 'content', ellipsis: true },
   {
-    title: 'Path', dataIndex: 'url', key: 'url',
+    title: 'Path', dataIndex: 'url',
     render: (text) => <span>{ getPath(text)}</span>,
     ellipsis: true
   },
   {
     title: 'Operation',
-    dataIndex: '',
-    key: 'id',
     width: '100px',
     render: (text, record) => <RecordOpBtns record={record} />,
   }
@@ -84,7 +82,7 @@ export function Records(props: RecordsProps) {
   return (
     <div>
       <Table columns={RecordsColumns} dataSource={list} pagination={false}
-        size="small"></Table>
+        rowKey="createTime" size="small"></Table>
     </div>
   )
 }
