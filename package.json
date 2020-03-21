@@ -4,7 +4,7 @@
   "description": "Steward Helper",
   "scripts": {
     "build": "webpack --config webpack.prod.js",
-    "dev": "webpack --config webpack.dev.js",
+    "dev": "webpack -w --config webpack.dev.js",
     "watch": "webpack -w --config webpack.dev.js",
     "lint": "tslint 'src/**/*.{ts, tsx}'"
   },

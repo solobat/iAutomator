@@ -27,7 +27,11 @@ function msgHandler(req: PageMsg, sender, resp) {
     recordsController.saveRecord(content, url, domain)
     handler('')
   } else if (action === PAGE_ACTIONS.AUTOMATIONS) {
-    handler(matchAutomations(automations, data.url))
+    const records = matchAutomations(automations, data.url)
+    handler(records)
+    chrome.browserAction.setBadgeText({
+      text: records.length ? String(records.length) : ''
+    })
   } else if (action === PAGE_ACTIONS.REFRESH_AUTOMATIONS) {
     loadAutomations()
     handler('')
