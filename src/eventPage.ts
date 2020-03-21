@@ -8,6 +8,20 @@ import { BUILDIN_ACTIONS, PAGE_ACTIONS } from './common/const';
 
 let automations = []
 
+const cachedBadges = {}
+
+function updateBadge(url) {
+  if (url.startsWith('http')) {
+    chrome.browserAction.enable()
+    chrome.browserAction.setBadgeText({
+      text: cachedBadges[url] || ''
+    })
+    
+  } else {
+    chrome.browserAction.disable()
+  }
+}
+
 function msgHandler(req: PageMsg, sender, resp) {
   console.log("msgHandler -> sender", sender)
   let { action, data, callbackId } = req;
@@ -28,10 +42,10 @@ function msgHandler(req: PageMsg, sender, resp) {
     handler('')
   } else if (action === PAGE_ACTIONS.AUTOMATIONS) {
     const records = matchAutomations(automations, data.url)
+
     handler(records)
-    chrome.browserAction.setBadgeText({
-      text: records.length ? String(records.length) : ''
-    })
+    cachedBadges[data.url] = records.length ? String(records.length) : ''
+    updateBadge(data.url)
   } else if (action === PAGE_ACTIONS.REFRESH_AUTOMATIONS) {
     loadAutomations()
     handler('')
@@ -101,6 +115,12 @@ chrome.commands.onCommand.addListener(function (command) {
     runMethod(tabs[0], command)
   });
 });
+
+chrome.tabs.onActivated.addListener(function () {
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    updateBadge(tabs[0].url)
+  });
+})
 
 function loadAutomations() {
   automationController.getList().then((resp) => {

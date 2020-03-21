@@ -12,6 +12,7 @@ body {
     display: flex;
     flex-direction: column;
     height: 400px;
+    overflow: auto;
     width: 600px;
     padding: 10px;
 }
