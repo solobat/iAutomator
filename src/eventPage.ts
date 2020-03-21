@@ -8,13 +8,46 @@ import { BUILDIN_ACTIONS, PAGE_ACTIONS } from './common/const';
 
 let automations = []
 
-const cachedBadges = {}
+interface BadgeItem {
+  url: string;
+  text: string;
+}
+
+class BadgesHelper {
+  list: BadgeItem[]
+  maxLength: number
+
+  constructor() {
+    this.list = []
+    this.maxLength = 20
+  }
+
+  getItem(url): string {
+    const item = this.list.find(item => item.url === url)
+
+    if (item) {
+      return item.text
+    } else {
+      return ''
+    }
+  }
+
+  setItem(item: BadgeItem) {
+    this.list.push(item)
+
+    if (this.list.length >= this.maxLength) {
+      this.list.shift()
+    }
+  }
+}
+
+const badgesHelper = new BadgesHelper()
 
 function updateBadge(url) {
   if (url.startsWith('http')) {
     chrome.browserAction.enable()
     chrome.browserAction.setBadgeText({
-      text: cachedBadges[url] || ''
+      text: badgesHelper.getItem(url)
     })
     
   } else {
@@ -47,7 +80,10 @@ function msgHandler(req: PageMsg, sender, resp) {
     const records = matchAutomations(automations, data.url)
 
     handler(records)
-    cachedBadges[data.url] = records.length ? String(records.length) : ''
+    badgesHelper.setItem({
+      url: data.url,
+      text: records.length ? String(records.length) : ''
+    })
     updateBadge(data.url)
   } else if (action === PAGE_ACTIONS.REFRESH_AUTOMATIONS) {
     loadAutomations()
