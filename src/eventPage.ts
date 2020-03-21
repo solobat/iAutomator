@@ -3,10 +3,11 @@ import DomHelper from './helper/dom'
 import * as recordsController from './server/controller/records.controller'
 import * as automationController from './server/controller/automations.controller'
 import { PageMsg, BackMsg } from './common/types';
+import { IAutomation } from './server/db/database'
 import { matchAutomations } from './helper/automations'
 import { BUILDIN_ACTIONS, PAGE_ACTIONS } from './common/const';
 
-let automations = []
+let automations: IAutomation[] = []
 
 interface BadgeItem {
   url: string;
@@ -163,7 +164,7 @@ chrome.tabs.onActivated.addListener(function () {
 
 function loadAutomations() {
   automationController.getList().then((resp) => {
-    automations = resp.data
+    automations = <IAutomation[]>resp.data
   }) 
 }
 
