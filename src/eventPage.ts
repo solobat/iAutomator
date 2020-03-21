@@ -19,6 +19,9 @@ function updateBadge(url) {
     
   } else {
     chrome.browserAction.disable()
+    chrome.browserAction.setBadgeText({
+      text: ''
+    })
   }
 }
 
