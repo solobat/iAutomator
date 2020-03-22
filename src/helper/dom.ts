@@ -25,6 +25,8 @@ function insertCss() {
     css.innerHTML = `
       .${outlineCls} {outline: 2px dotted #ccc}
       .${hashedCls} { cursor: pointer;}
+      .${fullScreenCls} { font-size: 20px!important; line-height: 1.3!important; }
+      .${fullScreenCls} span { font-size: 20px!important; }
     `;
     document.body.appendChild(css);
     cssInserted = true;
@@ -337,6 +339,7 @@ function setupFullScreenElem(elem) {
   const paddings = []
   
   elem.setAttribute('data-padding', elem.style.padding)
+  $(elem).addClass(fullScreenCls)
   if (pv > 0) {
     paddings.push(`${pv}px`)
   } else {
@@ -367,6 +370,7 @@ function setupFullScreenElem(elem) {
     if (ovf) {
       elem.style.overflow = elem.getAttribute('data-ovf')
     }
+    $(elem).removeClass(fullScreenCls)
   }
 }
 
