@@ -2,18 +2,21 @@ import $ = require('jquery')
 import keyboardJS = require('keyboardjs')
 import getCssSelector from 'css-selector-generator';
 import { noticeBg } from './event';
-import { NOTICE_TARGET } from '../common/enum';
-import { BUILDIN_ACTIONS, PAGE_ACTIONS } from '../common/const';
-import { getHost } from './url';
+import { PAGE_ACTIONS } from '../common/const';
+import Base, { DomHelper } from '../buildin/Base'
 import { appBridge } from './bridge'
+import Download from '../buildin/Download'
+import FullScreen from '../buildin/FullScreen'
+import HashElement from '../buildin/HashElement'
+import HighlightEnglishSyntax from '../buildin/HighlightEnglishSyntax'
+import KillElement from '../buildin/KillElement'
+import ReadMode from '../buildin/ReadMode'
 
 let isSetup, stop, cssInserted;
 
 const outlineCls = 'ext-hp-ms-over';
 const startOutlineEvt = 'ext-hp-startoutline';
 const stopOutlineEvt = 'ext-hp-clearoutline';
-const hashedCls = 'ext-hp-hashed'
-const fullScreenCls = 'ext-hp-fullscreen'
 
 function insertCss() {
   if (!cssInserted) {
@@ -22,9 +25,7 @@ function insertCss() {
     css.type = "text/css";
     css.innerHTML = `
       .${outlineCls} {outline: 2px dotted #ccc}
-      .${hashedCls} { cursor: pointer;}
-      .${fullScreenCls} { font-size: 20px!important; line-height: 1.3!important; }
-      .${fullScreenCls} span { font-size: 20px!important; }
+      ${getStyles()}
     `;
     document.body.appendChild(css);
     cssInserted = true;
@@ -62,6 +63,16 @@ function start() {
   return stop;
 }
 
+function recordAction(actionName, elem?: HTMLElement) {
+  const action = getAction(actionName, elem)
+
+  appBridge.invoke(PAGE_ACTIONS.RECORD, {
+    content: action, url: window.location.href, domain: window.location.host
+  }, resp => {
+    console.log("recordAction -> resp", resp)
+  });
+}
+
 function clear() {
   $(`.${outlineCls}`).removeClass(outlineCls);
 }
@@ -81,7 +92,7 @@ function stopOutline() {
 
 function setup() {
   if (!isSetup) {
-    insertCss();
+    helper.insertCss();
 
     $(document).on(startOutlineEvt, startOutline);
     $(document).on(stopOutlineEvt, stopOutline);
@@ -115,40 +126,9 @@ function getOutlinedElem() {
   return $(`.${outlineCls}`).get(0);
 }
 
-let actionCache = {
-  $elem: null,
-  subActions: null
-};
-
-function resetActionCache() {
-  actionCache = {
-    $elem: null,
-    subActions: null
-  };
-}
-
 export function exec(fn) {
   setup()
   startOutline(fn)
-}
-
-function enterReadMode(elem, silent?) {
-  const $elem = $(elem)
-
-  actionCache.$elem = $elem;
-  hideSiblings($elem);
-
-  elem.scrollIntoView();
-
-  if (!silent) {
-    recordAction(BUILDIN_ACTIONS.READ_MODE, elem)
-  }
-}
-
-export function readMode() {
-  exec((elem, event) => {
-    enterReadMode(elem)
-  })
 }
 
 function getAction(actionName: string, elem?: HTMLElement) {
@@ -159,234 +139,6 @@ function getAction(actionName: string, elem?: HTMLElement) {
   } else {
     return `${actionName}@body`
   }
-}
-
-function recordAction(actionName, elem?: HTMLElement) {
-  const action = getAction(actionName, elem)
-
-  appBridge.invoke(PAGE_ACTIONS.RECORD, {
-    content: action, url: window.location.href, domain: window.location.host
-  }, resp => {
-    console.log("recordAction -> resp", resp)
-  });
-}
-
-export function killElement() {
-  exec((elem, event) => {
-    elem.remove()
-    recordAction(BUILDIN_ACTIONS.KILL_ELEMENT, elem)
-    if (event.metaKey) {
-      requestAnimationFrame(killElement)
-    }
-  })
-}
-
-function hideSiblings($el) {
-  if ($el && $el.length) {
-    $el.siblings().not('#steward-main,#wordcard-main').css({
-      visibility: 'hidden',
-      opacity: 0
-    }).addClass('s-a-rm-hn');
-    hideSiblings($el.parent())
-  } else {
-    console.log('Enter reading mode');
-    keyboardJS.bind('esc', function showNode() {
-      $('.s-a-rm-hn').css({
-        visibility: 'visible',
-        opacity: 1
-      }).removeClass('s-a-rm-hn');
-      console.log('Exit reading mode');
-      execSubActions(actionCache.$elem, actionCache.subActions, 'leave');
-      resetActionCache();
-      keyboardJS.unbind('esc', showNode);
-    });
-  }
-}
-
-function execSubActions($elem, action, type) {
-
-}
-
-export function highlightEnglishSyntax() {
-  setup()
-  startOutline(elem => {
-    const $elem = $(elem)
-
-    if ($elem.length) {
-      const text = $elem[0].innerText;
-      if (text) {
-        appBridge.invoke(BUILDIN_ACTIONS.HIGHLIGHT_ENGLISH_SYNTAX, {
-          text
-        }, resp => {
-          if (resp) {
-            $elem.html(resp);
-          }
-        }, NOTICE_TARGET.IFRAME);
-      }
-    }
-  })
-}
-
-const shouldHashedTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']
-
-export function hashElement(silent?) {
-  insertCss()
-  $(shouldHashedTags.join(',')).filter(`[id]:not(.${hashedCls})`).on('click', function() {
-    location.hash = this.getAttribute('id')
-  }).addClass(hashedCls)
-
-  if (!silent) {
-    recordAction(BUILDIN_ACTIONS.HASH_ELEMENT)
-  }
-}
-
-function downloadURL(url, fileName?, type?) {
-  if (getHost(url) !== window.location.host) {
-    window.open(url) 
-  } else {
-    const elem = document.createElement('a');
-  
-    elem.setAttribute('href', url);
-    elem.setAttribute('download', fileName);
-    document.body.appendChild(elem);
-    elem.click();
-  
-    elem.remove();
-  }
-}
-
-function getFileNameByURL(elem, url, type = 'file', ext?) {
-  const baseName = elem.getAttribute('alt') || elem.getAttribute('title') || type
-  if (!ext) {
-    const m = url.match(/\.(\w+)$/)
-    if (m) {
-      ext = m[1]
-    } else {
-      ext = ''
-    }
-  }
-
-  return `${baseName}.${ext}`
-}
-
-function downloadSource(elem): boolean {
-  const url = elem.getAttribute('src')
-
-  if (url) {
-    const tag = elem.tagName.toLowerCase()
-
-    downloadURL(url, getFileNameByURL(elem, url, tag), tag)
-
-    return true
-  } else {
-    return false
-  } 
-}
-
-function downloadBg(elem): boolean {
-  const bgImg = window.getComputedStyle(elem).backgroundImage
-  const match = bgImg.match(/url\(["']?(.*\w)["']?\)/)
-
-  if (match) {
-    const url = match[1]
-    downloadURL(url, getFileNameByURL(elem, url, 'background'))
-
-    return true
-  } else {
-    return true
-  }
-}
-
-function downloadIt(elem, silent?): boolean {
-  const tagName = elem.tagName
-
-  function record(result) {
-    if (result && !silent) {
-      recordAction(BUILDIN_ACTIONS.DOWNLOAD, elem)
-    }
-  }
-
-  if (['VIDEO', 'IMG', 'AUDIO'].indexOf(tagName) !== -1) {
-    const result = downloadSource(elem)
-
-    record(result)
-
-    return result
-  } else {
-    const result = downloadBg(elem)
-
-    record(result)
-
-    return result
-  }
-}
-
-export function download() {
-  exec((elem, event) => {
-    downloadIt(elem)
-  })
-}
-
-let unsetFullScreenElem
-
-function setupFullScreenElem(elem, event) {
-  const pv = (window.innerHeight - elem.clientHeight) / 2
-  const ph = (window.innerWidth - elem.clientWidth) / 2
-  const bgc = window.getComputedStyle(elem).backgroundColor
-  const ovf = elem.clientHeight > window.innerHeight
-  const paddings = []
-  
-  elem.setAttribute('data-padding', elem.style.padding)
-  if (event.metaKey) {
-    $(elem).addClass(fullScreenCls)
-  }
-  if (pv > 0) {
-    paddings.push(`${pv}px`)
-  } else {
-    paddings.push('0')
-  }
-  if (ph > 0) {
-    paddings.push(`${ph}px`)
-  } else {
-    paddings.push('0')
-  }
-  
-  elem.style.padding = paddings.join(' ')
-
-  if (bgc === 'rgba(0, 0, 0, 0)') {
-    elem.setAttribute('data-bgc', bgc)
-    elem.style.backgroundColor = '#fff'
-  }
-  if (ovf) {
-    elem.setAttribute('data-ovf', elem.style.overflow)
-    elem.style.overflow = 'auto'
-  }
-
-  return function() {
-    elem.style.padding = elem.getAttribute('data-padding')
-    if (elem.hasAttribute('data-bgc')) {
-      elem.style.backgroundColor = elem.getAttribute('data-bgc')
-    }
-    if (ovf) {
-      elem.style.overflow = elem.getAttribute('data-ovf')
-    }
-    $(elem).removeClass(fullScreenCls)
-  }
-}
-
-function fullScreenElem(elem, event) {
-  if (elem.requestFullscreen) {
-    unsetFullScreenElem = setupFullScreenElem(elem, event)
-    requestAnimationFrame(() => {
-      elem.requestFullscreen()
-    })
-  }
-}
-
-export function fullScreen() {
-  exec((elem, event) => {
-    fullScreenElem(elem, event)
-  })
 }
 
 function openOutline() {
@@ -416,15 +168,21 @@ export function exceAutomation(content, times = 0) {
   }
 
   if (elem) {
-    if (action === BUILDIN_ACTIONS.READ_MODE) {
-      enterReadMode(elem, true)
-    } else if (action === BUILDIN_ACTIONS.HASH_ELEMENT) {
-      hashElement(true)
-    } else if (action === BUILDIN_ACTIONS.DOWNLOAD) {
-      const result = downloadIt(elem, true)
+    const instance = findAction(action)
 
-      if (!result) {
-        tryAgain()
+    if (instance) {
+      if (instance.shouldTryAgain) {
+        const result = instance.exec(elem, {
+          silent: true
+        })
+
+        if (!result) {
+          tryAgain()
+        }
+      } else {
+        instance.exec(elem, {
+          silent: true
+        })
       }
     }
   } else {
@@ -449,15 +207,67 @@ $(() => {
       })
     }
   })
-
-  document.addEventListener("fullscreenchange", function( event ) {
-    if (!document.fullscreenElement) {
-      if (unsetFullScreenElem) {
-        unsetFullScreenElem()
-      }
-    }
-  });
 })
+
+const helper: DomHelper = {
+  actionCache: {
+    $elem: null,
+    subActions: null
+  },
+
+  exec(fn) {
+    setup()
+    startOutline(fn)
+  },
+
+  resetActionCache() {
+    helper.actionCache = {
+      $elem: null,
+      subActions: null
+    };
+  },
+
+  recordAction,
+
+  insertCss,
+
+  invoke: appBridge.invoke,
+
+  actions: []
+}
+
+function install() {
+  new Download(helper)
+  new FullScreen(helper)
+  new HashElement(helper)
+  new HighlightEnglishSyntax(helper)
+  new KillElement(helper)
+  new ReadMode(helper)
+}
+
+install()
+
+function findAction(name: string): Base | null {
+  return helper.actions.find(item => item.name === name)
+}
+
+function getStyles() {
+  return helper.actions.reduce((memo, item) => {
+    if (item.style) {
+      memo += item.style
+    }
+
+    return memo
+  }, '')
+}
+
+export function startAction(actionName: string) {
+  const action = findAction(actionName)
+
+  if (action) {
+    action.start()
+  }
+}
 
 export default function (req) {
   const { data, action } = req

@@ -3,6 +3,7 @@ import { IFRAME_ID } from "../common/const"
 import { NOTICE_TARGET } from "../common/enum"
 import { PageMsg } from "../common/types"
 import { noticeBg, noticeIframe } from './event';
+import $ = require('jquery')
 
 export function createBridge() {
   const callbacks = {}
