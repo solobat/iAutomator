@@ -150,6 +150,16 @@ chrome.contextMenus.create({
   }
 });
 
+chrome.contextMenus.create({
+  title: 'FullScreen element',
+  contexts: ['all'],
+  onclick: function (info, tab) {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      runMethod(tabs[0], BUILDIN_ACTIONS.FULL_SCREEN)
+    });
+  }
+});
+
 chrome.commands.onCommand.addListener(function (command) {
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
     runMethod(tabs[0], command)

@@ -15,13 +15,17 @@ const outlineCls = 'ext-hp-ms-over';
 const startOutlineEvt = 'ext-hp-startoutline';
 const stopOutlineEvt = 'ext-hp-clearoutline';
 const hashedCls = 'ext-hp-hashed'
+const fullScreenCls = 'ext-hp-fullscreen'
 
 function insertCss() {
   if (!cssInserted) {
     const css = document.createElement("style");
   
     css.type = "text/css";
-    css.innerHTML = `.${outlineCls} {outline: 2px dotted #ccc} .${hashedCls} { cursor: pointer;}`;
+    css.innerHTML = `
+      .${outlineCls} {outline: 2px dotted #ccc}
+      .${hashedCls} { cursor: pointer;}
+    `;
     document.body.appendChild(css);
     cssInserted = true;
   }
@@ -323,6 +327,64 @@ export function download() {
   })
 }
 
+let unsetFullScreenElem
+
+function setupFullScreenElem(elem) {
+  const pv = (window.innerHeight - elem.clientHeight) / 2
+  const ph = (window.innerWidth - elem.clientWidth) / 2
+  const bgc = window.getComputedStyle(elem).backgroundColor
+  const ovf = elem.clientHeight > window.innerHeight
+  const paddings = []
+  
+  elem.setAttribute('data-padding', elem.style.padding)
+  if (pv > 0) {
+    paddings.push(`${pv}px`)
+  } else {
+    paddings.push('0')
+  }
+  if (ph > 0) {
+    paddings.push(`${ph}px`)
+  } else {
+    paddings.push('0')
+  }
+  
+  elem.style.padding = paddings.join(' ')
+
+  if (bgc === 'rgba(0, 0, 0, 0)') {
+    elem.setAttribute('data-bgc', bgc)
+    elem.style.backgroundColor = '#fff'
+  }
+  if (ovf) {
+    elem.setAttribute('data-ovf', elem.style.overflow)
+    elem.style.overflow = 'auto'
+  }
+
+  return function() {
+    elem.style.padding = elem.getAttribute('data-padding')
+    if (elem.hasAttribute('data-bgc')) {
+      elem.style.backgroundColor = elem.getAttribute('data-bgc')
+    }
+    if (ovf) {
+      elem.style.overflow = elem.getAttribute('data-ovf')
+    }
+  }
+}
+
+function fullScreenElem(elem) {
+  if (elem.requestFullscreen) {
+    unsetFullScreenElem = setupFullScreenElem(elem)
+    requestAnimationFrame(() => {
+      elem.requestFullscreen()
+    })
+  }
+}
+
+export function fullScreen() {
+  exec((elem, event) => {
+    fullScreenElem(elem)
+  })
+}
+
 function openOutline() {
   exec(() => true)
 }
@@ -465,6 +527,14 @@ $(() => {
       })
     }
   })
+
+  document.addEventListener("fullscreenchange", function( event ) {
+    if (!document.fullscreenElement) {
+      if (unsetFullScreenElem) {
+        unsetFullScreenElem()
+      }
+    }
+  });
 })
 
 export default function (req) {

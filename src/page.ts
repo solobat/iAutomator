@@ -1,4 +1,5 @@
-import { readMode, killElement, highlightEnglishSyntax, hashElement, download } from './helper/dom'
+import { readMode, killElement, highlightEnglishSyntax,
+  hashElement, download, fullScreen } from './helper/dom'
 import { BUILDIN_ACTIONS } from './common/const';
 
 chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
@@ -17,5 +18,7 @@ chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
     hashElement()
   } else if (method === BUILDIN_ACTIONS.DOWNLOAD) {
     download()
+  } else if (method === BUILDIN_ACTIONS.FULL_SCREEN) {
+    fullScreen()
   }
 });

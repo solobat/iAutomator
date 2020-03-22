@@ -12,5 +12,6 @@ export const BUILDIN_ACTIONS = {
   KILL_ELEMENT: 'killElement',
   READ_MODE: 'readMode',
   HASH_ELEMENT: 'hashElement',
-  DOWNLOAD: 'download'
+  DOWNLOAD: 'download',
+  FULL_SCREEN: 'fullScreen'
 }
