@@ -331,7 +331,7 @@ export function download() {
 
 let unsetFullScreenElem
 
-function setupFullScreenElem(elem) {
+function setupFullScreenElem(elem, event) {
   const pv = (window.innerHeight - elem.clientHeight) / 2
   const ph = (window.innerWidth - elem.clientWidth) / 2
   const bgc = window.getComputedStyle(elem).backgroundColor
@@ -339,7 +339,9 @@ function setupFullScreenElem(elem) {
   const paddings = []
   
   elem.setAttribute('data-padding', elem.style.padding)
-  $(elem).addClass(fullScreenCls)
+  if (event.metaKey) {
+    $(elem).addClass(fullScreenCls)
+  }
   if (pv > 0) {
     paddings.push(`${pv}px`)
   } else {
@@ -374,9 +376,9 @@ function setupFullScreenElem(elem) {
   }
 }
 
-function fullScreenElem(elem) {
+function fullScreenElem(elem, event) {
   if (elem.requestFullscreen) {
-    unsetFullScreenElem = setupFullScreenElem(elem)
+    unsetFullScreenElem = setupFullScreenElem(elem, event)
     requestAnimationFrame(() => {
       elem.requestFullscreen()
     })
@@ -385,7 +387,7 @@ function fullScreenElem(elem) {
 
 export function fullScreen() {
   exec((elem, event) => {
-    fullScreenElem(elem)
+    fullScreenElem(elem, event)
   })
 }
 
