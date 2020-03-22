@@ -1,13 +1,11 @@
 import $ = require('jquery')
 import keyboardJS = require('keyboardjs')
-import axios from 'axios'
 import getCssSelector from 'css-selector-generator';
-import { PageMsg } from '../common/types';
-import { noticeBg, noticeIframe } from './event';
+import { noticeBg } from './event';
 import { NOTICE_TARGET } from '../common/enum';
-import { getHtml } from '../helper/iframe'
-import { BUILDIN_ACTIONS, IFRAME_ID, PAGE_ACTIONS } from '../common/const';
+import { BUILDIN_ACTIONS, PAGE_ACTIONS } from '../common/const';
 import { getHost } from './url';
+import { appBridge } from './bridge'
 
 let isSetup, stop, cssInserted;
 
@@ -394,88 +392,6 @@ export function fullScreen() {
 function openOutline() {
   exec(() => true)
 }
-
-export function createBridge() {
-  const callbacks = {}
-  const registerFuncs = {}
-  let cbId = 0
-
-  const bridge = {
-    inited: false,
-    ready() {
-      if (bridge.inited) {
-        return Promise.resolve()
-      } else {
-        return new Promise(resolve => {
-          $('html').append(getHtml());
-          const $iframe = $(`#${IFRAME_ID}`);
-          $iframe.on('load', () => {
-            bridge.inited = true;
-            resolve();
-          });
-        });
-      }
-    },
-    async invoke(action, data, callback, target: NOTICE_TARGET = NOTICE_TARGET.BACKGROUND) {
-      await bridge.ready()
-      cbId = cbId + 1;
-      callbacks[cbId] = callback;
-
-      const msg: PageMsg = {
-        action,
-        ext_from: 'content',
-        data,
-        callbackId: cbId
-      }
-      if (target === NOTICE_TARGET.BACKGROUND) {
-        noticeBg(msg)
-      } else {
-        noticeIframe(msg)
-      }
-    },
-
-    receiveMessage(msg) {
-      const { action, data, callbackId, responstId } = msg;
-
-      if (callbackId) {
-        if (callbacks[callbackId]) {
-          callbacks[callbackId](data);
-          callbacks[callbackId] = null;
-        }
-      } else if (action) {
-        if (registerFuncs[action]) {
-          let ret = {};
-          let flag = false;
-
-          registerFuncs[action].forEach(callback => {
-            callback(data, function (r) {
-              flag = true;
-              ret = Object.assign(ret, r);
-            });
-          });
-
-          if (flag) {
-            noticeBg({
-              responstId: responstId,
-              ret: ret
-            });
-          }
-        }
-      }
-    },
-
-    register: function (action, callback) {
-      if (!registerFuncs[action]) {
-        registerFuncs[action] = [];
-      }
-      registerFuncs[action].push(callback);
-    }
-  }
-
-  return bridge;
-}
-
-export const appBridge = createBridge()
 
 window.addEventListener('message', event => {
   const { action, callbackId } = event.data;
