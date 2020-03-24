@@ -117,6 +117,10 @@ function setup() {
       }
     });
 
+    keyboardJS.bind('esc', () => {
+      stopOutline()
+    })
+
     console.log('extension helper inited');
     isSetup = true
   }
