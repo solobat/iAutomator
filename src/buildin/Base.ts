@@ -33,6 +33,7 @@ export default class Base {
   cls?: string
   style?: string
   shouldTryAgain?: boolean
+  shouldRecord?: boolean
 
   constructor(helper: DomHelper) {
     this.helper = helper
@@ -53,4 +54,10 @@ export default class Base {
   }
 
   bindEvents() {}
+
+  recordIfNeeded(options: ExecOptions, elem?) {
+    if (this.shouldRecord && !options.silent) {
+      this.helper.recordAction(this.name, elem)
+    }
+  }
 }

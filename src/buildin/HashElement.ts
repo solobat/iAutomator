@@ -8,6 +8,8 @@ export default class HashElements extends Base {
   style = `
     .ext-hp-hashed { cursor: pointer;}
   `
+  shouldRecord = true
+
   private shouldHashedTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']
 
   start() {
@@ -20,9 +22,7 @@ export default class HashElements extends Base {
       location.hash = this.getAttribute('id')
     }).addClass(this.cls)
   
-    if (!(options || defaultExecOptions).silent) {
-      this.helper.recordAction(BUILDIN_ACTIONS.HASH_ELEMENT)
-    }
+    this.recordIfNeeded(options)
 
     return true
   }

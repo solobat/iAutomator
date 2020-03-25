@@ -5,6 +5,7 @@ import $ = require('jquery')
 
 export default class ReadMode extends Base {
   name = BUILDIN_ACTIONS.READ_MODE
+  shouldRecord = true
   
   exec(elem, options?: ExecOptions) {
     const $elem = $(elem)
@@ -14,9 +15,7 @@ export default class ReadMode extends Base {
   
     elem.scrollIntoView();
   
-    if (!(options || defaultExecOptions).silent) {
-      this.helper.recordAction(BUILDIN_ACTIONS.READ_MODE, elem)
-    }
+    this.recordIfNeeded(options, elem)
 
     return true
   }
