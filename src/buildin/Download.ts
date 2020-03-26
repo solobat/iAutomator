@@ -5,8 +5,12 @@ import { getHost } from '../helper/url';
 
 export default class Download extends Base {
   name = BUILDIN_ACTIONS.DOWNLOAD
+  shouldRecord = true
   
   private downloadURL(url, fileName?, type?) {
+    if (url.startsWith('//')) {
+      url = location.protocol + url
+    }
     if (getHost(url) !== window.location.host) {
       window.open(url) 
     } else {
@@ -66,22 +70,20 @@ export default class Download extends Base {
   exec(elem, options?: ExecOptions) {
     const tagName = elem.tagName
 
-    function record(result) {
-      if (result && !(options || defaultExecOptions).silent) {
-        this.helper.recordAction(BUILDIN_ACTIONS.DOWNLOAD, elem)
-      }
-    }
-  
     if (['VIDEO', 'IMG', 'AUDIO'].indexOf(tagName) !== -1) {
       const result = this.downloadSource(elem)
   
-      record(result)
+      if (result) {
+        this.recordIfNeeded(options, elem)
+      }
   
       return result
     } else {
       const result = this.downloadBg(elem)
   
-      record(result)
+      if (result) {
+        this.recordIfNeeded(options, elem)
+      }
   
       return result
     }
