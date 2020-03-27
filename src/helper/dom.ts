@@ -170,23 +170,33 @@ export function exceAutomation(content, times = 0) {
       }, 1000)
     }
   }
+  function exec(instance) {
+    instance.autoMationFn = () => {
+      console.log('TCL: sh --> autoMationFn')
+      times = 0
+      tryAgain()
+    }
+    instance.run(elem, {
+      silent: true
+    })
+  }
 
   if (elem) {
     const instance = findAction(action)
 
     if (instance) {
       if (instance.shouldTryAgain) {
-        const result = instance.exec(elem, {
+        const result = instance.run(elem, {
           silent: true
         })
 
         if (!result) {
           tryAgain()
+        } else {
+          exec(instance)
         }
       } else {
-        instance.exec(elem, {
-          silent: true
-        })
+        exec(instance)
       }
     }
   } else {

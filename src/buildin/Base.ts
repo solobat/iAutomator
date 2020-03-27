@@ -30,6 +30,7 @@ export const defaultExecOptions: ExecOptions = {
 export default class Base {
   name: string
   helper: DomHelper
+  autoMationFn?: Function
   cls?: string
   style?: string
   shouldTryAgain?: boolean
@@ -43,14 +44,30 @@ export default class Base {
 
   start() {
     this.helper.exec((elem, event) => {
-      this.exec(elem, {
+      const options: ExecOptions = {
         metaKey: event.metaKey
-      })
+      }
+      this.run(elem, options)
     })
+  }
+
+  run(elem, options) {
+    const result = this.exec(elem, options)
+
+    if (result) {
+      setTimeout(() => {
+        this.checkExecResult(elem, options)
+      }, 16);
+    }
+    return result
   }
 
   exec(elem, options?: ExecOptions): boolean {
     return true
+  }
+
+  checkExecResult(elem, options?: ExecOptions) {
+
   }
 
   bindEvents() {}
