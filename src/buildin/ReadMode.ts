@@ -20,6 +20,13 @@ export default class ReadMode extends Base {
     return true
   }
 
+  checkExecResult(elem, options?: ExecOptions) {
+    const result = document.body.contains(elem)
+    if (!result) {
+      this.autoMationFn()
+    }
+  }
+
   private hideSiblings($el) {
     const that = this
 
