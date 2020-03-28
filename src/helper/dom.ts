@@ -97,7 +97,7 @@ function setup() {
     $(document).on(startOutlineEvt, startOutline);
     $(document).on(stopOutlineEvt, stopOutline);
 
-    $(document).on('click', function (event) {
+    document.addEventListener('click', function (event) {
       const $target = $(event.target).closest(`.${outlineCls}`)
 
       if ($target.length) {
@@ -115,7 +115,7 @@ function setup() {
 
         return false;
       }
-    });
+    }, true)
 
     keyboardJS.bind('esc', () => {
       stopOutline()
