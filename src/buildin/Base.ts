@@ -57,7 +57,7 @@ export default class Base {
     if (result) {
       setTimeout(() => {
         this.checkExecResult(elem, options)
-      }, 16);
+      }, 50);
     }
     return result
   }
