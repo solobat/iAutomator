@@ -14,6 +14,10 @@ export default class ReadMode extends Base {
     this.hideSiblings($elem);
   
     elem.scrollIntoView();
+
+    if (options.metaKey) {
+      this.initModePlus($elem)
+    }
   
     this.recordIfNeeded(options, elem)
 
@@ -27,25 +31,64 @@ export default class ReadMode extends Base {
     }
   }
 
+  private hideEl($el) {
+    $el.css({
+      visibility: 'hidden',
+      opacity: 0
+    }).addClass('s-a-rm-hn')
+  }
+
+  private showEl($el) {
+    $el.css({
+      visibility: 'visible',
+      opacity: 1
+    }).removeClass('s-a-rm-hn')
+  }
+
+  private layoutEl($el) {
+    const top = $el.offset().top
+
+    window.scrollTo(0, top - 200)
+  }
+
+  private initModePlus($el) {
+    let cur = $el
+    const fnCreator = fn => () => {
+      this.hideEl(cur)
+      const target = fn(cur)
+
+      if (target && target.length) {
+        cur = target
+        this.showEl(target)
+        this.layoutEl(target)
+      }
+    }
+    const nextFn = fnCreator(cur => cur.next())
+    const prevFn = fnCreator(cur => cur.prev())
+
+    keyboardJS.bind('alt + m', nextFn)
+    keyboardJS.bind('alt + n', prevFn)
+
+    this.unbindFns.push(() => {
+      keyboardJS.unbind('alt + m', nextFn)
+      keyboardJS.unbind('alt + n', prevFn)
+    })
+  }
+
   private hideSiblings($el) {
     const that = this
 
     if ($el && $el.length) {
-      $el.siblings().not('#steward-main,#wordcard-main').css({
-        visibility: 'hidden',
-        opacity: 0
-      }).addClass('s-a-rm-hn');
+      this.hideEl($el.siblings().not('#steward-main,#wordcard-main'))
       this.hideSiblings($el.parent())
     } else {
       console.log('Enter reading mode');
       keyboardJS.bind('esc', function showNode() {
-        $('.s-a-rm-hn').css({
-          visibility: 'visible',
-          opacity: 1
-        }).removeClass('s-a-rm-hn');
+        that.showEl($('.s-a-rm-hn'))
         console.log('Exit reading mode');
         that.helper.resetActionCache();
         keyboardJS.unbind('esc', showNode);
+        that.exit()
       });
     }
   }

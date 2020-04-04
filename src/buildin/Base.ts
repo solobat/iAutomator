@@ -35,9 +35,11 @@ export default class Base {
   style?: string
   shouldTryAgain?: boolean
   shouldRecord?: boolean
+  unbindFns: any[]
 
   constructor(helper: DomHelper) {
     this.helper = helper
+    this.unbindFns = []
     helper.actions.push(this)
     this.bindEvents()
   }
@@ -76,5 +78,12 @@ export default class Base {
     if (this.shouldRecord && !options.silent) {
       this.helper.recordAction(this.name, elem)
     }
+  }
+
+  exit() {
+    this.unbindFns.forEach(fn => {
+      fn()
+    })
+    this.unbindFns = []
   }
 }
