@@ -66,12 +66,12 @@ export default class ReadMode extends Base {
     const nextFn = fnCreator(cur => cur.next())
     const prevFn = fnCreator(cur => cur.prev())
 
-    keyboardJS.bind('alt + m', nextFn)
-    keyboardJS.bind('alt + n', prevFn)
+    keyboardJS.bind('right', nextFn)
+    keyboardJS.bind('left', prevFn)
 
     this.unbindFns.push(() => {
-      keyboardJS.unbind('alt + m', nextFn)
-      keyboardJS.unbind('alt + n', prevFn)
+      keyboardJS.unbind('right', nextFn)
+      keyboardJS.unbind('left', prevFn)
     })
   }
 
