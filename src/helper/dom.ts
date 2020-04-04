@@ -69,7 +69,6 @@ function recordAction(actionName, elem?: HTMLElement) {
   appBridge.invoke(PAGE_ACTIONS.RECORD, {
     content: action, url: window.location.href, domain: window.location.host
   }, resp => {
-    console.log("recordAction -> resp", resp)
   });
 }
 
@@ -121,7 +120,6 @@ function setup() {
       stopOutline()
     })
 
-    console.log('extension helper inited');
     isSetup = true
   }
 }
@@ -154,8 +152,6 @@ window.addEventListener('message', event => {
 
   if (callbackId) {
     appBridge.receiveMessage(event.data);
-  } else {
-    console.log("action", action)
   }
 });
 
@@ -172,7 +168,6 @@ export function exceAutomation(content, times = 0) {
   }
   function exec(instance) {
     instance.autoMationFn = () => {
-      console.log('TCL: sh --> autoMationFn')
       times = 0
       tryAgain()
     }

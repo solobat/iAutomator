@@ -26,7 +26,6 @@ export default function (props) {
 
 function Popup() {
   const { state } = useModel()
-  console.log("Popup -> state", state)
 
   return (
     <div className="popupContainer">

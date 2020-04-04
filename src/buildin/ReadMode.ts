@@ -82,10 +82,8 @@ export default class ReadMode extends Base {
       this.hideEl($el.siblings().not('#steward-main,#wordcard-main'))
       this.hideSiblings($el.parent())
     } else {
-      console.log('Enter reading mode');
       keyboardJS.bind('esc', function showNode() {
         that.showEl($('.s-a-rm-hn'))
-        console.log('Exit reading mode');
         that.helper.resetActionCache();
         keyboardJS.unbind('esc', showNode);
         that.exit()

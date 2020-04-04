@@ -60,7 +60,6 @@ function updateBadge(url) {
 }
 
 function msgHandler(req: PageMsg, sender, resp) {
-  console.log("msgHandler -> sender", sender)
   let { action, data, callbackId } = req;
 
   function handler(results) {
