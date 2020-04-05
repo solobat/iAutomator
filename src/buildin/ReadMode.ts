@@ -6,6 +6,7 @@ import $ = require('jquery')
 export default class ReadMode extends Base {
   name = BUILDIN_ACTIONS.READ_MODE
   shouldRecord = true
+  cls = 's-a-rm-hn'
   
   exec(elem, options?: ExecOptions) {
     const $elem = $(elem)
@@ -35,14 +36,14 @@ export default class ReadMode extends Base {
     $el.css({
       visibility: 'hidden',
       opacity: 0
-    }).addClass('s-a-rm-hn')
+    }).addClass(this.cls)
   }
 
   private showEl($el) {
     $el.css({
       visibility: 'visible',
       opacity: 1
-    }).removeClass('s-a-rm-hn')
+    }).removeClass(this.cls)
   }
 
   private layoutEl($el) {
@@ -83,7 +84,7 @@ export default class ReadMode extends Base {
       this.hideSiblings($el.parent())
     } else {
       keyboardJS.bind('esc', function showNode() {
-        that.showEl($('.s-a-rm-hn'))
+        that.showEl($(that.selector))
         that.helper.resetActionCache();
         keyboardJS.unbind('esc', showNode);
         that.exit()

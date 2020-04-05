@@ -44,6 +44,10 @@ export default class Base {
     this.bindEvents()
   }
 
+  get selector() {
+    return `.${this.cls}`
+  }
+
   start() {
     this.helper.exec((elem, event) => {
       const options: ExecOptions = {
