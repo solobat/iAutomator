@@ -5,11 +5,19 @@ import * as Code from '../common/code';
 import { IAutomation, db } from '../db/database';
 import { RunAt } from '../enum/Automation';
 
-export async function saveAutomation(instructions: string, pattern: string, runAt: RunAt = RunAt.END): Promise<Response> {
+export async function saveAutomation(instructions: string, pattern: string, runAt: RunAt = RunAt.END, id?: number): Promise<Response> {
     if (instructions) {
-        const result: number = await automationService.save(instructions, runAt, pattern);
+        if (id) {
+            const result = await automationService.update(id, {
+                instructions, pattern, runAt
+            })
 
-        return Response.ok(result);
+            return Response.ok(result);
+        } else {
+            const result: number = await automationService.save(instructions, runAt, pattern);
+
+            return Response.ok(result);
+        }
     } else {
         return Response.error(Code.PARAMS_ERROR);
     }

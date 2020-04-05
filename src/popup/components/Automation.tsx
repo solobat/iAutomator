@@ -6,7 +6,7 @@ import Response from '../../server/common/response';
 import Table from 'antd/es/table'
 import Button from 'antd/es/button';
 import Input from 'antd/es/input'
-import { PlusSquareOutlined, DeleteOutlined } from '@ant-design/icons';
+import { PlusSquareOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { matchAutomations } from '../../helper/automations';
 import { noticeBg } from '../../helper/event';
 import { PAGE_ACTIONS } from '../../common/const';
@@ -46,7 +46,7 @@ function AutomationEditor() {
   function onAmEditorSaveClick() {
     if (validateAmForm(form)) {
       setSaving(true)
-      automationsController.saveAutomation(form.instructions, form.pattern).then((resp) => {
+      automationsController.saveAutomation(form.instructions, form.pattern, form.runAt, form.id).then((resp) => {
         if (resp.code === 0) {
           setSaving(false)
           dispatch({ type: ACTIONS.AUTOMATION_FORM_CLOSE, payload: null})
@@ -89,7 +89,7 @@ const AutomationsColumns = [
   { title: 'Pattern', dataIndex: 'pattern' },
   {
     title: 'Operation',
-    width: '100px',
+    width: '120px',
     render: (text, record) => <OpBtns record={record} />,
   }
 ]
@@ -98,8 +98,20 @@ function OpBtns(props) {
 
   return (
     <div className="op-btns">
+      <EditBtn record={props.record}/>
       <DeleteBtn record={props.record} />
     </div>
+  )
+}
+
+function EditBtn(props) {
+  const { state, dispatch } = useModel()
+  const onClick = useCallback(() => {
+    dispatch({ type: ACTIONS.AUTOMATION_FORM_UPDATE, payload: props.record })
+  }, [])
+
+  return (
+    <EditOutlined onClick={onClick}/>
   )
 }
 
