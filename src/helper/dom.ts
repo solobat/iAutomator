@@ -155,8 +155,21 @@ window.addEventListener('message', event => {
   }
 });
 
+function getExecOptions(modifiers = []) {
+  const options = {
+    silent: true
+  }
+
+  modifiers.forEach((key) => {
+    options[key] = true
+  })
+
+  return options
+}
+
 export function exceAutomation(content, times = 0) {
-  const [ action, selector ] = content.split('@')
+  const [ actionStr, selector ] = content.split('@')
+  const [ action, ...modifiers ] = actionStr.split('.')
   const elem = document.querySelector(selector)
 
   function tryAgain() {
@@ -171,9 +184,7 @@ export function exceAutomation(content, times = 0) {
       times = 0
       tryAgain()
     }
-    instance.run(elem, {
-      silent: true
-    })
+    instance.run(elem, getExecOptions(modifiers))
   }
 
   if (elem) {
@@ -181,9 +192,7 @@ export function exceAutomation(content, times = 0) {
 
     if (instance) {
       if (instance.shouldTryAgain) {
-        const result = instance.run(elem, {
-          silent: true
-        })
+        const result = instance.run(elem, getExecOptions(modifiers))
 
         if (!result) {
           tryAgain()
