@@ -9,6 +9,7 @@
         "jsx": "react",
         "lib": ["es2015", "dom"],
         "experimentalDecorators": true,
-        "allowSyntheticDefaultImports": true
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true
     }
 }

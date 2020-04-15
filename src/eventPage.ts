@@ -140,6 +140,16 @@ chrome.contextMenus.create({
 });
 
 chrome.contextMenus.create({
+  title: 'Add time tag for video',
+  contexts: ['all'],
+  onclick: function (info, tab) {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      runMethod(tabs[0], BUILDIN_ACTIONS.TIME_UPDATE)
+    });
+  }
+});
+
+chrome.contextMenus.create({
   title: 'Download element',
   contexts: ['all'],
   onclick: function (info, tab) {

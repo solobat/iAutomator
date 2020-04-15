@@ -11,6 +11,7 @@ import HashElement from '../buildin/HashElement'
 import HighlightEnglishSyntax from '../buildin/HighlightEnglishSyntax'
 import KillElement from '../buildin/KillElement'
 import ReadMode from '../buildin/ReadMode'
+import TimeUpdate from '../buildin/TimeUpdate'
 
 let isSetup, stop, cssInserted;
 
@@ -261,6 +262,7 @@ function install() {
   new HighlightEnglishSyntax(helper)
   new KillElement(helper)
   new ReadMode(helper)
+  new TimeUpdate(helper)
 }
 
 install()
