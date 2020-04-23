@@ -29,7 +29,7 @@
     },
 
     "optional_permissions": [
-        "background", "clipboardRead", "clipboardWrite"
+        "background"
     ],
 
     "permissions": [

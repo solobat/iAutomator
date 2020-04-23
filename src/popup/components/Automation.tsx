@@ -17,8 +17,10 @@ export function AutomationsPanel() {
   return (
     <div>
       {
-        amFormEditing ? <AutomationEditor /> : <PlusSquareOutlined style={{fontSize: '20px'}}
-          onClick={() => dispatch({ type: ACTIONS.AUTOMATION_FORM_UPDATE, payload: { instructions: '', pattern: ''}})} />
+        amFormEditing ? <AutomationEditor /> : <span 
+          onClick={() => dispatch({ type: ACTIONS.AUTOMATION_FORM_UPDATE, payload: { instructions: '', pattern: ''}})}>
+          <PlusSquareOutlined style={{fontSize: '20px'}} translate="" />
+        </span>
       }
       <Automations />
     </div>
@@ -111,7 +113,7 @@ function EditBtn(props) {
   }, [])
 
   return (
-    <EditOutlined onClick={onClick}/>
+    <span onClick={onClick}><EditOutlined translate=""/></span>
   )
 }
 
@@ -127,7 +129,7 @@ function DeleteBtn(props) {
   }, [])
 
   return (
-    <DeleteOutlined onClick={onClick}/>
+    <span onClick={onClick}><DeleteOutlined translate=""/></span>
   )
 }
 
@@ -150,7 +152,7 @@ function Automations(props) {
   return (
     <div>
       <Table columns={AutomationsColumns} dataSource={state.automations}
-        pagination={false} size="small" rowKey="createTime">
+        pagination={false} size="small">
       </Table>
     </div>
   )

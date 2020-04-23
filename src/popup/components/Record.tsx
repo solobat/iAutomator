@@ -47,7 +47,9 @@ function RunBtn(props) {
   const { id } = state.tab
 
   return (
-    <PlayCircleOutlined onClick={() => onRecordRunClick(props.record, id)}/>
+    <span onClick={() => onRecordRunClick(props.record, id)}>
+      <PlayCircleOutlined translate=""/>
+    </span>
   )
 }
 
@@ -64,7 +66,9 @@ function AddAmBtn(props) {
   const { dispatch } = useContext(PageContext)
 
   return (
-    <PlusCircleOutlined onClick={() => onRecordAddAmClick(props.record, dispatch)}/>
+    <span onClick={() => onRecordAddAmClick(props.record, dispatch)}>
+      <PlusCircleOutlined translate=""/>
+    </span>
   ) 
 }
 
@@ -82,7 +86,7 @@ export function Records(props: RecordsProps) {
   return (
     <div>
       <Table columns={RecordsColumns} dataSource={list} pagination={false}
-        rowKey="createTime" size="small"></Table>
+        size="small"></Table>
     </div>
   )
 }
