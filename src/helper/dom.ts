@@ -12,6 +12,7 @@ import HighlightEnglishSyntax from '../buildin/HighlightEnglishSyntax'
 import KillElement from '../buildin/KillElement'
 import ReadMode from '../buildin/ReadMode'
 import TimeUpdate from '../buildin/TimeUpdate'
+import ClickElement from '../buildin/Click'
 
 let isSetup, stop, cssInserted;
 
@@ -263,6 +264,7 @@ function install() {
   new KillElement(helper)
   new ReadMode(helper)
   new TimeUpdate(helper)
+  new ClickElement(helper)
 }
 
 install()

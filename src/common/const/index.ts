@@ -14,5 +14,6 @@ export const BUILDIN_ACTIONS = {
   HASH_ELEMENT: 'hashElement',
   DOWNLOAD: 'download',
   FULL_SCREEN: 'fullScreen',
-  TIME_UPDATE: 'timeupdate'
+  TIME_UPDATE: 'timeupdate',
+  CLICK: 'click'
 }
