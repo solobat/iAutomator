@@ -1,9 +1,9 @@
 {
     "manifest_version": 2,
-
     "name": "Steward Helper",
+    "short_name": "Steward Helper",
     "description":
-        "Steward Helper",
+        "Steward Helper: Convenience and automation of commonly used browser actions",
     "version": "1.0.0",
 
     "browser_action": {
