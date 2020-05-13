@@ -5,6 +5,10 @@ export const PAGE_ACTIONS = {
   REFRESH_AUTOMATIONS: 'refreshAutomations'
 }
 
+export const APP_ACTIONS = {
+  IMPORT_DATA: 'importData'
+}
+
 export const IFRAME_ID = 'steward-helper-iframe'
 
 export const BUILDIN_ACTIONS = {

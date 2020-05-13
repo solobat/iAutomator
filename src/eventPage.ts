@@ -5,7 +5,7 @@ import * as automationController from './server/controller/automations.controlle
 import { PageMsg, BackMsg } from './common/types';
 import { IAutomation } from './server/db/database'
 import { matchAutomations } from './helper/automations'
-import { BUILDIN_ACTIONS, PAGE_ACTIONS } from './common/const';
+import { BUILDIN_ACTIONS, PAGE_ACTIONS, APP_ACTIONS } from './common/const';
 
 let automations: IAutomation[] = []
 
@@ -87,6 +87,9 @@ function msgHandler(req: PageMsg, sender, resp) {
     updateBadge(data.url)
   } else if (action === PAGE_ACTIONS.REFRESH_AUTOMATIONS) {
     loadAutomations()
+    handler('')
+  } else if (action === APP_ACTIONS.IMPORT_DATA) {
+    init()
     handler('')
   }
 }
