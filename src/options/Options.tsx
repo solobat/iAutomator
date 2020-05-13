@@ -1,0 +1,38 @@
+import * as React from 'react';
+import { useCallback } from 'react';
+import Button from 'antd/es/button';
+import Upload from 'antd/es/upload';
+import message from 'antd/es/message';
+import './Options.scss';
+import { exportAndDownload, importDBFile } from '../helper/db.helper';
+import { convertFile2Blob } from '../helper/file.helper';
+
+export function Options() {
+  const onExportClick = useCallback(() => {
+    exportAndDownload()
+  }, [])
+  const onImportFileBeforeUpload = useCallback((file) => {
+    convertFile2Blob(file).then(importDBFile).then(blob => {
+      message.success('Import done!')
+    }).catch((err) => {
+      message.error('Import failed!')
+    })
+
+    return false
+  }, [])
+
+  return (
+    <div className="container">
+      <div className="btns">
+        <Button type="primary" onClick={onExportClick}>Export</Button>
+        <Upload 
+          name="file"
+          accept="application/json"
+          showUploadList={false}
+          beforeUpload={onImportFileBeforeUpload}>
+            <Button type="primary">Import</Button>
+        </Upload>
+      </div>
+    </div>
+  )
+}
