@@ -19,7 +19,7 @@ export function AutomationsPanel() {
       {
         amFormEditing ? <AutomationEditor /> : <span 
           onClick={() => dispatch({ type: ACTIONS.AUTOMATION_FORM_UPDATE, payload: { instructions: '', pattern: ''}})}>
-          <PlusSquareOutlined style={{fontSize: '20px'}} translate="" />
+          <PlusSquareOutlined style={{fontSize: '20px'}} translate="no" />
         </span>
       }
       <Automations />
@@ -113,7 +113,7 @@ function EditBtn(props) {
   }, [])
 
   return (
-    <span onClick={onClick}><EditOutlined translate=""/></span>
+    <span onClick={onClick}><EditOutlined translate="no"/></span>
   )
 }
 
@@ -129,7 +129,7 @@ function DeleteBtn(props) {
   }, [])
 
   return (
-    <span onClick={onClick}><DeleteOutlined translate=""/></span>
+    <span onClick={onClick}><DeleteOutlined translate="no"/></span>
   )
 }
 

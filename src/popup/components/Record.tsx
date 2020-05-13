@@ -48,7 +48,7 @@ function RunBtn(props) {
 
   return (
     <span onClick={() => onRecordRunClick(props.record, id)}>
-      <PlayCircleOutlined translate=""/>
+      <PlayCircleOutlined translate="no"/>
     </span>
   )
 }
@@ -67,7 +67,7 @@ function AddAmBtn(props) {
 
   return (
     <span onClick={() => onRecordAddAmClick(props.record, dispatch)}>
-      <PlusCircleOutlined translate=""/>
+      <PlusCircleOutlined translate="no"/>
     </span>
   ) 
 }
