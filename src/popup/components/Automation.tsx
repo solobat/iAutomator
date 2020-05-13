@@ -19,7 +19,7 @@ export function AutomationsPanel() {
       {
         amFormEditing ? <AutomationEditor /> : <span 
           onClick={() => dispatch({ type: ACTIONS.AUTOMATION_FORM_UPDATE, payload: { instructions: '', pattern: ''}})}>
-          <PlusSquareOutlined style={{fontSize: '20px'}} translate="no" />
+          <PlusSquareOutlined style={{fontSize: '20px', cursor: 'pointer'}} translate="no" />
         </span>
       }
       <Automations />
