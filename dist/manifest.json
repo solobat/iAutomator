@@ -17,6 +17,9 @@
         "run_at": "document_start"
     }],
     "content_security_policy": "script-src 'self' 'unsafe-eval' https://ssl.google-analytics.com; object-src 'self'",
+
+    "options_page": "options.html",
+
     "background": {
         "scripts": ["js/eventPage.js"],
         "persistent": true
