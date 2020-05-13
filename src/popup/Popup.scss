@@ -21,9 +21,16 @@ body {
     flex: 1;
 }
 
-.record-op-btns {
+.record-op-btns,
+.op-btns {
     display: flex;
     justify-content: space-evenly;
+}
+
+.op-btns {
+    .anticon {
+        cursor: pointer;
+    }
 }
 
 .am-editor {
