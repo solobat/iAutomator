@@ -18,3 +18,13 @@ export default async function hanlder(req) {
     return Promise.resolve({})
   }
 }
+
+export function copyToClipboard(text: string) {
+  document.addEventListener('copy', event => {
+      event.preventDefault();
+      event.clipboardData.setData('text/plain', text);
+
+  }, {once: true});
+
+  document.execCommand('copy');
+}

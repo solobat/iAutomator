@@ -16,6 +16,7 @@ export const BUILDIN_ACTIONS = {
   KILL_ELEMENT: 'killElement',
   READ_MODE: 'readMode',
   HASH_ELEMENT: 'hashElement',
+  CODE_COPY: 'codeCopy',
   DOWNLOAD: 'download',
   FULL_SCREEN: 'fullScreen',
   TIME_UPDATE: 'timeupdate',

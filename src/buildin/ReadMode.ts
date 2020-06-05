@@ -1,6 +1,6 @@
 import Base, { ExecOptions, defaultExecOptions } from './base'
 import { BUILDIN_ACTIONS } from '../common/const';
-import keyboardJS = require('keyboardjs')
+import keyboardJS from 'keyboardjs'
 import $ = require('jquery')
 
 export default class ReadMode extends Base {

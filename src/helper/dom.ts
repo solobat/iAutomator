@@ -1,5 +1,5 @@
 import $ = require('jquery')
-import keyboardJS = require('keyboardjs')
+import keyboardJS from 'keyboardjs'
 import getCssSelector from 'css-selector-generator';
 import { noticeBg } from './event';
 import { PAGE_ACTIONS } from '../common/const';
@@ -13,6 +13,7 @@ import KillElement from '../buildin/KillElement'
 import ReadMode from '../buildin/ReadMode'
 import TimeUpdate from '../buildin/TimeUpdate'
 import ClickElement from '../buildin/Click'
+import CodeCopy from '../buildin/CodeCopy'
 
 let isSetup, stop, cssInserted;
 
@@ -265,6 +266,7 @@ function install() {
   new ReadMode(helper)
   new TimeUpdate(helper)
   new ClickElement(helper)
+  new CodeCopy(helper)
 }
 
 install()

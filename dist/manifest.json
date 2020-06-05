@@ -32,7 +32,7 @@
     },
 
     "optional_permissions": [
-        "background"
+        "background", "clipboardWrite"
     ],
 
     "permissions": [
@@ -62,6 +62,9 @@
         },
         "fullScreen": {
             "description": "FullScreen element"
+        },
+        "codeCopy": {
+            "description": "Code copy"
         }
     }
 }
