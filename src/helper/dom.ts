@@ -27,6 +27,22 @@ function insertCss() {
   
     css.type = "text/css";
     css.innerHTML = `
+      @font-face {
+        font-family: 'iconfont';  /* project id 1867097 */
+        src: url('//at.alicdn.com/t/font_1867097_6yqhpbmlqwb.eot');
+        src: url('//at.alicdn.com/t/font_1867097_6yqhpbmlqwb.eot?#iefix') format('embedded-opentype'),
+        url('//at.alicdn.com/t/font_1867097_6yqhpbmlqwb.woff2') format('woff2'),
+        url('//at.alicdn.com/t/font_1867097_6yqhpbmlqwb.woff') format('woff'),
+        url('//at.alicdn.com/t/font_1867097_6yqhpbmlqwb.ttf') format('truetype'),
+        url('//at.alicdn.com/t/font_1867097_6yqhpbmlqwb.svg#iconfont') format('svg');
+      }
+      .iconfont::after {
+        font-family:"iconfont" !important;
+        font-size:16px;font-style:normal;
+        -webkit-font-smoothing: antialiased;
+        -webkit-text-stroke-width: 0.2px;
+        -moz-osx-font-smoothing: grayscale;
+      }
       .${outlineCls} {outline: 2px dotted #ccc}
       ${getStyles()}
     `;
@@ -163,8 +179,9 @@ function getExecOptions(modifiers = []) {
     silent: true
   }
 
-  modifiers.forEach((key) => {
-    options[key] = true
+  modifiers.forEach((item) => {
+    const [key, value = true] = item.split('!');
+    options[key] = value
   })
 
   return options
@@ -172,7 +189,7 @@ function getExecOptions(modifiers = []) {
 
 export function exceAutomation(content, times = 0) {
   const [ actionStr, selector ] = content.split('@')
-  const [ action, ...modifiers ] = actionStr.split('.')
+  const [ action, ...modifiers ] = actionStr.split('^')
   const elem = document.querySelector(selector)
 
   function tryAgain() {

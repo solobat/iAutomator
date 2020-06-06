@@ -22,6 +22,7 @@ export interface DomHelper {
 export interface ExecOptions {
   silent?: boolean;
   metaKey?: boolean;
+  [prop: string]: any;
 }
 
 export const defaultExecOptions: ExecOptions = {
