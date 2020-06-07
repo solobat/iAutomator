@@ -10,10 +10,16 @@ export default class CodeCopy extends Base {
     .ext-hp-code-copy { 
       cursor: pointer;
       position: absolute;
-      left: 1px;
       font-size: 12px;
-      top: 1px;
       color: #8c8c8c;
+    }
+    .ext-hp-code-copy-tl {
+      left: 1px;
+      top: 1px;
+    }
+    .ext-hp-code-copy-tr {
+      right: 1px;
+      top: 1px;
     }
     .ext-hp-code-copy::after {
       content: "\\e618";
@@ -33,9 +39,19 @@ export default class CodeCopy extends Base {
     }
   }
 
+  private getPositionCls(position = 'tl') {
+    return `ext-hp-code-copy-${position}`
+  }
+
   private insertCopyBtn(codeElem: HTMLElement, options?: ExecOptions) {
-    codeElem.parentElement.style.position = 'relative';
-    $(codeElem).append('<span class="ext-hp-code-copy iconfont"></span>');
+    const position = options ? options.pos : 'tl'
+
+    if (options.inpre) {
+      codeElem.parentElement.style.position = 'relative';
+    } else {
+      codeElem.style.position = 'relative';
+    }
+    $(codeElem).append(`<span class="ext-hp-code-copy iconfont ${this.getPositionCls(position)}"></span>`);
     if (options.rm) {
       $(codeElem).find(options.rm).remove();
     }
