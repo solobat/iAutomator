@@ -14,6 +14,7 @@ import ReadMode from '../buildin/ReadMode'
 import TimeUpdate from '../buildin/TimeUpdate'
 import ClickElement from '../buildin/Click'
 import CodeCopy from '../buildin/CodeCopy'
+import GotoElement from '../buildin/GotoElement'
 
 let isSetup, stop, cssInserted;
 
@@ -180,8 +181,16 @@ function getExecOptions(modifiers = []) {
   }
 
   modifiers.forEach((item) => {
-    const [key, value = true] = item.split('!');
-    options[key] = value
+    const [key, ...value] = item.split('!');
+    if (value.length) {
+      if (value.length === 1) {
+        options[key] = value[0]
+      } else {
+        options[key] = value
+      }
+    } else {
+      options[key] = true
+    }
   })
 
   return options
@@ -284,6 +293,7 @@ function install() {
   new TimeUpdate(helper)
   new ClickElement(helper)
   new CodeCopy(helper)
+  new GotoElement(helper)
 }
 
 install()

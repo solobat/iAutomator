@@ -87,7 +87,7 @@ function AutomationEditor() {
 }
 
 const AutomationsColumns = [
-  { title: 'Instructions', dataIndex: 'instructions' },
+  { title: 'Instructions', dataIndex: 'instructions', width: '300px', textWrap: 'word-break', ellipsis: true, },
   { title: 'Pattern', dataIndex: 'pattern' },
   {
     title: 'Operation',
@@ -99,7 +99,7 @@ const AutomationsColumns = [
 function OpBtns(props) {
 
   return (
-    <div className="op-btns">
+    <div className="op-btns" style={{minWidth: '120px'}}>
       <EditBtn record={props.record}/>
       <DeleteBtn record={props.record} />
     </div>

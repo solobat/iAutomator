@@ -17,6 +17,7 @@ export const BUILDIN_ACTIONS = {
   READ_MODE: 'readMode',
   HASH_ELEMENT: 'hashElement',
   CODE_COPY: 'codeCopy',
+  GOTO_ELEMENT: 'gotoElement',
   DOWNLOAD: 'download',
   FULL_SCREEN: 'fullScreen',
   TIME_UPDATE: 'timeupdate',
