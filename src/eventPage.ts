@@ -4,8 +4,10 @@ import * as recordsController from './server/controller/records.controller'
 import * as automationController from './server/controller/automations.controller'
 import { PageMsg, BackMsg } from './common/types';
 import { IAutomation } from './server/db/database'
-import { matchAutomations } from './helper/automations'
-import { BUILDIN_ACTIONS, PAGE_ACTIONS, APP_ACTIONS, BUILDIN_ACTION_CONFIGS } from './common/const';
+import { matchAutomations, installAutomation } from './helper/automations'
+import { BUILDIN_ACTIONS, PAGE_ACTIONS, APP_ACTIONS, BUILDIN_ACTION_CONFIGS, WEB_ACTIONS } from './common/const';
+import hanlder from './helper/others';
+import { create as createNotice } from './helper/notifications';
 
 let automations: IAutomation[] = []
 
@@ -80,6 +82,31 @@ function onRefreshAutmations(handler) {
   handler('')
 }
 
+function noticeCurTab(data?) {
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    runMethod(tabs[0], WEB_ACTIONS.INSTALL_DONE, data)
+  });
+}
+
+function onInstallAutomation(data, handler) {
+  installAutomation(data.instructions, data.pattern).then((resp) => {
+    if (resp.code === 0) {
+      createNotice('Automation installed successfully', `Automation: 「${data.name}」`,
+        chrome.extension.getURL('img/success.png'))
+      loadAutomations().then(() => {
+        updateBadgeByCurrentTab()
+      })
+      noticeCurTab({
+        id: data.id
+      })
+    } else {
+      createNotice('Automation installed failed', `Reason: 「${resp.message}」`,
+        chrome.extension.getURL('img/fail.png'))
+    }
+  })
+  handler('')
+}
+
 function msgHandler(req: PageMsg, sender, resp) {
   let { action, data, callbackId } = req;
 
@@ -104,6 +131,8 @@ function msgHandler(req: PageMsg, sender, resp) {
   } else if (action === APP_ACTIONS.IMPORT_DATA) {
     init()
     handler('')
+  } else if (action === WEB_ACTIONS.INSTALL_AUTOMATION) {
+    onInstallAutomation(data, hanlder)
   }
 }
 
@@ -111,8 +140,8 @@ function msgHandler(req: PageMsg, sender, resp) {
   chrome.runtime[msgType].addListener(msgHandler);
 });
 
-function runMethod(tab, method) {
-  chrome.tabs.sendMessage(tab.id, { method }, function (response) { });
+function runMethod(tab, method, data?) {
+  chrome.tabs.sendMessage(tab.id, { method, data }, function (response) { });
 }
 
 function initCommands() {

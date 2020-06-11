@@ -37,7 +37,8 @@
 
     "permissions": [
         "tabs",
-        "contextMenus"
+        "contextMenus",
+        "notifications"
     ],
 
     "web_accessible_resources": [

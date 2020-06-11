@@ -5,6 +5,11 @@ export const PAGE_ACTIONS = {
   REFRESH_AUTOMATIONS: 'refreshAutomations'
 }
 
+export const WEB_ACTIONS = {
+  INSTALL_AUTOMATION: 'installAutomation',
+  INSTALL_DONE: 'installDone'
+}
+
 export const APP_ACTIONS = {
   IMPORT_DATA: 'importData'
 }
