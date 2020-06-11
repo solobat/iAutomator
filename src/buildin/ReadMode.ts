@@ -59,6 +59,9 @@ export default class ReadMode extends Base {
       const target = fn(cur)
 
       if (target && target.length) {
+        if (!target.hasClass('.s-a-rm-hn')) {
+          this.hideSiblings(target)
+        }
         cur = target
         this.showEl(target)
         this.layoutEl(target)
