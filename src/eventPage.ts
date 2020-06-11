@@ -5,7 +5,7 @@ import * as automationController from './server/controller/automations.controlle
 import { PageMsg, BackMsg } from './common/types';
 import { IAutomation } from './server/db/database'
 import { matchAutomations } from './helper/automations'
-import { BUILDIN_ACTIONS, PAGE_ACTIONS, APP_ACTIONS } from './common/const';
+import { BUILDIN_ACTIONS, PAGE_ACTIONS, APP_ACTIONS, BUILDIN_ACTION_CONFIGS } from './common/const';
 
 let automations: IAutomation[] = []
 
@@ -34,7 +34,13 @@ class BadgesHelper {
   }
 
   setItem(item: BadgeItem) {
-    this.list.push(item)
+    const result = this.list.find(tab => tab.url === item.url)
+
+    if (result) {
+      result.text = item.text
+    } else {
+      this.list.push(item)
+    }
 
     if (this.list.length >= this.maxLength) {
       this.list.shift()
@@ -59,6 +65,21 @@ function updateBadge(url) {
   }
 }
 
+function onAutomations(data, handler) {
+  const records = updateBadgeByURL(data.url)
+
+  if (handler) {
+    handler(records)
+  }
+}
+
+function onRefreshAutmations(handler) {
+  loadAutomations().then(() => {
+    updateBadgeByCurrentTab()
+  })
+  handler('')
+}
+
 function msgHandler(req: PageMsg, sender, resp) {
   let { action, data, callbackId } = req;
 
@@ -77,17 +98,9 @@ function msgHandler(req: PageMsg, sender, resp) {
     recordsController.saveRecord(content, url, domain)
     handler('')
   } else if (action === PAGE_ACTIONS.AUTOMATIONS) {
-    const records = matchAutomations(automations, data.url)
-
-    handler(records)
-    badgesHelper.setItem({
-      url: data.url,
-      text: records.length ? String(records.length) : ''
-    })
-    updateBadge(data.url)
+    onAutomations(data, handler);
   } else if (action === PAGE_ACTIONS.REFRESH_AUTOMATIONS) {
-    loadAutomations()
-    handler('')
+    onRefreshAutmations(handler)
   } else if (action === APP_ACTIONS.IMPORT_DATA) {
     init()
     handler('')
@@ -102,85 +115,42 @@ function runMethod(tab, method) {
   chrome.tabs.sendMessage(tab.id, { method }, function (response) { });
 }
 
-chrome.contextMenus.create({
-  title: 'Read Mode',
-  contexts: ['all'],
-  onclick: function (info, tab) {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      runMethod(tabs[0], BUILDIN_ACTIONS.READ_MODE)
+function initCommands() {
+  BUILDIN_ACTION_CONFIGS.filter(item => item.asCommand).forEach(item => {
+    chrome.contextMenus.create({
+      title: item.title,
+      contexts: item.contexts,
+      onclick: function (info, tab) {
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+          runMethod(tabs[0], BUILDIN_ACTIONS[item.name])
+        });
+      }
     });
-  }
-});
+  })
+}
 
-chrome.contextMenus.create({
-  title: 'Kill Element',
-  contexts: ['all'],
-  onclick: function (info, tab) {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      runMethod(tabs[0], BUILDIN_ACTIONS.KILL_ELEMENT)
-    });
-  }
-});
+function updateBadgeByURL(url: string) {
+  const records = matchAutomations(automations, url)
+  const realNum = records.filter(item => item.active).length
 
-chrome.contextMenus.create({
-  title: 'English Syntax highlighting',
-  contexts: ['all'],
-  onclick: function (info, tab) {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      runMethod(tabs[0], BUILDIN_ACTIONS.HIGHLIGHT_ENGLISH_SYNTAX)
-    });
-  }
-});
+  badgesHelper.setItem({
+    url: url,
+    text: realNum ? String(realNum) : ''
+  })
+  updateBadge(url)
 
-chrome.contextMenus.create({
-  title: 'Add anchor for elements',
-  contexts: ['all'],
-  onclick: function (info, tab) {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      runMethod(tabs[0], BUILDIN_ACTIONS.HASH_ELEMENT)
-    });
-  }
-});
+  return records
+}
 
-chrome.contextMenus.create({
-  title: 'Add time tag for video',
-  contexts: ['all'],
-  onclick: function (info, tab) {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      runMethod(tabs[0], BUILDIN_ACTIONS.TIME_UPDATE)
-    });
-  }
-});
+function updateBadgeByCurrentTab() {
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    const url = tabs[0].url
 
-chrome.contextMenus.create({
-  title: 'Download element',
-  contexts: ['all'],
-  onclick: function (info, tab) {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      runMethod(tabs[0], BUILDIN_ACTIONS.DOWNLOAD)
-    });
-  }
-});
-
-chrome.contextMenus.create({
-  title: 'FullScreen element',
-  contexts: ['all'],
-  onclick: function (info, tab) {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      runMethod(tabs[0], BUILDIN_ACTIONS.FULL_SCREEN)
-    });
-  }
-});
-
-chrome.contextMenus.create({
-  title: 'Code copy',
-  contexts: ['all'],
-  onclick: function (info, tab) {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      runMethod(tabs[0], BUILDIN_ACTIONS.CODE_COPY)
-    });
-  }
-});
+    if (url) {
+      updateBadgeByURL(url)
+    }
+  });
+}
 
 chrome.commands.onCommand.addListener(function (command) {
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
@@ -195,13 +165,14 @@ chrome.tabs.onActivated.addListener(function () {
 })
 
 function loadAutomations() {
-  automationController.getList().then((resp) => {
+  return automationController.getList().then((resp) => {
     automations = <IAutomation[]>resp.data
   }) 
 }
 
 function init() {
   loadAutomations()
+  initCommands()
 }
 
 init()

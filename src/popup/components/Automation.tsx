@@ -6,6 +6,7 @@ import Response from '../../server/common/response';
 import Table from 'antd/es/table'
 import Button from 'antd/es/button';
 import Input from 'antd/es/input'
+import Switch from 'antd/es/switch';
 import { PlusSquareOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { matchAutomations } from '../../helper/automations';
 import { noticeBg } from '../../helper/event';
@@ -100,9 +101,28 @@ function OpBtns(props) {
 
   return (
     <div className="op-btns" style={{minWidth: '120px'}}>
+      <SwitchBtn record={props.record} />
       <EditBtn record={props.record}/>
       <DeleteBtn record={props.record} />
     </div>
+  )
+}
+
+function SwitchBtn(props) {
+  const { state, dispatch } = useModel()
+  const onChange = useCallback((checked) => {
+    props.record.active = checked;
+    automationsController.updateAutomation(props.record.id, {
+      active: checked
+    }).then(() => {
+      fetchList(state, dispatch).then(() => {
+        noticeBg({ action: PAGE_ACTIONS.REFRESH_AUTOMATIONS })
+      })
+    });
+  }, [])
+
+  return (
+    <Switch size="small" checked={props.record.active} onChange={onChange}/>
   )
 }
 
@@ -134,7 +154,7 @@ function DeleteBtn(props) {
 }
 
 function fetchList(state, dispatch) {
-  automationsController.getList().then((res: Response) => {
+  return automationsController.getList().then((res: Response) => {
     if (res.code === 0) {
       dispatch({ type: ACTIONS.AUTOMATIONS, payload: matchAutomations(res.data, state.tab.url) })
     }

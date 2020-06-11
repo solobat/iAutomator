@@ -250,7 +250,9 @@ $(() => {
   }, (result) => {
     if (result.data && result.data.length) {
       result.data.forEach(item => {
-        exceAutomation(item.instructions)
+        if (item.active) {
+          exceAutomation(item.instructions)
+        }
       })
     }
   })
