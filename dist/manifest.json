@@ -4,7 +4,7 @@
     "short_name": "Steward Helper",
     "description":
         "Steward Helper: Convenience and automation of commonly used browser actions",
-    "version": "1.1.0",
+    "version": "1.1.1",
 
     "browser_action": {
         "default_icon": "icon16.png",

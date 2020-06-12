@@ -1,6 +1,6 @@
 {
   "name": "steward-helper",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Steward Helper",
   "scripts": {
     "build": "webpack --config webpack.prod.js",
