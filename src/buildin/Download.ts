@@ -7,12 +7,14 @@ export default class Download extends Base {
   name = BUILDIN_ACTIONS.DOWNLOAD
   shouldRecord = true
   
-  private downloadURL(url, fileName?, type?) {
+  private downloaded = true
+
+  private downloadURL(url, fileName?, type?: string) {
     if (url.startsWith('//')) {
       url = location.protocol + url
     }
     if (getHost(url) !== window.location.host) {
-      window.open(url) 
+      window.open(url + this.getSuffix(type)) 
     } else {
       const elem = document.createElement('a');
     
@@ -45,7 +47,7 @@ export default class Download extends Base {
   
     if (match) {
       const url = match[1]
-      this.downloadURL(url, this.getFileNameByURL(elem, url, 'background'))
+      this.downloadURL(url, this.getFileNameByURL(elem, url, 'background'), 'img')
   
       return true
     } else {
@@ -53,11 +55,15 @@ export default class Download extends Base {
     }
   }
 
+  private getSuffix(tag = 'file') {
+    return `#/shd=${tag}`
+  }
+
   private downloadSource(elem): boolean {
     const url = elem.getAttribute('src')
   
     if (url) {
-      const tag = elem.tagName.toLowerCase()
+      const tag: string = elem.tagName.toLowerCase()
   
       this.downloadURL(url, this.getFileNameByURL(elem, url, tag), tag)
   
@@ -67,25 +73,33 @@ export default class Download extends Base {
     } 
   }
 
+  checkExecResult(elem, options?: ExecOptions) {
+    if (!this.downloaded) {
+      this.autoMationFn()
+    }
+  }
+
   exec(elem, options?: ExecOptions) {
     const tagName = elem.tagName
 
-    if (['VIDEO', 'IMG', 'AUDIO'].indexOf(tagName) !== -1) {
+    if (['VIDEO', 'IMG', 'AUDIO', 'SOURCE'].indexOf(tagName) !== -1) {
       const result = this.downloadSource(elem)
+      this.downloaded = result
   
       if (result) {
         this.recordIfNeeded(options, elem)
       }
   
-      return result
+      return true
     } else {
       const result = this.downloadBg(elem)
+      this.downloaded = result
   
       if (result) {
         this.recordIfNeeded(options, elem)
       }
   
-      return result
+      return true
     }
   }
 }
