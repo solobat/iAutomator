@@ -48,6 +48,7 @@ export default class Base {
     return `.${this.cls}`
   }
 
+  // only called by UI
   start() {
     this.helper.exec((elem, event) => {
       const options: ExecOptions = {
@@ -57,6 +58,7 @@ export default class Base {
     })
   }
 
+  // called by UI or automation
   // run and check result if needed
   run(elem, options) {
     const result = this.exec(elem, options)
@@ -74,7 +76,7 @@ export default class Base {
   }
 
   checkExecResult(elem, options?: ExecOptions) {
-
+    // if not ready --> this.autoMationFn()
   }
 
   bindEvents() {}
