@@ -8,6 +8,7 @@ export default class Download extends Base {
   shouldRecord = true
   
   private downloaded = true
+  private autoclose = false
 
   private downloadURL(url, fileName?, type?: string) {
     if (url.startsWith('//')) {
@@ -24,6 +25,9 @@ export default class Download extends Base {
       elem.click();
     
       elem.remove();
+      if (this.autoclose) {
+        window.close()
+      }
     }
   }
 
@@ -81,6 +85,8 @@ export default class Download extends Base {
 
   exec(elem, options?: ExecOptions) {
     const tagName = elem.tagName
+  
+    this.autoclose = options.autoclose
 
     if (['VIDEO', 'IMG', 'AUDIO', 'SOURCE'].indexOf(tagName) !== -1) {
       const result = this.downloadSource(elem)
