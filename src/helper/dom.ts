@@ -220,17 +220,7 @@ export function exceAutomation(content, times = 0) {
     const instance = findAction(action)
 
     if (instance) {
-      if (instance.shouldTryAgain) {
-        const result = instance.run(elem, getExecOptions(modifiers))
-
-        if (!result) {
-          tryAgain()
-        } else {
-          exec(instance)
-        }
-      } else {
-        exec(instance)
-      }
+      exec(instance)
     }
   } else {
     tryAgain()

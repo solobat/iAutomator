@@ -34,7 +34,6 @@ export default class Base {
   autoMationFn?: Function
   cls?: string
   style?: string
-  shouldTryAgain?: boolean
   shouldRecord?: boolean
   unbindFns: any[]
 
@@ -58,6 +57,7 @@ export default class Base {
     })
   }
 
+  // run and check result if needed
   run(elem, options) {
     const result = this.exec(elem, options)
 
