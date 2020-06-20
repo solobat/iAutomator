@@ -15,6 +15,7 @@ import TimeUpdate from '../buildin/TimeUpdate'
 import ClickElement from '../buildin/Click'
 import CodeCopy from '../buildin/CodeCopy'
 import GotoElement from '../buildin/GotoElement'
+import PictureInPicture from '../buildin/PictureInPicture'
 
 let isSetup, stop, cssInserted;
 
@@ -286,6 +287,7 @@ function install() {
   new ClickElement(helper)
   new CodeCopy(helper)
   new GotoElement(helper)
+  new PictureInPicture(helper)
 }
 
 install()

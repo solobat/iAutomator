@@ -2,7 +2,8 @@
 export const PAGE_ACTIONS = {
   RECORD: 'recordAction',
   AUTOMATIONS: 'getAutomations',
-  REFRESH_AUTOMATIONS: 'refreshAutomations'
+  REFRESH_AUTOMATIONS: 'refreshAutomations',
+  NOTICE: 'createNotice'
 }
 
 export const WEB_ACTIONS = {
@@ -11,7 +12,9 @@ export const WEB_ACTIONS = {
 }
 
 export const APP_ACTIONS = {
-  IMPORT_DATA: 'importData'
+  IMPORT_DATA: 'importData',
+  RUN_COMMAND: 'runCommand',
+  LIST_ACTIONS: 'listActions'
 }
 
 export const IFRAME_ID = 'steward-helper-iframe'
@@ -26,7 +29,8 @@ export const BUILDIN_ACTIONS = {
   DOWNLOAD: 'download',
   FULL_SCREEN: 'fullScreen',
   TIME_UPDATE: 'timeupdate',
-  CLICK: 'click'
+  CLICK: 'click',
+  PICTURE_IN_PICTURE: 'pictureInPicture'
 }
 
 export const BUILDIN_ACTION_CONFIGS = [
@@ -89,5 +93,11 @@ export const BUILDIN_ACTION_CONFIGS = [
     title: 'Goto element',
     contexts: ['all'],
     asCommand: false
+  },
+  {
+    name: 'PICTURE_IN_PICTURE',
+    title: 'Start PIP mode',
+    contexts: ['all'],
+    asCommand: true
   }
 ]

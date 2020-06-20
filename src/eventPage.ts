@@ -107,6 +107,25 @@ function onInstallAutomation(data, handler) {
   handler('')
 }
 
+function onNewNotice(data, handler) {
+  const { title, message, iconUrl } = data
+  
+  createNotice(title, message, iconUrl)
+
+  handler('')
+}
+
+function onRunMethod(data, sender, handler) {
+  runMethod(sender.tab, BUILDIN_ACTIONS[data.command])
+  handler('') 
+}
+
+function onListActions(handler) {
+  const list = BUILDIN_ACTION_CONFIGS.filter(item => item.asCommand)
+
+  handler(list)
+}
+
 function msgHandler(req: PageMsg, sender, resp) {
   let { action, data, callbackId } = req;
 
@@ -133,6 +152,12 @@ function msgHandler(req: PageMsg, sender, resp) {
     handler('')
   } else if (action === WEB_ACTIONS.INSTALL_AUTOMATION) {
     onInstallAutomation(data, hanlder)
+  } else if (action === PAGE_ACTIONS.NOTICE) {
+    onNewNotice(data, handler);
+  } else if (action === APP_ACTIONS.RUN_COMMAND) {
+    onRunMethod(data, sender, handler)
+  } else if (action === APP_ACTIONS.LIST_ACTIONS) {
+    onListActions(handler);
   }
 }
 
