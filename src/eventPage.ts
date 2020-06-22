@@ -8,6 +8,7 @@ import { matchAutomations, installAutomation } from './helper/automations'
 import { BUILDIN_ACTIONS, PAGE_ACTIONS, APP_ACTIONS, BUILDIN_ACTION_CONFIGS, WEB_ACTIONS } from './common/const';
 import hanlder from './helper/others';
 import { create as createNotice } from './helper/notifications';
+import { RunAt } from './server/enum/Automation';
 
 let automations: IAutomation[] = []
 
@@ -89,7 +90,7 @@ function noticeCurTab(data?) {
 }
 
 function onInstallAutomation(data, handler) {
-  installAutomation(data.instructions, data.pattern).then((resp) => {
+  installAutomation(data.instructions, data.pattern, data.runAt).then((resp) => {
     if (resp.code === 0) {
       createNotice('Automation installed successfully', `Automation: 「${data.name}」`,
         chrome.extension.getURL('img/success.png'))

@@ -7,10 +7,13 @@ import Table from 'antd/es/table'
 import Button from 'antd/es/button';
 import Input from 'antd/es/input'
 import Switch from 'antd/es/switch';
+import Select from 'antd/es/select';
 import { PlusSquareOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { matchAutomations } from '../../helper/automations';
 import { noticeBg } from '../../helper/event';
 import { PAGE_ACTIONS } from '../../common/const';
+
+const { Option } = Select
 
 export function AutomationsPanel() {
   const { state, dispatch } = useContext(PageContext)
@@ -71,13 +74,21 @@ function AutomationEditor() {
     <div className="am-editor">
       <div className="am-editor-fields">
         <Input placeholder="Instructions" value={form.instructions}
+          className="ipt-ins"
           onChange={(event) => {onAmFormChange({
             instructions: event.target.value
           }, dispatch)}} />
         <Input placeholder="Pattern" value={form.pattern} 
+          className="ipt-pattern"
           onChange={(event) => {onAmFormChange({
             pattern: event.target.value
           }, dispatch)}}/>
+        <Select value={form.runAt} onChange={(value) => {onAmFormChange({
+            runAt: value
+          }, dispatch)}}>
+          <Option value={0}>Immediately</Option>
+          <Option value={1}>DomReady</Option>
+        </Select>
       </div>
       <div className="am-editor-btns">
         <Button onClick={() => onAmEditorCancleClick()} style={{marginRight: '10px'}}>Cancel</Button>
@@ -90,12 +101,34 @@ function AutomationEditor() {
 const AutomationsColumns = [
   { title: 'Instructions', dataIndex: 'instructions', width: '300px', textWrap: 'word-break', ellipsis: true, },
   { title: 'Pattern', dataIndex: 'pattern' },
+  { title: 'RunAt', dataIndex: 'runAt', render: (runAt, record) => <RunAt record={record} /> },
   {
     title: 'Operation',
     width: '120px',
     render: (text, record) => <OpBtns record={record} />,
   }
 ]
+
+function RunAt(props) {
+  const { state, dispatch } = useModel()
+  const onChange = useCallback((value) => {
+    props.record.runAt = value;
+    automationsController.updateAutomation(props.record.id, {
+      runAt: value
+    }).then(() => {
+      fetchList(state, dispatch).then(() => {
+        noticeBg({ action: PAGE_ACTIONS.REFRESH_AUTOMATIONS })
+      })
+    });
+  }, [])
+
+  return (
+    <Select value={props.record.runAt} onChange={onChange}>
+      <Option value={0}>Immediately</Option>
+      <Option value={1}>DomReady</Option>
+    </Select>
+  )
+}
 
 function OpBtns(props) {
 

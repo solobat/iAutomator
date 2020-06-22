@@ -13,7 +13,7 @@ body {
     flex-direction: column;
     height: 400px;
     overflow: auto;
-    width: 600px;
+    width: 700px;
     padding: 10px;
 }
 
@@ -37,6 +37,11 @@ body {
 
 .am-editor-fields {
     display: flex;
+    justify-content: space-between;
+
+    .ant-input {
+        width: 270px;
+    }
 }
 
 .am-editor-btns {

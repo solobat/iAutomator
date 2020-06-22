@@ -16,6 +16,8 @@ import ClickElement from '../buildin/Click'
 import CodeCopy from '../buildin/CodeCopy'
 import GotoElement from '../buildin/GotoElement'
 import PictureInPicture from '../buildin/PictureInPicture'
+import { RunAt } from '../server/enum/Automation';
+import Automation from '../server/model/Automation';
 
 let isSetup, stop, cssInserted;
 
@@ -197,16 +199,18 @@ function getExecOptions(modifiers = []) {
   return options
 }
 
-export function exceAutomation(content, times = 0) {
+export function exceAutomation(content, times = 0, runAt: RunAt) {
   const [ actionStr, selector ] = content.split('@')
   const [ action, ...modifiers ] = actionStr.split('^')
   const elem = document.querySelector(selector)
 
   function tryAgain() {
     if (times < 5) {
+      const delay = runAt === RunAt.START ? 16 : 1000
+
       setTimeout(() => {
-        exceAutomation(content, times + 1)
-      }, 1000)
+        exceAutomation(content, times + 1, runAt)
+      }, delay)
     }
   }
   function exec(instance) {
@@ -233,21 +237,6 @@ declare global {
 }
 
 window.exceAutomation = exceAutomation
-
-$(() => {
-  noticeBg({
-    action: PAGE_ACTIONS.AUTOMATIONS,
-    data: { url: window.location.href }
-  }, (result) => {
-    if (result.data && result.data.length) {
-      result.data.forEach(item => {
-        if (item.active) {
-          exceAutomation(item.instructions)
-        }
-      })
-    }
-  })
-})
 
 const helper: DomHelper = {
   actionCache: {
@@ -325,3 +314,30 @@ export default function (req) {
     return Promise.resolve({})
   }
 }
+
+function startAutomations() {
+  noticeBg({
+    action: PAGE_ACTIONS.AUTOMATIONS,
+    data: { url: window.location.href }
+  }, (result) => {
+    if (result.data && result.data.length) {
+      const activeItems = result.data.filter(item => item.active)
+      const immediateItems = activeItems.filter(item => item.runAt === RunAt.START)
+      const readyItems = activeItems.filter(item => item.runAt === RunAt.END)
+
+      execAutomations(immediateItems, RunAt.START)
+
+      $(() => {
+        execAutomations(readyItems, RunAt.END)
+      })
+    }
+  })
+}
+
+function execAutomations(automations, runAt: RunAt) {
+  automations.forEach(item => {
+    exceAutomation(item.instructions, 0, runAt)
+  })
+}
+
+startAutomations()

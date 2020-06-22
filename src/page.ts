@@ -1,6 +1,7 @@
 import { startAction, exceAutomation } from './helper/dom'
 import { BUILDIN_ACTIONS, WEB_ACTIONS, PAGE_ACTIONS } from './common/const';
 import { handleWebEvents, noticeWeb } from './helper/web';
+import { RunAt } from './server/enum/Automation';
 
 function bindAppEvents() {
   chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
@@ -9,7 +10,7 @@ function bindAppEvents() {
     if (method === WEB_ACTIONS.INSTALL_DONE) {
       noticeWeb(method, data)
     } else if (method === PAGE_ACTIONS.EXEC_INSTRUCTIONS) {
-      exceAutomation(data.instructions)
+      exceAutomation(data.instructions, 0, RunAt.END)
     } else {
       startAction(method)
     }

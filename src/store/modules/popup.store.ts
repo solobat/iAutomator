@@ -1,4 +1,5 @@
 import { createContext, useContext } from 'react';
+import { RunAt } from '../../server/enum/Automation';
 
 export const ACTIONS = {
   TAB_META: 'tabMeta',
@@ -28,7 +29,7 @@ export function pageReducer(state, action) {
       break;
     case ACTIONS.AUTOMATION_FORM_CLOSE:
       newState.amFormEditing = false;
-      newState.automationForm = null;
+      newState.automationForm = getDefaultAutomationForm();
       break;
     case ACTIONS.AUTOMATIONS:
       newState.automations = payload;
@@ -44,11 +45,19 @@ export function pageReducer(state, action) {
 
 export const PageContext = createContext(null)
 
+function getDefaultAutomationForm() {
+  return {
+    instructions: '',
+    pattern: '',
+    runAt: RunAt.END
+  }
+}
+
 export function getInitialState() {
   return {
     tab: null,
     tabKey: 'automation',
-    automationForm: null,
+    automationForm: getDefaultAutomationForm(),
     amFormEditing: false,
     automations: []
   }
