@@ -7,15 +7,20 @@ import Table, { ColumnsType } from 'antd/es/table'
 import { PlayCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import { AutomationForm } from '../../common/types';
 import { getPath } from '../../helper/url';
+import { noticeBg } from '../../helper/event';
+import { PAGE_ACTIONS } from '../../common/const';
 
 interface RecordsProps {
   host: string;
 }
 
 function onRecordRunClick(item, tabId) {
-  chrome.tabs.executeScript(tabId, {
-    code: `window.exceAutomation("${item.content}")`
-  }, (result) => {
+  noticeBg({
+    action: PAGE_ACTIONS.EXEC_INSTRUCTIONS,
+    data: {
+      tabId,
+      instructions: item.content
+    }
   })
 }
 

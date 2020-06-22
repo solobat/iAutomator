@@ -1,5 +1,5 @@
-import { startAction } from './helper/dom'
-import { BUILDIN_ACTIONS, WEB_ACTIONS } from './common/const';
+import { startAction, exceAutomation } from './helper/dom'
+import { BUILDIN_ACTIONS, WEB_ACTIONS, PAGE_ACTIONS } from './common/const';
 import { handleWebEvents, noticeWeb } from './helper/web';
 
 function bindAppEvents() {
@@ -8,6 +8,8 @@ function bindAppEvents() {
 
     if (method === WEB_ACTIONS.INSTALL_DONE) {
       noticeWeb(method, data)
+    } else if (method === PAGE_ACTIONS.EXEC_INSTRUCTIONS) {
+      exceAutomation(data.instructions)
     } else {
       startAction(method)
     }

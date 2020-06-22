@@ -3,7 +3,8 @@ export const PAGE_ACTIONS = {
   RECORD: 'recordAction',
   AUTOMATIONS: 'getAutomations',
   REFRESH_AUTOMATIONS: 'refreshAutomations',
-  NOTICE: 'createNotice'
+  NOTICE: 'createNotice',
+  EXEC_INSTRUCTIONS: 'execInstructions'
 }
 
 export const WEB_ACTIONS = {

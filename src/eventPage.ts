@@ -126,6 +126,13 @@ function onListActions(handler) {
   handler(list)
 }
 
+function onExecInstructions(data, handler) {
+  const { tabId, instructions } = data
+
+  runMethod({ id: tabId }, PAGE_ACTIONS.EXEC_INSTRUCTIONS, { instructions })
+  handler('')
+}
+
 function msgHandler(req: PageMsg, sender, resp) {
   let { action, data, callbackId } = req;
 
@@ -158,6 +165,8 @@ function msgHandler(req: PageMsg, sender, resp) {
     onRunMethod(data, sender, handler)
   } else if (action === APP_ACTIONS.LIST_ACTIONS) {
     onListActions(handler);
+  } else if (action === PAGE_ACTIONS.EXEC_INSTRUCTIONS) {
+    onExecInstructions(data, handler)
   }
 }
 
