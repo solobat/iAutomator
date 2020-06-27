@@ -16,6 +16,7 @@ import ClickElement from '../buildin/Click'
 import CodeCopy from '../buildin/CodeCopy'
 import GotoElement from '../buildin/GotoElement'
 import PictureInPicture from '../buildin/PictureInPicture'
+import ZenMode from '../buildin/ZenMode'
 import { RunAt } from '../server/enum/Automation';
 import Automation from '../server/model/Automation';
 
@@ -277,6 +278,7 @@ function install() {
   new CodeCopy(helper)
   new GotoElement(helper)
   new PictureInPicture(helper)
+  new ZenMode(helper)
 }
 
 install()

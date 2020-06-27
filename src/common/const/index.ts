@@ -24,6 +24,7 @@ export const BUILDIN_ACTIONS = {
   HIGHLIGHT_ENGLISH_SYNTAX: 'highlightEnglishSyntax',
   KILL_ELEMENT: 'killElement',
   READ_MODE: 'readMode',
+  ZEN_MODE: 'zenMode',
   HASH_ELEMENT: 'hashElement',
   CODE_COPY: 'codeCopy',
   GOTO_ELEMENT: 'gotoElement',
@@ -98,6 +99,12 @@ export const BUILDIN_ACTION_CONFIGS = [
   {
     name: 'PICTURE_IN_PICTURE',
     title: 'Start PIP mode',
+    contexts: ['all'],
+    asCommand: true
+  },
+  {
+    name: 'ZEN_MODE',
+    title: 'Zen mode',
     contexts: ['all'],
     asCommand: true
   }
