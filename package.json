@@ -1,7 +1,7 @@
 {
-  "name": "steward-helper",
+  "name": "ihelpers",
   "version": "1.1.4",
-  "description": "Steward Helper",
+  "description": "Some Helpers",
   "scripts": {
     "build": "webpack --config webpack.prod.js",
     "dev": "webpack -w --config webpack.dev.js",

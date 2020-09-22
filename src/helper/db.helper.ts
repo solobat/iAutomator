@@ -6,7 +6,7 @@ import dayjs from 'dayjs'
 export async function exportAndDownload() {
   const blob = await exportDB(db)
 
-  download(blob, "Steward-Helper-export.json", "application/json")
+  download(blob, "iHelpers-export.json", "application/json")
 }
 
 function readBlob(blob) {

@@ -1,9 +1,9 @@
 {
     "manifest_version": 2,
-    "name": "Steward Helper",
-    "short_name": "Steward Helper",
+    "name": "iHelpers",
+    "short_name": "iHelpers",
     "description":
-        "Steward Helper: Convenience and automation of commonly used browser actions",
+        "iHelpers: Convenience and automation of commonly used browser actions",
     "version": "1.1.4",
 
     "browser_action": {
