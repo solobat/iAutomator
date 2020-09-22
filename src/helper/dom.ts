@@ -3,7 +3,7 @@ import keyboardJS from 'keyboardjs'
 import getCssSelector from 'css-selector-generator';
 import { noticeBg } from './event';
 import { PAGE_ACTIONS } from '../common/const';
-import Base, { DomHelper } from '../buildin/Base'
+import Base, { DomHelper, ExecOptions } from '../buildin/Base'
 import { appBridge } from './bridge'
 import Download from '../buildin/Download'
 import FullScreen from '../buildin/FullScreen'
@@ -87,8 +87,8 @@ function start() {
   return stop;
 }
 
-function recordAction(actionName, elem?: HTMLElement) {
-  const action = getAction(actionName, elem)
+function recordAction(actionName, elem?: HTMLElement, options?: ExecOptions) {
+  const action = getAction(actionName, elem, options)
 
   appBridge.invoke(PAGE_ACTIONS.RECORD, {
     content: action, url: window.location.href, domain: window.location.host
@@ -157,13 +157,33 @@ export function exec(fn) {
   startOutline(fn)
 }
 
-function getAction(actionName: string, elem?: HTMLElement) {
+function serializeOptions(options?: ExecOptions): string {
+  if (options) {
+    const str = Object.keys(options).map(key => {
+      const val = options[key]
+
+      if (val) {
+        return [key, options[key]].join('!') 
+      } else {
+        return ''
+      }
+    }).join('^');
+
+    return str ? `^${str}` : '';
+  } else {
+    return ''
+  }
+}
+
+function getAction(actionName: string, elem?: HTMLElement, options?: ExecOptions) {
+  const optStr = serializeOptions(options);
+
   if (elem) {
     const selector = getCssSelector(elem, { blacklist: [/ext-hp/]})
-  
-    return `${actionName}@${selector}`
+
+    return `${actionName}${optStr}@${selector}`
   } else {
-    return `${actionName}@body`
+    return `${actionName}${optStr}@body`
   }
 }
 

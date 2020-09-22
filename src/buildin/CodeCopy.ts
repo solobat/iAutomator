@@ -3,6 +3,15 @@ import { BUILDIN_ACTIONS } from '../common/const';
 import $ = require('jquery')
 import { copyToClipboard } from '../helper/others';
 
+interface CodeCopyExecOptions extends ExecOptions {
+  inpre?: boolean;
+  pre?: boolean;
+  block?: boolean;
+  inline?: boolean;
+  rm?: string;
+  pos?: string;  
+}
+
 export default class CodeCopy extends Base {
   name = BUILDIN_ACTIONS.CODE_COPY
   cls: 'ext-hp-code-copy'
@@ -24,16 +33,23 @@ export default class CodeCopy extends Base {
     .ext-hp-code-copy::after {
       content: "\\e618";
     }
+    .ext-hp-inlinecode-copy {
+      cursor: crosshair;
+    }
   `
   shouldRecord = true
 
   private inited = false
 
   start() {
-    this.exec(document.body, {}) 
+    this.exec(document.body, {
+      block: true,
+      inline: true,
+      inpre: true,
+    }) 
   }
 
-  checkExecResult(elem, options?: ExecOptions) {
+  checkExecResult(elem, options?: CodeCopyExecOptions) {
     if (!this.inited) {
       this.autoMationFn()
     }
@@ -43,7 +59,7 @@ export default class CodeCopy extends Base {
     return `ext-hp-code-copy-${position}`
   }
 
-  private insertCopyBtn(codeElem: HTMLElement, options?: ExecOptions) {
+  private insertCopyBtn(codeElem: HTMLElement, options?: CodeCopyExecOptions) {
     const position = options ? options.pos : 'tl'
 
     if (options.inpre) {
@@ -57,27 +73,64 @@ export default class CodeCopy extends Base {
     }
   }
 
-  exec(elem, options?: ExecOptions) {
-    this.helper.insertCss()
-
-    const selected = options.pre ? 'pre' : 'code';
-    const elems = Array.from(document.querySelectorAll(selected))
-
-    if (elems.length) {
-      elems.forEach((codeElem) => {
-        if (options.inpre) {
-          if (codeElem.parentElement.tagName === 'PRE') {
+  private handleBlockCode(options?: CodeCopyExecOptions): boolean {
+    if (options.block) {
+      const selected = options.pre ? 'pre' : 'code';
+      const elems = Array.from(document.querySelectorAll(selected))
+  
+      if (elems.length) {
+        elems.forEach((codeElem) => {
+          if (options.inpre) {
+            if (codeElem.parentElement.tagName === 'PRE') {
+              this.insertCopyBtn(codeElem, options);
+            }
+          } else {
             this.insertCopyBtn(codeElem, options);
           }
-        } else {
-          this.insertCopyBtn(codeElem, options);
-        }
-      })
-      $(document).on('click', '.ext-hp-code-copy', function() {
-        const text = this.parentElement.textContent
-        copyToClipboard(text)
-      })
-    
+        })
+        $(document).on('click', '.ext-hp-code-copy', function() {
+          const text = this.parentElement.textContent
+          copyToClipboard(text)
+        })
+      
+        return true
+      } else {
+        return false
+      }
+    } else {
+      return false;
+    }
+  }
+
+  private handleInlineCode(options?: CodeCopyExecOptions): boolean {
+    if (options.inline) {
+      const inlineElems = Array.from(document.querySelectorAll('code')).filter(elem => elem.parentElement.tagName === 'P')
+
+      if (inlineElems.length) {
+        inlineElems.forEach(elem => {
+          elem.className += ' ext-hp-inlinecode-copy';
+        });
+        $(document).on('click', '.ext-hp-inlinecode-copy', function() {
+          const text = this.textContent;
+          copyToClipboard(text)
+        })
+
+        return true
+      } else {
+        return false
+      }
+    } else {
+      return false
+    }
+  }
+
+  exec(elem, options?: CodeCopyExecOptions) {
+    this.helper.insertCss()
+
+    const blockResult = this.handleBlockCode(options);
+    const inlineResult = this.handleInlineCode(options);
+
+    if (blockResult || inlineResult) {
       this.recordIfNeeded(options)
       this.inited = true
     }

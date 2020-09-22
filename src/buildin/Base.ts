@@ -13,7 +13,7 @@ export interface DomHelper {
   exec(fn: execFn): void;
   actionCache: ActionCache;
   resetActionCache();
-  recordAction(actionName: string, elem?);
+  recordAction(actionName: string, elem?, options?: ExecOptions);
   insertCss();
   invoke(action, data, callback, target: NOTICE_TARGET);
   actions: Base[]
@@ -83,7 +83,7 @@ export default class Base {
 
   recordIfNeeded(options: ExecOptions, elem?) {
     if (this.shouldRecord && !options.silent) {
-      this.helper.recordAction(this.name, elem)
+      this.helper.recordAction(this.name, elem, options)
     }
   }
 
