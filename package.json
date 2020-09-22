@@ -1,9 +1,10 @@
 {
   "name": "ihelpers",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "Some Helpers",
   "scripts": {
     "build": "webpack --config webpack.prod.js",
+    "prod": "bash build/build.sh",
     "dev": "webpack -w --config webpack.dev.js",
     "watch": "webpack -w --config webpack.dev.js",
     "lint": "tslint 'src/**/*.{ts, tsx}'"
