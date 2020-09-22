@@ -74,7 +74,7 @@ export default class CodeCopy extends Base {
   }
 
   private handleBlockCode(options?: CodeCopyExecOptions): boolean {
-    if (options.block) {
+    if (options.block !== false) {
       const selected = options.pre ? 'pre' : 'code';
       const elems = Array.from(document.querySelectorAll(selected))
   

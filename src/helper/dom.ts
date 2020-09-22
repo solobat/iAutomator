@@ -208,7 +208,11 @@ function getExecOptions(modifiers = []) {
     const [key, ...value] = item.split('!');
     if (value.length) {
       if (value.length === 1) {
-        options[key] = value[0]
+        try {
+          options[key] = JSON.parse(value[0]);
+        } catch (error) {
+          options[key] = value[0];
+        }
       } else {
         options[key] = value
       }
