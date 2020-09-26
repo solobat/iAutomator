@@ -6,7 +6,7 @@ import { PageMsg, BackMsg } from './common/types';
 import { IAutomation } from './server/db/database'
 import { matchAutomations, installAutomation } from './helper/automations'
 import { BUILDIN_ACTIONS, PAGE_ACTIONS, APP_ACTIONS, BUILDIN_ACTION_CONFIGS, WEB_ACTIONS } from './common/const';
-import hanlder from './helper/others';
+import { highlightEnglish } from './helper/others';
 import { create as createNotice } from './helper/notifications';
 import { RunAt } from './server/enum/Automation';
 
@@ -134,16 +134,27 @@ function onExecInstructions(data, handler) {
   handler('')
 }
 
+function onHightlighting(data, handler) {
+  highlightEnglish(data.text).then((result) => {
+    handler(result, true); 
+  })
+}
+
 function msgHandler(req: PageMsg, sender, resp) {
   let { action, data, callbackId } = req;
 
-  function handler(results) {
+  function handler(results, isAsync = false) {
     const msg: BackMsg = {
       msg: `${action} response`,
       callbackId,
       data: results
     }
-    resp(msg)
+
+    if (!isAsync) {
+      resp(msg)
+    } else {
+      runMethod(sender.tab, APP_ACTIONS.MSG_RESP, msg);
+    }
   }
 
   if (action === PAGE_ACTIONS.RECORD) {
@@ -159,7 +170,7 @@ function msgHandler(req: PageMsg, sender, resp) {
     init()
     handler('')
   } else if (action === WEB_ACTIONS.INSTALL_AUTOMATION) {
-    onInstallAutomation(data, hanlder)
+    onInstallAutomation(data, handler)
   } else if (action === PAGE_ACTIONS.NOTICE) {
     onNewNotice(data, handler);
   } else if (action === APP_ACTIONS.RUN_COMMAND) {
@@ -168,6 +179,8 @@ function msgHandler(req: PageMsg, sender, resp) {
     onListActions(handler);
   } else if (action === PAGE_ACTIONS.EXEC_INSTRUCTIONS) {
     onExecInstructions(data, handler)
+  } else if (action === BUILDIN_ACTIONS.HIGHLIGHT_ENGLISH_SYNTAX) {
+    onHightlighting(data, handler);
   }
 }
 

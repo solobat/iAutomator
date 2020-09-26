@@ -1,7 +1,7 @@
 import axios from 'axios'
 import browser from 'webextension-polyfill'
 
-function highlightEnglish(text) {
+export function highlightEnglish(text) {
   const params = new URLSearchParams();
 
   params.append('text', text);

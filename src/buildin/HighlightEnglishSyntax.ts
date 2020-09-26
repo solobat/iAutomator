@@ -18,7 +18,7 @@ export default class HighlightEnglishSyntax extends Base {
           if (resp) {
             $elem.html(resp);
           }
-        }, NOTICE_TARGET.IFRAME);
+        }, NOTICE_TARGET.BACKGROUND);
       }
 
       return true

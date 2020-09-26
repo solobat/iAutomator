@@ -15,7 +15,8 @@ export const WEB_ACTIONS = {
 export const APP_ACTIONS = {
   IMPORT_DATA: 'importData',
   RUN_COMMAND: 'runCommand',
-  LIST_ACTIONS: 'listActions'
+  LIST_ACTIONS: 'listActions',
+  MSG_RESP: 'msgResp'
 }
 
 export const IFRAME_ID = 'steward-helper-iframe'

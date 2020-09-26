@@ -1,7 +1,8 @@
 import { startAction, exceAutomation } from './helper/dom'
-import { BUILDIN_ACTIONS, WEB_ACTIONS, PAGE_ACTIONS } from './common/const';
+import { BUILDIN_ACTIONS, WEB_ACTIONS, PAGE_ACTIONS, APP_ACTIONS } from './common/const';
 import { handleWebEvents, noticeWeb } from './helper/web';
 import { RunAt } from './server/enum/Automation';
+import { appBridge } from './helper/bridge';
 
 function bindAppEvents() {
   chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
@@ -11,6 +12,8 @@ function bindAppEvents() {
       noticeWeb(method, data)
     } else if (method === PAGE_ACTIONS.EXEC_INSTRUCTIONS) {
       exceAutomation(data.instructions, 0, RunAt.END)
+    } else if (method === APP_ACTIONS.MSG_RESP) {
+      appBridge.receiveMessage(data);
     } else {
       startAction(method)
     }
