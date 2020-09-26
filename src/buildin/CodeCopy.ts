@@ -104,7 +104,9 @@ export default class CodeCopy extends Base {
 
   private handleInlineCode(options?: CodeCopyExecOptions): boolean {
     if (options.inline) {
-      const inlineElems = Array.from(document.querySelectorAll('code')).filter(elem => elem.parentElement.tagName === 'P')
+      const validTags = ['P', 'LI', 'TD']
+      const inlineElems = Array.from(document.querySelectorAll('code'))
+        .filter(elem => validTags.indexOf(elem.parentElement.tagName) !== -1)
 
       if (inlineElems.length) {
         inlineElems.forEach(elem => {
