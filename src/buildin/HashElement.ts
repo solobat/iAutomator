@@ -8,6 +8,7 @@ export default class HashElements extends Base {
   style = `
     .ext-hp-hashed { cursor: pointer;}
   `
+  shouldRedo = true
   shouldRecord = true
 
   private shouldHashedTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']

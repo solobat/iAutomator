@@ -21,6 +21,14 @@ export const APP_ACTIONS = {
 
 export const IFRAME_ID = 'steward-helper-iframe'
 
+export const REDO_DELAY = 2 * 1000
+
+export const ROUTE_CHANGE_TYPE = {
+  POP_STATE: 'popstate',
+  LINK: 'link',
+  PUSH_STATE: 'pushstate'
+}
+
 export const BUILDIN_ACTIONS = {
   HIGHLIGHT_ENGLISH_SYNTAX: 'highlightEnglishSyntax',
   KILL_ELEMENT: 'killElement',

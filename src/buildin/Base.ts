@@ -32,6 +32,8 @@ export default class Base {
   name: string
   helper: DomHelper
   autoMationFn?: Function
+  redo?: Function
+  shouldRedo: boolean = false
   cls?: string
   style?: string
   shouldRecord?: boolean

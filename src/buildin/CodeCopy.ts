@@ -37,6 +37,9 @@ export default class CodeCopy extends Base {
       cursor: crosshair;
     }
   `
+
+  shouldRedo = true
+  
   shouldRecord = true
 
   private inited = false

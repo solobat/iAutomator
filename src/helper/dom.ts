@@ -2,7 +2,7 @@ import $ = require('jquery')
 import keyboardJS from 'keyboardjs'
 import getCssSelector from 'css-selector-generator';
 import { noticeBg } from './event';
-import { PAGE_ACTIONS } from '../common/const';
+import { PAGE_ACTIONS, REDO_DELAY, ROUTE_CHANGE_TYPE } from '../common/const';
 import Base, { DomHelper, ExecOptions } from '../buildin/Base'
 import { appBridge } from './bridge'
 import Download from '../buildin/Download'
@@ -224,6 +224,14 @@ function getExecOptions(modifiers = []) {
   return options
 }
 
+function getDelayByRouteChangeType(type: string): number {
+  if (type === ROUTE_CHANGE_TYPE.POP_STATE) {
+    return 1000
+  } else {
+    return REDO_DELAY
+  }
+}
+
 export function exceAutomation(content, times = 0, runAt: RunAt) {
   const [ actionStr, selector ] = content.split('@')
   const [ action, ...modifiers ] = actionStr.split('^')
@@ -238,12 +246,23 @@ export function exceAutomation(content, times = 0, runAt: RunAt) {
       }, delay)
     }
   }
-  function exec(instance) {
+  function exec(instance: Base) {
     instance.autoMationFn = () => {
       times = 0
       tryAgain()
     }
-    instance.run(elem, getExecOptions(modifiers))
+    const options = getExecOptions(modifiers)
+
+    if (instance.shouldRedo) {
+      instance.redo = (type: string) => {
+        const delay = getDelayByRouteChangeType(type);
+
+        setTimeout(() => {
+          instance.run(elem, options)
+        }, delay)
+      }
+    }
+    instance.run(elem, options)
   }
 
   if (elem) {
@@ -341,6 +360,32 @@ export default function (req) {
   }
 }
 
+function onStateChange(type: string) {
+  const actions = helper.actions.filter(item => item.shouldRedo)
+
+  actions.forEach(item => item.redo(type))
+}
+
+function listenEventsAndRedoActions() {
+  const pushState = window.history.pushState;
+
+  window.history.pushState = function(...args) {
+    pushState.call(window.history, ...args)
+    onStateChange(ROUTE_CHANGE_TYPE.PUSH_STATE)
+  }
+
+  $(document).on('click', 'a', function() {
+    const $a = $(this)
+
+    if (!$a.attr('href').startsWith('http')) {
+      onStateChange(ROUTE_CHANGE_TYPE.LINK)
+    }
+  });
+  window.addEventListener('popstate', () => {
+    onStateChange(ROUTE_CHANGE_TYPE.POP_STATE)
+  });
+}
+
 function startAutomations() {
   noticeBg({
     action: PAGE_ACTIONS.AUTOMATIONS,
@@ -356,6 +401,8 @@ function startAutomations() {
       $(() => {
         execAutomations(readyItems, RunAt.END)
       })
+
+      listenEventsAndRedoActions();
     }
   })
 }
