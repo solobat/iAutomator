@@ -16,7 +16,9 @@ export const APP_ACTIONS = {
   IMPORT_DATA: 'importData',
   RUN_COMMAND: 'runCommand',
   LIST_ACTIONS: 'listActions',
-  MSG_RESP: 'msgResp'
+  MSG_RESP: 'msgResp',
+  START_SYNC: 'startSync',
+  STOP_SYNC: 'stopSync'
 }
 
 export const IFRAME_ID = 'steward-helper-iframe'
@@ -118,3 +120,22 @@ export const BUILDIN_ACTION_CONFIGS = [
     asCommand: true
   }
 ]
+
+export const SYNC_INTERVAL_OPTIONS = [
+  { label: '10s', value: 10 * 1000 },
+  { label: '30s', value: 30 * 1000 },
+  { label: '1min', value: 60 * 1000 },
+  { label: '5mins', value: 5 * 60 * 1000 },
+  { label: '30mins', value: 30 * 60 * 1000 },
+]
+
+export const SYNC_STATUS = {
+  WAIT: 'wait',
+  BEGIN: 'begin',
+  SUCCESS: 'success',
+  FAIL: 'fail'
+}
+
+export const WEBDAV_MIN_SYNC_INTERVAL = SYNC_INTERVAL_OPTIONS[0].value;
+
+export const WEBDAV_MAX_SYNC_INTERVAL = SYNC_INTERVAL_OPTIONS[4].value;

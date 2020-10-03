@@ -30,3 +30,20 @@ export async function importDBFile(blob) {
     clearTablesBeforeImport: true
   })
 }
+
+export function onDbUpdate(callback) {
+  const dbNames = ['automations', 'records']
+  const eventNames = ['creating', 'updating', 'deleting']
+  const unbindFns = [];
+
+  dbNames.forEach(name => {
+    eventNames.forEach(event => {
+      db[name].hook(event, callback)
+      unbindFns.push(() => {
+        db[name].hook(event).unsubscribe(callback);
+      });
+    });
+  });
+
+  return unbindFns;
+}

@@ -7,6 +7,9 @@ import { ACTIONS, pageReducer, PageContext, getInitialState, useModel } from '..
 import { TabMeta } from '../common/types';
 import { AutomationsPanel } from './components/Automation';
 import { Records } from './components/Record';
+import { onDbUpdate } from '../helper/db.helper';
+import { noticeBg } from '../helper/event';
+import { APP_ACTIONS } from '../common/const';
 
 export default function (props) {
   const [state, dispatch] = useReducer(pageReducer, getInitialState())
@@ -15,6 +18,15 @@ export default function (props) {
     getTabs((result) => {
       dispatch({ type: ACTIONS.TAB_META, payload: result })
     })
+    const unbindFns = onDbUpdate(() => {
+      noticeBg({
+        action: APP_ACTIONS.START_SYNC
+      })
+    });
+
+    return (() => {
+      unbindFns.forEach(fn => fn());
+    });
   }, [])
 
   return (

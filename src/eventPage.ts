@@ -5,12 +5,15 @@ import * as automationController from './server/controller/automations.controlle
 import { PageMsg, BackMsg } from './common/types';
 import { IAutomation } from './server/db/database'
 import { matchAutomations, installAutomation } from './helper/automations'
-import { BUILDIN_ACTIONS, PAGE_ACTIONS, APP_ACTIONS, BUILDIN_ACTION_CONFIGS, WEB_ACTIONS } from './common/const';
+import { BUILDIN_ACTIONS, PAGE_ACTIONS, APP_ACTIONS,
+  BUILDIN_ACTION_CONFIGS, WEB_ACTIONS, SYNC_STATUS, WEBDAV_MIN_SYNC_INTERVAL } from './common/const';
 import { highlightEnglish } from './helper/others';
 import { create as createNotice } from './helper/notifications';
 import { RunAt } from './server/enum/Automation';
+import Sync from './helper/sync';
 
 let automations: IAutomation[] = []
+let sync = new Sync();
 
 interface BadgeItem {
   url: string;
@@ -142,6 +145,7 @@ function onHightlighting(data, handler) {
 
 function msgHandler(req: PageMsg, sender, resp) {
   let { action, data, callbackId } = req;
+  console.log("msgHandler -> req", req)
 
   function handler(results, isAsync = false) {
     const msg: BackMsg = {
@@ -181,6 +185,12 @@ function msgHandler(req: PageMsg, sender, resp) {
     onExecInstructions(data, handler)
   } else if (action === BUILDIN_ACTIONS.HIGHLIGHT_ENGLISH_SYNTAX) {
     onHightlighting(data, handler);
+  } else if (action === APP_ACTIONS.START_SYNC) {
+    sync.tryStartSync();
+    handler('');
+  } else if (action === APP_ACTIONS.STOP_SYNC) {
+    sync.stopSync();
+    handler('');
   }
 }
 

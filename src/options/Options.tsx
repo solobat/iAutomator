@@ -1,52 +1,30 @@
 import * as React from 'react';
 import { useCallback } from 'react';
-import Button from 'antd/es/button';
-import Upload from 'antd/es/upload';
-import message from 'antd/es/message';
+import Tabs from 'antd/es/tabs';
+import Export from './components/Export';
+import WebDav from './components/WebDav';
 import './Options.scss';
-import { exportAndDownload, importDBFile } from '../helper/db.helper';
-import { convertFile2Blob } from '../helper/file.helper';
-import { noticeBg } from '../helper/event';
-import { PageMsg } from '../common/types'
-import { APP_ACTIONS } from '../common/const';
 
-function reload() {
-  const msg: PageMsg = {
-    action: APP_ACTIONS.IMPORT_DATA,
-    ext_from: 'popup',
-    data: null,
-    callbackId: 0
-  };
-  noticeBg(msg)
-}
+const { TabPane } = Tabs;
 
 export function Options() {
-  const onExportClick = useCallback(() => {
-    exportAndDownload()
-  }, [])
-  const onImportFileBeforeUpload = useCallback((file) => {
-    convertFile2Blob(file).then(importDBFile).then(blob => {
-      reload()
-      message.success('Import done!')
-    }).catch((err) => {
-      message.error('Import failed!')
-    })
+  const onTabChange = useCallback(() => {
 
-    return false
-  }, [])
+  }, []);
 
   return (
     <div className="container">
-      <div className="btns">
-        <Button type="primary" onClick={onExportClick}>Export</Button>
-        <Upload 
-          name="file"
-          accept="application/json"
-          showUploadList={false}
-          beforeUpload={onImportFileBeforeUpload}>
-            <Button type="primary">Import</Button>
-        </Upload>
-      </div>
+      <Tabs defaultActiveKey="1" onChange={onTabChange}>
+        <TabPane tab="Basic" key="1">
+          iHelpers
+        </TabPane>
+        <TabPane tab="Export" key="2">
+          <Export />
+        </TabPane>
+        <TabPane tab="WebDav" key="3">
+          <WebDav />
+        </TabPane>
+      </Tabs>
     </div>
   )
 }
