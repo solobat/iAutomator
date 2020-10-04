@@ -1,13 +1,20 @@
 import { throttle } from "lodash";
 import { SYNC_STATUS, WEBDAV_MAX_SYNC_INTERVAL, WEBDAV_MIN_SYNC_INTERVAL } from "../common/const";
+import { SimpleEvent } from "../utils/event";
+import { tuple } from "../utils/types";
 import { onDbUpdate } from "./db.helper";
 import { createDataSyncTick, isWebDavConfiged } from "./webdav";
 
-export default class Sync {
+const EventTypes = tuple('received', 'uploaded')
+
+export type EventType = (typeof EventTypes)[number]
+
+export default class Sync extends SimpleEvent<EventType> {
   syncStatus;
   syncTimer = 0;
 
   constructor() {
+    super();
     this.tryStartSync();
 
     onDbUpdate(() => {
@@ -22,10 +29,10 @@ export default class Sync {
 
   async runDataSyncTick() {
     try {
-      const shouldUpdate = await createDataSyncTick();
+      const newReceived = await createDataSyncTick();
   
-      if (shouldUpdate) {
-        // this.eventHub.$emit('import:done');
+      if (newReceived) {
+        this.emit('received');
       }
       this.syncStatus = SYNC_STATUS.SUCCESS;
     } catch (error) {
