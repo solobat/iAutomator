@@ -1,5 +1,5 @@
 import { throttle } from "lodash";
-import { SYNC_STATUS, WEBDAV_MAX_SYNC_INTERVAL, WEBDAV_MIN_SYNC_INTERVAL } from "../common/const";
+import { STORAGE_KEYS, SYNC_STATUS, WEBDAV_MAX_SYNC_INTERVAL, WEBDAV_MIN_SYNC_INTERVAL } from "../common/const";
 import { SimpleEvent } from "../utils/event";
 import { tuple } from "../utils/types";
 import { onDbUpdate } from "./db.helper";
@@ -9,6 +9,12 @@ const EventTypes = tuple('received', 'uploaded')
 
 export type EventType = (typeof EventTypes)[number]
 
+export function isAutoSync() {
+  const autoSync = Number(localStorage.getItem(STORAGE_KEYS.AUTO_SYNC) || 1)
+
+  return autoSync === 1
+}
+
 export default class Sync extends SimpleEvent<EventType> {
   syncStatus;
   syncTimer = 0;
@@ -16,12 +22,17 @@ export default class Sync extends SimpleEvent<EventType> {
   constructor() {
     super();
     this.tryStartSync();
+    this.setupAutoSync();
+  }
 
+  setupAutoSync() {
     onDbUpdate(() => {
-      this.tryStartSync();
+      if (isAutoSync()) {
+        this.tryStartSync();
+      }
     })
   }
-  
+
   stopSync() {
     clearInterval(this.syncTimer);
     this.syncStatus = SYNC_STATUS.WAIT;
@@ -41,14 +52,23 @@ export default class Sync extends SimpleEvent<EventType> {
     }
   }
 
-  startSync = throttle(async function () {
+  private getSyncInterval() {
+    const cached = localStorage.getItem(STORAGE_KEYS.SYNC_INTERVAL);
+    const interval = Number(cached) || WEBDAV_MAX_SYNC_INTERVAL;
+
+    return interval;
+  }
+
+  startSync = throttle(async function (this: Sync) {
     this.stopSync();
     this.syncStatus = SYNC_STATUS.BEGIN;
     await this.runDataSyncTick();
   
+    const inerval = this.getSyncInterval();
+
     this.syncTimer = setInterval(async () => {
       await this.runDataSyncTick()
-    }, WEBDAV_MAX_SYNC_INTERVAL);
+    }, inerval);
   }, WEBDAV_MIN_SYNC_INTERVAL)
 
   tryStartSync() {

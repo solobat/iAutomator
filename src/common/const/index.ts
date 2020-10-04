@@ -121,6 +121,11 @@ export const BUILDIN_ACTION_CONFIGS = [
   }
 ]
 
+export const STORAGE_KEYS = {
+  SYNC_INTERVAL: 'sync_interval',
+  AUTO_SYNC: 'auto_sync'
+}
+
 export const SYNC_INTERVAL_OPTIONS = [
   { label: '10s', value: 10 * 1000 },
   { label: '30s', value: 30 * 1000 },
