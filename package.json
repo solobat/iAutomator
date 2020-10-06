@@ -1,6 +1,6 @@
 {
   "name": "ihelpers",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Some Helpers",
   "scripts": {
     "build": "webpack --config webpack.prod.js",
