@@ -19,6 +19,7 @@ import PictureInPicture from '../buildin/PictureInPicture'
 import ZenMode from '../buildin/ZenMode'
 import { RunAt } from '../server/enum/Automation';
 import Automation from '../server/model/Automation';
+import DarkMode from '../buildin/darkmode';
 
 let isSetup, stop, cssInserted;
 
@@ -322,6 +323,7 @@ function install() {
   new GotoElement(helper)
   new PictureInPicture(helper)
   new ZenMode(helper)
+  new DarkMode(helper)
 }
 
 install()

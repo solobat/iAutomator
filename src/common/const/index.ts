@@ -43,13 +43,20 @@ export const BUILDIN_ACTIONS = {
   FULL_SCREEN: 'fullScreen',
   TIME_UPDATE: 'timeupdate',
   CLICK: 'click',
-  PICTURE_IN_PICTURE: 'pictureInPicture'
+  PICTURE_IN_PICTURE: 'pictureInPicture',
+  DARK_MODE: 'darkMode'
 }
 
 export const BUILDIN_ACTION_CONFIGS = [
   {
     name: 'READ_MODE',
     title: 'Read Mode',
+    contexts: ['all'],
+    asCommand: true
+  },
+  {
+    name: 'DARK_MODE',
+    title: 'Dark Mode',
     contexts: ['all'],
     asCommand: true
   },

@@ -45,6 +45,7 @@
     "lodash": "^4.17.15",
     "react": "^16.8.0",
     "react-dom": "^16.8.0",
+    "sunrise-sunset-js": "^2.1.2",
     "webdav": "^3.3.0"
   }
 }
