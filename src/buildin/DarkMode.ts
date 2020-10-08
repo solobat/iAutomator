@@ -2,11 +2,11 @@ import Base, { ExecOptions, defaultExecOptions } from './base'
 import { BUILDIN_ACTIONS } from '../common/const';
 import keyboardJS from 'keyboardjs'
 import $ = require('jquery')
-import { isSunset } from '../helper/sun';
+import { isDark } from '../helper/sun';
 
 interface DarkModeOptions extends ExecOptions {
-  lat: string;
-  long: string;
+  lat?: string;
+  long?: string;
 }
 
 export default class DarkMode extends Base {
@@ -18,8 +18,8 @@ export default class DarkMode extends Base {
   private EXIT_SHORTCUT = 'esc'
 
   private defaultOptions: DarkModeOptions = {
-    lat: '39.9',
-    long: '116.3'
+    lat: '',
+    long: ''
   }
 
   style = `
@@ -34,18 +34,19 @@ export default class DarkMode extends Base {
   `
 
   start() {
-    this.exec(document.body, {
-      lat: '39.9',
-      long: '116.3'
-    })
+    this.exec(document.body, {})
   }
 
   private shouldStart(options = this.defaultOptions) {
-    const { lat = this.defaultOptions.lat,
-      long = this.defaultOptions.long } = options; 
-    const flag = isSunset(parseInt(lat), parseInt(long));
+    const { lat, long } = options; 
 
-    return flag
+    if (lat && long) {
+      const flag = isDark(parseInt(lat), parseInt(long));
+  
+      return flag
+    } else {
+      return true;
+    }
   }
 
   exec(elem, options?: DarkModeOptions) {
@@ -56,7 +57,7 @@ export default class DarkMode extends Base {
     this.helper.insertCss()
     $('html').attr('theme', this.theme)
     
-    this.recordIfNeeded(options, elem)
+    this.recordIfNeeded(options)
     
     this.unbindFns.push(() => {
       $('html').attr('theme', '')
