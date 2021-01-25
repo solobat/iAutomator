@@ -53,7 +53,7 @@
             "description": "Kill Elements"
         },
         "highlightEnglishSyntax": {
-            "description": "English Syntax hignlighting"
+            "description": "English Syntax highlighting"
         },
         "hashElement": {
             "description": "Add anchor for elements"
