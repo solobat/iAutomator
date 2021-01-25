@@ -27,9 +27,11 @@ export default class DarkMode extends Base {
     filter: invert(1) hue-rotate(180deg);
   }
   html[theme='sh-dm-dark-mode'] img,
-  picture,
-  video{
-      filter: invert(1) hue-rotate(180deg);
+  html[theme='sh-dm-dark-mode'] picture,
+  html[theme='sh-dm-dark-mode'] video,
+  html[theme='sh-dm-dark-mode'] [style*='background-image']
+  {
+    filter: invert(1) hue-rotate(180deg);
   }
   `
 
