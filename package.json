@@ -40,6 +40,7 @@
     "dexie": "^2.0.4",
     "dexie-export-import": "^1.0.0-rc.2",
     "downloadjs": "^1.4.7",
+    "is-in-viewport": "^3.0.4",
     "jquery": "^3.4.1",
     "keyboardjs": "^2.5.1",
     "lodash": "^4.17.15",

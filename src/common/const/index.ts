@@ -44,7 +44,8 @@ export const BUILDIN_ACTIONS = {
   TIME_UPDATE: 'timeupdate',
   CLICK: 'click',
   PICTURE_IN_PICTURE: 'pictureInPicture',
-  DARK_MODE: 'darkMode'
+  DARK_MODE: 'darkMode',
+  OUTLINE: 'outline'
 }
 
 export const BUILDIN_ACTION_CONFIGS = [
@@ -123,6 +124,12 @@ export const BUILDIN_ACTION_CONFIGS = [
   {
     name: 'ZEN_MODE',
     title: 'Zen mode',
+    contexts: ['all'],
+    asCommand: true
+  },
+  {
+    name: 'OUTLINE',
+    title: 'Outline',
     contexts: ['all'],
     asCommand: true
   }

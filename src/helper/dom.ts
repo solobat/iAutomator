@@ -20,6 +20,7 @@ import ZenMode from '../buildin/ZenMode'
 import { RunAt } from '../server/enum/Automation';
 import Automation from '../server/model/Automation';
 import DarkMode from '../buildin/darkmode';
+import Outline from '../buildin/Outline';
 
 let isSetup, stop, cssInserted;
 
@@ -324,6 +325,7 @@ function install() {
   new PictureInPicture(helper)
   new ZenMode(helper)
   new DarkMode(helper)
+  new Outline(helper)
 }
 
 install()
@@ -379,7 +381,7 @@ function listenEventsAndRedoActions() {
   $(document).on('click', 'a', function() {
     const $a = $(this)
 
-    if (!$a.attr('href').startsWith('http')) {
+    if (!$a.attr('href').startsWith('http') && !$a.hasClass('ext-hp-link')) {
       onStateChange(ROUTE_CHANGE_TYPE.LINK)
     }
   });
