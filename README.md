@@ -1,17 +1,14 @@
 <h1 align="center">iHelpers</h1>
 <p align="center">Some useful tools for Chrome</p>
 <p align="center">
-   <a href="https://github.com/solobat/iHelpers/releases"><img src="https://img.shields.io/badge/lastest_version-1.1.4-blue.svg"></a>
+   <a href="https://github.com/solobat/iHelpers/releases"><img src="https://img.shields.io/badge/lastest_version-1.2.4-blue.svg"></a>
    <a target="_blank" href="https://chrome.google.com/webstore/detail/jglmompgeddkbcdamdknmebaimldkkbl"><img src="https://img.shields.io/badge/download-_chrome_webstore-brightgreen.svg"></a>
-   <a href="http://static.oksteward.com/ihelpers-1.1.5.crx"><img src="https://img.shields.io/badge/download-_crx-brightgreen.svg"></a>
-
 </p>
 
 ***
 
 ### Install
 - [Chrome Web Store](https://chrome.google.com/webstore/detail/hcnekoladldejmeindnhpjkfhjadcick)
-- [crx Download](http://static.oksteward.com/ihelpers-1.1.5.crx)
 
 ### Usage
 
@@ -35,10 +32,9 @@ npm run build
 [![license-badge]][license-link]
 
 <!-- Link -->
-[version-badge]:    https://img.shields.io/badge/lastest_version-1.1.4-blue.svg
+[version-badge]:    https://img.shields.io/badge/lastest_version-1.2.4-blue.svg
 [version-link]:     https://github.com/solobat/iHelpers
 [chrome-badge]:     https://img.shields.io/badge/download-_chrome_webstore-brightgreen.svg
 [offline-badge]:    https://img.shields.io/badge/download-_crx-brightgreen.svg
-[offline-link]:     http://static.oksteward.com/iHelpers-1.1.4.crx
 [license-badge]:    https://img.shields.io/github/license/mashape/apistatus.svg
 [license-link]:     https://opensource.org/licenses/MIT
