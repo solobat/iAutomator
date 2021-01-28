@@ -260,8 +260,6 @@ function loadAutomations() {
 function initSync() {
   sync.on('received', () => {
     loadAutomations();
-    createNotice('Data Sync', 'The latest data has been synced from the cloud',
-      chrome.extension.getURL('img/success.png'));
   })
 }
 
