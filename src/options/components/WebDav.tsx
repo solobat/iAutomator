@@ -9,6 +9,7 @@ import { APP_ACTIONS, STORAGE_KEYS, SYNC_INTERVAL_OPTIONS, WEBDAV_MAX_SYNC_INTER
 import { useLocalStorageState } from 'ahooks';
 import Select from 'antd/es/select';
 import Switch from 'antd/es/switch';
+import Modal from 'antd/es/modal';
 
 const { Option } = Select;
 const { useForm } = Form;
@@ -46,9 +47,14 @@ function ResetConfig(props) {
   const [autoSync, setAutoSync] = useLocalStorageState(STORAGE_KEYS.AUTO_SYNC, 1);
 
   const onReset = useCallback(() => {
-    removeWebDavConfig();
-    setSyncInterval(WEBDAV_MAX_SYNC_INTERVAL);
-    props.onReset();
+    Modal.confirm({
+      title: "Confirm to reset?",
+      onOk() {
+        removeWebDavConfig();
+        setSyncInterval(WEBDAV_MAX_SYNC_INTERVAL);
+        props.onReset();
+      }
+    })
   }, []);
   const onIntervalChange = useCallback((value) => {
     setSyncInterval(Number(value))
