@@ -88,6 +88,7 @@ function AutomationEditor() {
           }, dispatch)}}>
           <Option value={0}>Immediately</Option>
           <Option value={1}>DomReady</Option>
+          <Option value={2}>Delayed</Option>
         </Select>
       </div>
       <div className="am-editor-btns">
@@ -126,6 +127,7 @@ function RunAt(props) {
     <Select value={props.record.runAt} onChange={onChange}>
       <Option value={0}>Immediately</Option>
       <Option value={1}>DomReady</Option>
+      <Option value={2}>Delayed</Option>
     </Select>
   )
 }

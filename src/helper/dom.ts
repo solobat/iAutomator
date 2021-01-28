@@ -18,7 +18,6 @@ import GotoElement from '../buildin/GotoElement'
 import PictureInPicture from '../buildin/PictureInPicture'
 import ZenMode from '../buildin/ZenMode'
 import { RunAt } from '../server/enum/Automation';
-import Automation from '../server/model/Automation';
 import DarkMode from '../buildin/darkmode';
 import Outline from '../buildin/Outline';
 
@@ -50,7 +49,7 @@ function insertCss() {
         -webkit-text-stroke-width: 0.2px;
         -moz-osx-font-smoothing: grayscale;
       }
-      .${outlineCls} {outline: 2px dotted #ccc}
+      .${outlineCls} {outline: 2px dotted #ccc!important;}
       ${getStyles()}
     `;
     document.body.appendChild(css);
@@ -367,7 +366,11 @@ export default function (req) {
 function onStateChange(type: string) {
   const actions = helper.actions.filter(item => item.shouldRedo)
 
-  actions.forEach(item => item.redo(type))
+  actions.forEach(item => {
+    if (item.redo) {
+      item.redo(type)
+    }
+  })
 }
 
 function listenEventsAndRedoActions() {
@@ -399,11 +402,16 @@ function startAutomations() {
       const activeItems = result.data.filter(item => item.active)
       const immediateItems = activeItems.filter(item => item.runAt === RunAt.START)
       const readyItems = activeItems.filter(item => item.runAt === RunAt.END)
+      const delayedItems = activeItems.filter(item => item.runAt === RunAt.IDLE)
 
       execAutomations(immediateItems, RunAt.START)
 
       $(() => {
         execAutomations(readyItems, RunAt.END)
+
+        window.setTimeout(() => {
+          execAutomations(delayedItems, RunAt.END)
+        }, 1000)
       })
 
       listenEventsAndRedoActions();

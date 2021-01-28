@@ -7,7 +7,7 @@ export default class ReadMode extends Base {
   name = BUILDIN_ACTIONS.READ_MODE
   shouldRecord = true
   cls = 's-a-rm-hn'
-  private excludeSelectors = ['#steward-main', '#wordcard-main', '.sh-zm-layer']
+  private excludeSelectors = ['#steward-main', '#wordcard-main', '.sh-zm-layer', '#ext-hp-outline']
   
   exec(elem, options?: ExecOptions) {
     const $elem = $(elem)
@@ -80,11 +80,19 @@ export default class ReadMode extends Base {
     })
   }
 
+  private get excludes() {
+    if (this.options.excludes) {
+      return this.excludeSelectors.join(',') + ',' + this.options.excludes
+    } else {
+      return this.excludeSelectors.join(',')
+    }
+  }
+
   private hideSiblings($el) {
     const that = this
 
     if ($el && $el.length) {
-      this.hideEl($el.siblings().not(this.excludeSelectors.join(',')))
+      this.hideEl($el.siblings().not(this.excludes))
       this.hideSiblings($el.parent())
     } else {
       keyboardJS.bind('esc', function showNode() {
