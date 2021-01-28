@@ -38,6 +38,7 @@ export default class Base {
   style?: string
   shouldRecord?: boolean
   unbindFns: any[]
+  options?: ExecOptions
 
   constructor(helper: DomHelper) {
     this.helper = helper
@@ -63,6 +64,7 @@ export default class Base {
   // called by UI or automation
   // run and check result if needed
   run(elem, options) {
+    this.options = options
     const result = this.exec(elem, options)
 
     if (result) {
