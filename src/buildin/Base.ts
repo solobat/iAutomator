@@ -16,7 +16,8 @@ export interface DomHelper {
   recordAction(actionName: string, elem?, options?: ExecOptions);
   insertCss();
   invoke(action, data, callback, target: NOTICE_TARGET);
-  actions: Base[]
+  actions: Base[],
+  observe: (elem, cb: () => void) => void
 }
 
 export interface ExecOptions {

@@ -20,6 +20,10 @@ export default class ReadMode extends Base {
     if (options.metaKey) {
       this.initModePlus($elem)
     }
+
+    this.helper.observe(elem, () => {
+      this.hideSiblings($(elem))
+    })
   
     this.recordIfNeeded(options, elem)
 

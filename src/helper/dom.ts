@@ -291,6 +291,20 @@ declare global {
 
 window.exceAutomation = exceAutomation
 
+function observe(elem, cb: () => void) {
+  const config = { childList: true, subtree: true };
+  const callback = (mutationsList, observer) => {
+    const done = () => {
+      cb()
+    }
+    done()
+  };
+
+  const observer = new MutationObserver(callback);
+  
+  observer.observe(elem, config);
+}
+
 const helper: DomHelper = {
   actionCache: {
     $elem: null,
@@ -315,7 +329,9 @@ const helper: DomHelper = {
 
   invoke: appBridge.invoke,
 
-  actions: []
+  actions: [],
+
+  observe
 }
 
 function install() {

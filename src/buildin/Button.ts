@@ -44,6 +44,24 @@ export default class Button extends Base {
       background: #fff;
       float: right;
     }
+
+    .ext-hp-btn-link {
+      position: fixed;
+      background: #f2f3f4;
+      z-index: 100000;
+    }
+
+    .ext-hp-btn-link.cr {
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+    }
+    
+    .ext-hp-btn-link.cl {
+      top: 50%;
+      left: 10px;
+      transform: translateY(-50%);
+    }
   `
 
   shouldRedo = false
@@ -115,17 +133,18 @@ export default class Button extends Base {
       })
     }
 
-    const config = { childList: true, subtree: true };
-    const callback = (mutationsList, observer) => {
-      const done = () => {
-        run()
-      }
-      done()
-    };
+    this.helper.observe(scope, run)
+  }
 
-    const observer = new MutationObserver(callback);
-    
-    observer.observe(scope, config);
+  private insertShortcut(elem: HTMLDivElement, options: ButtonExecOptions) {
+    const { icon = 'icon-link', pos = 'cr' } = options
+    const $icon = this.createBtn('link', icon).addClass(pos)
+
+    $icon.on('click', () => {
+      elem.click()
+    })
+
+    $('body').append($icon)
   }
 
   exec(elem, options: ButtonExecOptions) {
@@ -135,6 +154,8 @@ export default class Button extends Base {
       this.insertTopButton(elem, options)
     } else if (type === 'toggle') {
       this.insertToggleButton(elem, options)
+    } else if (type === 'shortcut') {
+      this.insertShortcut(elem, options)
     }
 
     return false
