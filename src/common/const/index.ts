@@ -45,7 +45,8 @@ export const BUILDIN_ACTIONS = {
   CLICK: 'click',
   PICTURE_IN_PICTURE: 'pictureInPicture',
   DARK_MODE: 'darkMode',
-  OUTLINE: 'outline'
+  OUTLINE: 'outline',
+  BUTTON: 'button'
 }
 
 export const BUILDIN_ACTION_CONFIGS = [
@@ -132,6 +133,12 @@ export const BUILDIN_ACTION_CONFIGS = [
     title: 'Outline',
     contexts: ['all'],
     asCommand: true
+  },
+  {
+    name: 'BUTTON',
+    title: 'button',
+    contexts: ['all'],
+    asCommand: false
   }
 ]
 

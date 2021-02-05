@@ -7,7 +7,7 @@ export default class ReadMode extends Base {
   name = BUILDIN_ACTIONS.READ_MODE
   shouldRecord = true
   cls = 's-a-rm-hn'
-  private excludeSelectors = ['#steward-main', '#wordcard-main', '.sh-zm-layer', '#ext-hp-outline']
+  private excludeSelectors = ['#steward-main', '#wordcard-main', '.sh-zm-layer', '#ext-hp-outline', '.ext-hp-btn']
   
   exec(elem, options?: ExecOptions) {
     const $elem = $(elem)

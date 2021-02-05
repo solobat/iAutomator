@@ -20,6 +20,7 @@ import ZenMode from '../buildin/ZenMode'
 import { RunAt } from '../server/enum/Automation';
 import DarkMode from '../buildin/darkmode';
 import Outline from '../buildin/Outline';
+import Button from '../buildin/Button';
 
 let isSetup, stop, cssInserted;
 
@@ -233,10 +234,17 @@ function getDelayByRouteChangeType(type: string): number {
   }
 }
 
+function getElem(selector: string) {
+  if (selector.startsWith('!')) {
+    return document.querySelectorAll(selector.substr(1));
+  } else {
+    return document.querySelector(selector);
+  }
+}
 export function exceAutomation(content, times = 0, runAt: RunAt) {
   const [ actionStr, selector ] = content.split('@')
   const [ action, ...modifiers ] = actionStr.split('^')
-  const elem = document.querySelector(selector)
+  const elem = getElem(selector)
 
   function tryAgain() {
     if (times < 5) {
@@ -325,6 +333,7 @@ function install() {
   new ZenMode(helper)
   new DarkMode(helper)
   new Outline(helper)
+  new Button(helper)
 }
 
 install()
