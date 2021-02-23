@@ -6,7 +6,6 @@ export default class HashElements extends Base {
   name = BUILDIN_ACTIONS.HASH_ELEMENT
   cls: 'ext-hp-hashed'
   style = `
-    .ext-hp-hashed { cursor: pointer;}
   `
   shouldRedo = true
   shouldRecord = true
@@ -18,7 +17,6 @@ export default class HashElements extends Base {
   }
 
   exec(elem, options?: ExecOptions) {
-    this.helper.insertCss()
     $(this.shouldHashedTags.join(',')).filter(`[id]:not(.${this.cls})`).on('click', function() {
       location.hash = this.getAttribute('id')
     }).addClass(this.cls)

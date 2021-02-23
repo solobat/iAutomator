@@ -85,8 +85,6 @@ export default class GotoElement extends Base {
   }
 
   exec(elem, options?: ExecOptions) {
-    this.helper.insertCss()
-
     const selected = options.to;
     const elems: HTMLElement[] = Array.from(document.querySelectorAll(selected))
 

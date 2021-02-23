@@ -6,11 +6,6 @@ export default class FullScreen extends Base {
   name = BUILDIN_ACTIONS.FULL_SCREEN
   cls: string = 'ext-hp-fullscreen'
 
-  style = `
-    .ext-hp-fullscreen { font-size: 20px!important; line-height: 1.3!important; }
-    .ext-hp-fullscreen span { font-size: 20px!important; } 
-  `
-
   private unsetFullScreenElem: Function
 
   private setupFullScreenElem(elem, event) {

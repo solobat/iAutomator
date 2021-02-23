@@ -14,82 +14,7 @@ interface OutlineNode {
 export default class Outline extends Base {
   name = BUILDIN_ACTIONS.OUTLINE
   cls = 'ext-hp-outline'
-  style = `
-    #ext-hp-outline {
-      background-color: #fafafa;
-      border: 1px solid rgba(0, 0, 0, .07);
-      -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
-      box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
-      background-clip: padding-box;
-      padding: 5px 10px;
-      position: fixed;
-      /* background-color: rgba(255,255,255,0.98); */
-      font-size: 12px;
-      white-space: nowrap;
-      z-index: 999;
-      cursor: pointer;
-      text-align: right;
-      border-radius: 5px;
-      user-select: none;
-    }
-
-    #ext-hp-outline.tr {
-      right: 50px;
-      top: 68px;
-    }
-
-    #ext-hp-outline.tl {
-      left: 50px;
-      top: 68px;
-      text-align: left;
-    }
-
-    #ext-hp-outline.bl {
-      left: 50px;
-      bottom: 68px;
-      text-align: left;
-    }
-
-    #ext-hp-outline.br {
-      right: 50px;
-      bottom: 68px;
-    }
-
-    #ext-hp-outline .content {
-      max-height: 210px;
-      overflow-y: auto;
-      overflow-x: hidden;
-    }
-
-    #ext-hp-outline ul {
-      display: block;
-      text-align: left;
-      padding-right: 10px;
-      padding-left: 10px;
-      list-style-type: none;
-    }
-
-    #ext-hp-outline ul li a {
-      line-height: 1.7;
-      text-decoration: none;
-      border-bottom: none;
-      font-size: 14px;
-      color: #364149;
-      background: 0 0;
-      text-overflow: ellipsis;
-      overflow: hidden;
-      white-space: nowrap;
-      position: relative;
-    }
-
-    .ext-hp-outline-fold, .ext-hp-outline-fold-btn {
-      position: relative;
-      cursor: pointer;
-      font-size: 20px;
-      color: #333;
-      line-height: 1;
-    }
-  `
+  style = ``
   shouldRedo = true
   shouldRecord = true
 
@@ -226,7 +151,6 @@ export default class Outline extends Base {
   }
 
   exec(elem, options?: ExecOptions) {
-    this.helper.insertCss()
     if (!options.lazy) {
       this.createOutline(elem, options)
     } else {

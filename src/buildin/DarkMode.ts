@@ -22,19 +22,6 @@ export default class DarkMode extends Base {
     long: ''
   }
 
-  style = `
-  html[theme='sh-dm-dark-mode'] {
-    filter: invert(1) hue-rotate(180deg);
-  }
-  html[theme='sh-dm-dark-mode'] img,
-  html[theme='sh-dm-dark-mode'] picture,
-  html[theme='sh-dm-dark-mode'] video,
-  html[theme='sh-dm-dark-mode'] [style*='background-image']
-  {
-    filter: invert(1) hue-rotate(180deg);
-  }
-  `
-
   start() {
     this.exec(document.body, {})
   }
@@ -56,7 +43,6 @@ export default class DarkMode extends Base {
       return
     }
 
-    this.helper.insertCss()
     $('html').attr('theme', this.theme)
     
     this.recordIfNeeded(options)

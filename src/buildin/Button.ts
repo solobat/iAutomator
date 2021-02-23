@@ -14,55 +14,6 @@ interface ButtonExecOptions extends ExecOptions {
 export default class Button extends Base {
   name = BUILDIN_ACTIONS.BUTTON
   cls: 'ext-hp-btn'
-  style = `
-    .ext-hp-btn { 
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 40px;
-      height: 40px;
-      cursor: pointer;
-      font-size: 12px;
-      color: #8590a6;
-      font-weight: 500;
-      box-shadow: 0 1px 3px rgb(18 18 18 / 10%);
-      border-radius: 4px;
-    }
-    .ext-hp-btn-top {
-      position: fixed;
-      bottom: 10px;
-      right: 10px;
-      background: #f2f3f4;
-      z-index: 100000;
-    }
-
-    .ext-hp-btn-toggle {
-      position: sticky;
-      top: 5px;
-      right: 5px;
-      z-index: 100000;
-      background: #fff;
-      float: right;
-    }
-
-    .ext-hp-btn-link {
-      position: fixed;
-      background: #f2f3f4;
-      z-index: 100000;
-    }
-
-    .ext-hp-btn-link.cr {
-      top: 50%;
-      right: 10px;
-      transform: translateY(-50%);
-    }
-    
-    .ext-hp-btn-link.cl {
-      top: 50%;
-      left: 10px;
-      transform: translateY(-50%);
-    }
-  `
 
   shouldRedo = false
   
@@ -149,7 +100,6 @@ export default class Button extends Base {
 
   exec(elem, options: ButtonExecOptions) {
     const { type } = options
-    this.helper.insertCss()
     if (type === 'top') {
       this.insertTopButton(elem, options)
     } else if (type === 'toggle') {

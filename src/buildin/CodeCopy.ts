@@ -15,28 +15,6 @@ interface CodeCopyExecOptions extends ExecOptions {
 export default class CodeCopy extends Base {
   name = BUILDIN_ACTIONS.CODE_COPY
   cls: 'ext-hp-code-copy'
-  style = `
-    .ext-hp-code-copy { 
-      cursor: pointer;
-      position: absolute;
-      font-size: 12px;
-      color: #8c8c8c;
-    }
-    .ext-hp-code-copy-tl {
-      left: 1px;
-      top: 1px;
-    }
-    .ext-hp-code-copy-tr {
-      right: 1px;
-      top: 1px;
-    }
-    .ext-hp-code-copy::after {
-      content: "\\e618";
-    }
-    .ext-hp-inlinecode-copy {
-      cursor: crosshair;
-    }
-  `
 
   shouldRedo = true
   
@@ -70,7 +48,7 @@ export default class CodeCopy extends Base {
     } else {
       codeElem.style.position = 'relative';
     }
-    $(codeElem).append(`<span class="ext-hp-code-copy iconfont ${this.getPositionCls(position)}"></span>`);
+    $(codeElem).append(`<span class="ext-hp-code-copy iconfont icon-copy ${this.getPositionCls(position)}"></span>`);
     if (options.rm) {
       $(codeElem).find(options.rm).remove();
     }
@@ -130,8 +108,6 @@ export default class CodeCopy extends Base {
   }
 
   exec(elem, options?: CodeCopyExecOptions) {
-    this.helper.insertCss()
-
     const blockResult = this.handleBlockCode(options);
     const inlineResult = this.handleInlineCode(options);
 
