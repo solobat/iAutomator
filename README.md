@@ -1,7 +1,7 @@
 <h1 align="center">iHelpers</h1>
 <p align="center">Some useful tools for Chrome</p>
 <p align="center">
-   <a href="https://github.com/solobat/iHelpers/releases"><img src="https://img.shields.io/badge/lastest_version-1.4.0-blue.svg"></a>
+   <a href="https://github.com/solobat/iHelpers/releases"><img src="https://img.shields.io/badge/lastest_version-1.4.1-blue.svg"></a>
    <a target="_blank" href="https://chrome.google.com/webstore/detail/jglmompgeddkbcdamdknmebaimldkkbl"><img src="https://img.shields.io/badge/download-_chrome_webstore-brightgreen.svg"></a>
 </p>
 
@@ -32,7 +32,7 @@ npm run build
 [![license-badge]][license-link]
 
 <!-- Link -->
-[version-badge]:    https://img.shields.io/badge/lastest_version-1.4.0-blue.svg
+[version-badge]:    https://img.shields.io/badge/lastest_version-1.4.1-blue.svg
 [version-link]:     https://github.com/solobat/iHelpers
 [chrome-badge]:     https://img.shields.io/badge/download-_chrome_webstore-brightgreen.svg
 [offline-badge]:    https://img.shields.io/badge/download-_crx-brightgreen.svg
