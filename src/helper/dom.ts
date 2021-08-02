@@ -13,6 +13,7 @@ import KillElement from '../buildin/KillElement'
 import ReadMode from '../buildin/ReadMode'
 import TimeUpdate from '../buildin/TimeUpdate'
 import ClickElement from '../buildin/Click'
+import FocusElement from '../buildin/Focus'
 import CodeCopy from '../buildin/CodeCopy'
 import GotoElement from '../buildin/GotoElement'
 import PictureInPicture from '../buildin/PictureInPicture'
@@ -334,6 +335,7 @@ function install() {
   new ReadMode(helper)
   new TimeUpdate(helper)
   new ClickElement(helper)
+  new FocusElement(helper)
   new CodeCopy(helper)
   new GotoElement(helper)
   new PictureInPicture(helper)

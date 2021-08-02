@@ -43,6 +43,7 @@ export const BUILDIN_ACTIONS = {
   FULL_SCREEN: 'fullScreen',
   TIME_UPDATE: 'timeupdate',
   CLICK: 'click',
+  FOCUS: 'focus',
   PICTURE_IN_PICTURE: 'pictureInPicture',
   DARK_MODE: 'darkMode',
   OUTLINE: 'outline',
@@ -107,6 +108,12 @@ export const BUILDIN_ACTION_CONFIGS = [
   {
     name: 'CLICK',
     title: 'Click',
+    contexts: ['all'],
+    asCommand: false
+  },
+  {
+    name: 'FOCUS',
+    title: 'Focus',
     contexts: ['all'],
     asCommand: false
   },
