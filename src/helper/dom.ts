@@ -14,6 +14,7 @@ import ReadMode from '../buildin/ReadMode'
 import TimeUpdate from '../buildin/TimeUpdate'
 import ClickElement from '../buildin/Click'
 import FocusElement from '../buildin/Focus'
+import ProtectPage from '../buildin/Protect'
 import CodeCopy from '../buildin/CodeCopy'
 import GotoElement from '../buildin/GotoElement'
 import PictureInPicture from '../buildin/PictureInPicture'
@@ -336,6 +337,7 @@ function install() {
   new TimeUpdate(helper)
   new ClickElement(helper)
   new FocusElement(helper)
+  new ProtectPage(helper)
   new CodeCopy(helper)
   new GotoElement(helper)
   new PictureInPicture(helper)

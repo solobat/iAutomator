@@ -44,6 +44,7 @@ export const BUILDIN_ACTIONS = {
   TIME_UPDATE: 'timeupdate',
   CLICK: 'click',
   FOCUS: 'focus',
+  PROTECT: 'protect',
   PICTURE_IN_PICTURE: 'pictureInPicture',
   DARK_MODE: 'darkMode',
   OUTLINE: 'outline',
@@ -66,6 +67,12 @@ export const BUILDIN_ACTION_CONFIGS = [
   {
     name: 'KILL_ELEMENT',
     title: 'Kill Element',
+    contexts: ['all'],
+    asCommand: true
+  },
+  {
+    name: 'PROTECT',
+    title: 'Page Protect',
     contexts: ['all'],
     asCommand: true
   },
