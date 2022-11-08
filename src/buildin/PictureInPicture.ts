@@ -2,9 +2,6 @@ import Base, { ExecOptions, defaultExecOptions } from './base'
 import { BUILDIN_ACTIONS, PAGE_ACTIONS } from '../common/const';
 import { noticeBg } from '../helper/event';
 
-declare global {
-  interface Document { pictureInPictureEnabled: boolean; exitPictureInPicture: Function; }
-}
 
 export default class PictureInPicture extends Base {
   name = BUILDIN_ACTIONS.PICTURE_IN_PICTURE

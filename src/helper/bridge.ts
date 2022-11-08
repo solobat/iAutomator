@@ -21,7 +21,7 @@ export function createBridge() {
           const $iframe = $(`#${IFRAME_ID}`);
           $iframe.on('load', () => {
             bridge.inited = true;
-            resolve();
+            resolve(null);
           });
         });
       }

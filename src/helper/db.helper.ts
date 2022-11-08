@@ -1,7 +1,6 @@
 import { db } from '../server/db/database'
 import { exportDB, importInto } from "dexie-export-import"
 import download from 'downloadjs'
-import dayjs from 'dayjs'
 
 export async function exportAndDownload() {
   const blob = await exportDB(db)

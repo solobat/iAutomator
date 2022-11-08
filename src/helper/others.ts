@@ -1,12 +1,7 @@
 import axios from 'axios'
-import browser from 'webextension-polyfill'
 
 export function highlightEnglish(text) {
-  const params = new URLSearchParams();
-
-  params.append('text', text);
-
-  return axios.post('https://english.edward.io/parse', params).then(result => result.data);
+  return axios.post('https://english.edward.io/parse?text=' + text).then(result => result.data);
 }
 
 export default async function hanlder(req) {

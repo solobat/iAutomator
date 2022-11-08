@@ -1,51 +1,24 @@
 {
-    "manifest_version": 2,
+    "manifest_version": 3,
     "name": "iHelpers",
-    "short_name": "iHelpers",
-    "description":
-        "iHelpers: Convenience and automation of commonly used browser actions",
-    "version": "1.4.1",
+    "version": "1.5.0",
 
-    "browser_action": {
-        "default_icon": "icon16.png",
+    "action": {
+        "default_icon": {
+            "16": "icon16.png"
+        },
         "default_popup": "popup.html"
     },
-
-    "content_scripts": [{
-        "matches": ["<all_urls>"],
-        "js": ["js/content.js"],
-        "css": ["css/content.css"],
-        "run_at": "document_start"
-    }],
-    "content_security_policy": "script-src 'self' 'unsafe-eval' https://ssl.google-analytics.com; object-src 'self'",
-
-    "options_page": "options.html",
-
-    "background": {
-        "scripts": ["js/eventPage.js"],
-        "persistent": true
-    },
-
+    "description": "iHelpers: Convenience and automation of commonly used browser actions",
     "icons": {
         "16": "icon16.png",
         "48": "icon48.png",
         "128": "icon128.png"
     },
 
-    "optional_permissions": [
-        "background", "clipboardWrite"
-    ],
-
-    "permissions": [
-        "tabs",
-        "contextMenus",
-        "notifications"
-    ],
-
-    "web_accessible_resources": [
-        "helper.html"
-    ],
-
+    "background": {
+        "service_worker": "js/eventPage.js"
+    },
     "commands": {
         "readMode": {
             "description": "Read Mode"
@@ -71,5 +44,44 @@
         "outline": {
             "description": "Outline"
         }
-    }
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "js/content.js"
+            ],
+            "css": [
+                "css/content.css"
+            ],
+            "run_at": "document_start"
+        }
+    ],
+    "content_security_policy": {
+        "script-src": "self",
+        "object-src": "self"
+    },
+    "options_page": "options.html",
+
+    "optional_permissions": [
+        "background",
+        "clipboardWrite"
+    ],
+    "permissions": [
+        "tabs",
+        "contextMenus",
+        "notifications"
+    ],
+    "host_permissions": ["http://*/*", "https://*/*"],
+    "web_accessible_resources": [
+        {
+            "resources": ["helper.html"],
+            "extension_ids": ["cdombiofmnhpmohkhhkccejnfmodnfjb", "hcnekoladldejmeindnhpjkfhjadcick"],
+            "matches": [
+                "<all_urls>"
+            ]
+        }
+    ]
 }

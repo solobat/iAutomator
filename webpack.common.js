@@ -1,4 +1,5 @@
 const path = require("path");
+const webpack = require('webpack');
 
 module.exports = {
   entry: {
@@ -38,5 +39,11 @@ module.exports = {
   },
   resolve: {
     extensions: [".ts", ".tsx", ".js"]
-  }
+  },
+  plugins: [
+    new webpack.BannerPlugin({
+      banner: 'if (typeof window === "undefined") { window = {};};',
+      raw: true
+    })
+  ]
 };

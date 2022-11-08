@@ -2,7 +2,6 @@ import * as React from 'react';
 import { useCallback } from 'react';
 import Tabs from 'antd/es/tabs';
 import Export from './components/Export';
-import WebDav from './components/WebDav';
 import './Options.scss';
 
 const { TabPane } = Tabs;
@@ -20,9 +19,6 @@ export function Options() {
         </TabPane>
         <TabPane tab="Export" key="2">
           <Export />
-        </TabPane>
-        <TabPane tab="WebDav" key="3">
-          <WebDav />
         </TabPane>
       </Tabs>
     </div>

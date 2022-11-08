@@ -10,7 +10,6 @@ import { Records } from './components/Record';
 import { onDbUpdate } from '../helper/db.helper';
 import { noticeBg } from '../helper/event';
 import { APP_ACTIONS } from '../common/const';
-import { isAutoSync } from '../helper/sync';
 
 export default function (props) {
   const [state, dispatch] = useReducer(pageReducer, getInitialState())
@@ -20,11 +19,6 @@ export default function (props) {
       dispatch({ type: ACTIONS.TAB_META, payload: result })
     })
     const unbindFns = onDbUpdate(() => {
-      if (isAutoSync()) {
-        noticeBg({
-          action: APP_ACTIONS.START_SYNC
-        })
-      }
     });
 
     return (() => {

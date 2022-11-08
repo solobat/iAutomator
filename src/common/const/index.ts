@@ -55,7 +55,7 @@ export const BUILDIN_ACTION_CONFIGS = [
   {
     name: 'READ_MODE',
     title: 'Read Mode',
-    contexts: ['all'],
+    contexts: ['all'] as any[],
     asCommand: true
   },
   {

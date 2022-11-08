@@ -1,8 +1,6 @@
 import * as recordService from '../service/records.service';
-import * as browser from 'webextension-polyfill';
 import Response from '../common/response';
 import * as Code from '../common/code';
-import { IRecord, db } from '../db/database';
 
 export async function saveRecord(content: string, url: string, domain: string): Promise<Response> {
     if (content && url) {

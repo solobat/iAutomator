@@ -1,20 +1,14 @@
-import OthersHandler from './helper/others'
-import DomHelper from './helper/dom'
 import * as recordsController from './server/controller/records.controller'
 import * as automationController from './server/controller/automations.controller'
 import { PageMsg, BackMsg } from './common/types';
 import { IAutomation } from './server/db/database'
 import { matchAutomations, installAutomation } from './helper/automations'
 import { BUILDIN_ACTIONS, PAGE_ACTIONS, APP_ACTIONS,
-  BUILDIN_ACTION_CONFIGS, WEB_ACTIONS, SYNC_STATUS, WEBDAV_MIN_SYNC_INTERVAL } from './common/const';
+  BUILDIN_ACTION_CONFIGS, WEB_ACTIONS,  } from './common/const';
 import { highlightEnglish } from './helper/others';
 import { create as createNotice } from './helper/notifications';
-import { RunAt } from './server/enum/Automation';
-import Sync from './helper/sync';
 
 let automations: IAutomation[] = []
-let sync = new Sync();
-
 interface BadgeItem {
   url: string;
   text: string;
@@ -58,14 +52,14 @@ const badgesHelper = new BadgesHelper()
 
 function updateBadge(url) {
   if (url.startsWith('http')) {
-    chrome.browserAction.enable()
-    chrome.browserAction.setBadgeText({
+    chrome.action.enable()
+    chrome.action.setBadgeText({
       text: badgesHelper.getItem(url)
     })
     
   } else {
-    chrome.browserAction.disable()
-    chrome.browserAction.setBadgeText({
+    chrome.action.disable()
+    chrome.action.setBadgeText({
       text: ''
     })
   }
@@ -185,12 +179,6 @@ function msgHandler(req: PageMsg, sender, resp) {
     onExecInstructions(data, handler)
   } else if (action === BUILDIN_ACTIONS.HIGHLIGHT_ENGLISH_SYNTAX) {
     onHightlighting(data, handler);
-  } else if (action === APP_ACTIONS.START_SYNC) {
-    sync.tryStartSync();
-    handler('');
-  } else if (action === APP_ACTIONS.STOP_SYNC) {
-    sync.stopSync();
-    handler('');
   }
 }
 
@@ -199,20 +187,20 @@ function msgHandler(req: PageMsg, sender, resp) {
 });
 
 function runMethod(tab, method, data?) {
-  chrome.tabs.sendMessage(tab.id, { method, data }, function (response) { });
+  chrome.tabs.sendMessage(tab.id, { method, data }, function (response) {
+  });
 }
 
 function initCommands() {
   BUILDIN_ACTION_CONFIGS.filter(item => item.asCommand).forEach(item => {
     chrome.contextMenus.create({
+      id: item.name,
       title: item.title,
       contexts: item.contexts,
-      onclick: function (info, tab) {
-        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-          runMethod(tabs[0], BUILDIN_ACTIONS[item.name])
-        });
-      }
     });
+  })
+  chrome.contextMenus.onClicked.addListener((info, tab) => {
+    runMethod(tab, BUILDIN_ACTIONS[info.menuItemId])
   })
 }
 
@@ -239,10 +227,8 @@ function updateBadgeByCurrentTab() {
   });
 }
 
-chrome.commands.onCommand.addListener(function (command) {
-  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    runMethod(tabs[0], command)
-  });
+chrome.commands.onCommand.addListener(function (command, tab) {
+  runMethod(tab, command)
 });
 
 chrome.tabs.onActivated.addListener(function () {
@@ -257,16 +243,11 @@ function loadAutomations() {
   }) 
 }
 
-function initSync() {
-  sync.on('received', () => {
-    loadAutomations();
-  })
-}
+
 
 function init() {
   loadAutomations()
   initCommands()
-  initSync()
 }
 
 init()

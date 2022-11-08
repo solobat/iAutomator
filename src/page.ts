@@ -1,5 +1,5 @@
 import { startAction, exceAutomation } from './helper/dom'
-import { BUILDIN_ACTIONS, WEB_ACTIONS, PAGE_ACTIONS, APP_ACTIONS } from './common/const';
+import { WEB_ACTIONS, PAGE_ACTIONS, APP_ACTIONS } from './common/const';
 import { handleWebEvents, noticeWeb } from './helper/web';
 import { RunAt } from './server/enum/Automation';
 import { appBridge } from './helper/bridge';
@@ -17,6 +17,8 @@ function bindAppEvents() {
     } else {
       startAction(method)
     }
+
+    sendResponse({'msg': 'ok'})
   });
 }
 
