@@ -1,13 +1,13 @@
-import { createContext, useContext } from 'react';
-import { RunAt } from '../../server/enum/Automation';
+import { createContext, useContext } from "react";
+import { RunAt } from "../../server/enum/Automation.enum";
 
 export const ACTIONS = {
-  TAB_META: 'tabMeta',
-  TAB_CHANGE: 'tabChange',
-  AUTOMATION_FORM_UPDATE: 'initAutomationForm',
-  AUTOMATION_FORM_CLOSE: 'automationFormClose',
-  AUTOMATIONS: 'AUTOMATIONS'
-}
+  TAB_META: "tabMeta",
+  TAB_CHANGE: "tabChange",
+  AUTOMATION_FORM_UPDATE: "initAutomationForm",
+  AUTOMATION_FORM_CLOSE: "automationFormClose",
+  AUTOMATIONS: "AUTOMATIONS",
+};
 
 export function pageReducer(state, action) {
   const { type, payload } = action;
@@ -24,7 +24,7 @@ export function pageReducer(state, action) {
       newState.amFormEditing = true;
       newState.automationForm = {
         ...(state.automationForm || {}),
-        ...payload
+        ...payload,
       };
       break;
     case ACTIONS.AUTOMATION_FORM_CLOSE:
@@ -39,30 +39,30 @@ export function pageReducer(state, action) {
   }
   return {
     ...state,
-    ...newState
-  }
+    ...newState,
+  };
 }
 
-export const PageContext = createContext(null)
+export const PageContext = createContext(null);
 
 function getDefaultAutomationForm() {
   return {
-    instructions: '',
-    pattern: '',
-    runAt: RunAt.END
-  }
+    instructions: "",
+    pattern: "",
+    runAt: RunAt.END,
+  };
 }
 
 export function getInitialState() {
   return {
     tab: null,
-    tabKey: 'automation',
+    tabKey: "automation",
     automationForm: getDefaultAutomationForm(),
     amFormEditing: false,
-    automations: []
-  }
+    automations: [],
+  };
 }
 
 export function useModel() {
-  return useContext(PageContext)
+  return useContext(PageContext);
 }

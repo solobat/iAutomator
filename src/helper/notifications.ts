@@ -1,9 +1,8 @@
-
 export function create(title, message, url) {
   chrome.notifications.create({
-    type: 'basic',
+    type: "basic",
     iconUrl: url,
     title,
-    message
-  })
+    message,
+  });
 }

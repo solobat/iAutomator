@@ -1,28 +1,31 @@
-import Base, { ExecOptions, defaultExecOptions } from './base'
-import { BUILDIN_ACTIONS } from '../common/const';
-import $ = require('jquery')
+import Base, { ExecOptions } from "./Base";
+import { BUILDIN_ACTIONS } from "../common/const";
+import $ from "jquery";
 
 export default class HashElements extends Base {
-  name = BUILDIN_ACTIONS.HASH_ELEMENT
-  cls: 'ext-hp-hashed'
+  name = BUILDIN_ACTIONS.HASH_ELEMENT;
+  declare cls: "ext-hp-hashed";
   style = `
-  `
-  shouldRedo = true
-  shouldRecord = true
+  `;
+  shouldRedo = true;
+  shouldRecord = true;
 
-  private shouldHashedTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']
+  private shouldHashedTags = ["h1", "h2", "h3", "h4", "h5", "h6"];
 
   start() {
-    this.exec(document.body, {})
+    this.exec(document.body, {});
   }
 
   exec(elem, options?: ExecOptions) {
-    $(this.shouldHashedTags.join(',')).filter(`[id]:not(.${this.cls})`).on('click', function() {
-      location.hash = this.getAttribute('id')
-    }).addClass(this.cls)
-  
-    this.recordIfNeeded(options)
+    $(this.shouldHashedTags.join(","))
+      .filter(`[id]:not(.${this.cls})`)
+      .on("click", function () {
+        location.hash = this.getAttribute("id");
+      })
+      .addClass(this.cls);
 
-    return true
+    this.recordIfNeeded(options);
+
+    return true;
   }
 }

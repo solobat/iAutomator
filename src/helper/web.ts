@@ -1,11 +1,11 @@
-import { appBridge } from './bridge'
-import { WEB_ACTIONS } from '../common/const';
+import { appBridge } from "./bridge";
+import { WEB_ACTIONS } from "../common/const";
 
 export function handleWebEvents(event) {
-  const { action, data } = event.detail
+  const { action, data } = event.detail;
 
   if (action) {
-    switch(action) {
+    switch (action) {
       case WEB_ACTIONS.INSTALL_AUTOMATION:
         invoke(action, data);
         break;
@@ -16,17 +16,18 @@ export function handleWebEvents(event) {
 }
 
 export function noticeWeb(action, data) {
-  const event = new CustomEvent('stewardHelper', {
+  const event = new CustomEvent("stewardHelper", {
     detail: {
       action,
-      data
-    }
-  })
+      data,
+    },
+  });
 
   document.dispatchEvent(event);
 }
 
 function invoke(action, data = {}) {
-  appBridge.invoke(action, data, resp => {
+  appBridge.invoke(action, data, (resp) => {
+    console.log(resp);
   });
 }

@@ -1,20 +1,19 @@
-import Base, { ExecOptions, defaultExecOptions } from './base'
-import { BUILDIN_ACTIONS, PAGE_ACTIONS } from '../common/const';
-import { noticeBg } from '../helper/event';
-
+import Base, { ExecOptions } from "./Base";
+import { BUILDIN_ACTIONS, PAGE_ACTIONS } from "../common/const";
+import { noticeBg } from "../helper/event";
 
 export default class PictureInPicture extends Base {
-  name = BUILDIN_ACTIONS.PICTURE_IN_PICTURE
-  shouldRecord = true
+  name = BUILDIN_ACTIONS.PICTURE_IN_PICTURE;
+  shouldRecord = true;
 
-  private started: boolean = false
+  private started = false;
 
   start() {
-    this.exec(document.querySelector('video'), {})
+    this.exec(document.querySelector("video"), {});
   }
 
   private startPIP(elem) {
-    elem.requestPictureInPicture()
+    elem.requestPictureInPicture();
     this.started = true;
   }
 
@@ -30,30 +29,30 @@ export default class PictureInPicture extends Base {
       } else {
         if (elem) {
           this.startPIP(elem);
-  
-          this.recordIfNeeded(options)
+
+          this.recordIfNeeded(options);
         } else {
           noticeBg({
             action: PAGE_ACTIONS.NOTICE,
             data: {
-              title: 'Video not found', 
+              title: "Video not found",
               message: `Action: PICTURE_IN_PICTURE`,
-              iconUrl: chrome.extension.getURL('/img/fail.png')
-            }
-          })
+              iconUrl: chrome.extension.getURL("/img/fail.png"),
+            },
+          });
         }
       }
     } else {
       noticeBg({
         action: PAGE_ACTIONS.NOTICE,
         data: {
-          title: 'PIP mode is invalid', 
+          title: "PIP mode is invalid",
           message: `Action: PICTURE_IN_PICTURE`,
-          iconUrl: chrome.extension.getURL('/img/fail.png')
-        }
-      })
+          iconUrl: chrome.extension.getURL("/img/fail.png"),
+        },
+      });
     }
 
-    return true
+    return true;
   }
 }

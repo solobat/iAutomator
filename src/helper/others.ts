@@ -1,25 +1,30 @@
-import axios from 'axios'
+import axios from "axios";
 
 export function highlightEnglish(text) {
-  return axios.post('https://english.edward.io/parse?text=' + text).then(result => result.data);
+  return axios
+    .post("https://english.edward.io/parse?text=" + text)
+    .then((result) => result.data);
 }
 
 export default async function hanlder(req) {
-  const { data, action } = req
+  const { data, action } = req;
 
-  if (action === 'others.highlightEnglishSyntax') {
-    return highlightEnglish(data.text)
+  if (action === "others.highlightEnglishSyntax") {
+    return highlightEnglish(data.text);
   } else {
-    return Promise.resolve({})
+    return Promise.resolve({});
   }
 }
 
 export function copyToClipboard(text: string) {
-  document.addEventListener('copy', event => {
+  document.addEventListener(
+    "copy",
+    (event) => {
       event.preventDefault();
-      event.clipboardData.setData('text/plain', text);
+      event.clipboardData.setData("text/plain", text);
+    },
+    { once: true }
+  );
 
-  }, {once: true});
-
-  document.execCommand('copy');
+  document.execCommand("copy");
 }

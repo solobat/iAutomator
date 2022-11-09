@@ -1,4 +1,3 @@
-
 export interface PageMsg {
   action: string;
   ext_from: string;

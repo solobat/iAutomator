@@ -1,0 +1,49 @@
+@import 'antd/dist/antd.css';
+
+$primary-color: darkblue;
+$background-color: #BADA55;
+
+// Chrome applies an 8px margin by default (gross).
+body {
+    margin: 0px;
+}
+
+.popupContainer {
+    display: flex;
+    flex-direction: column;
+    height: 400px;
+    overflow: auto;
+    width: 700px;
+    padding: 10px;
+}
+
+.tab-info {
+    flex: 1;
+}
+
+.record-op-btns,
+.op-btns {
+    display: flex;
+    justify-content: space-evenly;
+
+    .anticon {
+        cursor: pointer;
+    }
+}
+
+.am-editor {
+    margin: 10px 0;
+}
+
+.am-editor-fields {
+    display: flex;
+    justify-content: space-between;
+
+    .ant-input {
+        width: 270px;
+    }
+}
+
+.am-editor-btns {
+    margin-top: 8px;
+}

@@ -1,23 +1,22 @@
-import cuid from 'cuid';
+import cuid from "cuid";
 
-const STORAGE_KEY = 'ihelpers_cuid';
+const STORAGE_KEY = "ihelpers_cuid";
 
 function initCuid() {
   const id = cuid();
-
 
   return id;
 }
 
 function restoreCuid() {
-  return null
+  return null;
 }
 
 export function getCuid() {
   const id = restoreCuid();
 
   if (id) {
-    return id
+    return id;
   } else {
     return initCuid();
   }

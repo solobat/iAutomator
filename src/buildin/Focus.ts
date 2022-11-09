@@ -1,19 +1,18 @@
-import Base, { ExecOptions, defaultExecOptions } from './base'
-import { BUILDIN_ACTIONS } from '../common/const';
-import $ = require('jquery')
+import Base, { ExecOptions } from "./Base";
+import { BUILDIN_ACTIONS } from "../common/const";
 
 export default class FocusElement extends Base {
-  name = BUILDIN_ACTIONS.FOCUS
-  shouldRecord = true
+  name = BUILDIN_ACTIONS.FOCUS;
+  shouldRecord = true;
 
   exec(elem, options?: ExecOptions) {
     if (options.blur) {
-      elem.blur()
+      elem.blur();
     } else {
-      elem.focus()
+      elem.focus();
     }
-    this.recordIfNeeded(options)
+    this.recordIfNeeded(options);
 
-    return true
+    return true;
   }
 }

@@ -1,4 +1,4 @@
-import { NOTICE_TARGET } from "../common/enum"
+import { NOTICE_TARGET } from "../common/enum";
 
 interface execFn {
   (elem, event): void;
@@ -16,8 +16,8 @@ export interface DomHelper {
   recordAction(actionName: string, elem?, options?: ExecOptions);
   insertCss();
   invoke(action, data, callback, target: NOTICE_TARGET);
-  actions: Base[],
-  observe: (elem, cb: () => void) => void
+  actions: Base[];
+  observe: (elem, cb: () => void) => void;
 }
 
 export interface ExecOptions {
@@ -26,76 +26,77 @@ export interface ExecOptions {
   [prop: string]: any;
 }
 
-export const defaultExecOptions: ExecOptions = {
-}
+export const defaultExecOptions: ExecOptions = {};
 
 export default class Base {
-  name: string
-  helper: DomHelper
-  autoMationFn?: Function
-  redo?: Function
-  shouldRedo: boolean = false
-  cls?: string
-  style?: string
-  shouldRecord?: boolean
-  unbindFns: any[]
-  options?: ExecOptions
+  name: string;
+  helper: DomHelper;
+  autoMationFn?: () => void;
+  redo?: (type: string) => void;
+  shouldRedo = false;
+  cls?: string;
+  style?: string;
+  shouldRecord?: boolean;
+  unbindFns: Array<() => void>;
+  options?: ExecOptions;
 
   constructor(helper: DomHelper) {
-    this.helper = helper
-    this.unbindFns = []
-    helper.actions.push(this)
-    this.bindEvents()
+    this.helper = helper;
+    this.unbindFns = [];
+    helper.actions.push(this);
+    this.bindEvents();
   }
 
   get selector() {
-    return `.${this.cls}`
+    return `.${this.cls}`;
   }
 
   // only called by UI
   start() {
     this.helper.exec((elem, event) => {
       const options: ExecOptions = {
-        metaKey: event.metaKey
-      }
-      this.run(elem, options)
-    })
+        metaKey: event.metaKey,
+      };
+      this.run(elem, options);
+    });
   }
 
   // called by UI or automation
   // run and check result if needed
   run(elem, options) {
-    this.options = options
-    const result = this.exec(elem, options)
+    this.options = options;
+    const result = this.exec(elem, options);
 
     if (result) {
       setTimeout(() => {
-        this.checkExecResult(elem, options)
+        this.checkExecResult(elem, options);
       }, 50);
     }
-    return result
+    return result;
   }
 
   exec(elem, options?: ExecOptions): boolean {
-    return true
+    return true;
   }
 
   checkExecResult(elem, options?: ExecOptions) {
     // if not ready --> this.autoMationFn()
   }
 
-  bindEvents() {}
+  bindEvents() {
+    // noop
+  }
 
   recordIfNeeded(options: ExecOptions, elem?) {
     if (this.shouldRecord && !options.silent) {
-      this.helper.recordAction(this.name, elem, options)
+      this.helper.recordAction(this.name, elem, options);
     }
   }
 
   exit() {
-    this.unbindFns.forEach(fn => {
-      fn()
-    })
-    this.unbindFns = []
+    this.unbindFns.forEach((fn) => {
+      fn();
+    });
+    this.unbindFns = [];
   }
 }

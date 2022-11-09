@@ -1,8 +1,8 @@
-import Base, { ExecOptions, defaultExecOptions } from './base'
-import { BUILDIN_ACTIONS } from '../common/const';
-import keyboardJS from 'keyboardjs'
-import $ = require('jquery')
-import { isDark } from '../helper/sun';
+import Base, { ExecOptions, defaultExecOptions } from "./Base";
+import { BUILDIN_ACTIONS } from "../common/const";
+import keyboardJS from "keyboardjs";
+import { isDark } from "../helper/sun";
+import $ from "jquery";
 
 interface DarkModeOptions extends ExecOptions {
   lat?: string;
@@ -10,29 +10,29 @@ interface DarkModeOptions extends ExecOptions {
 }
 
 export default class DarkMode extends Base {
-  name = BUILDIN_ACTIONS.DARK_MODE
-  shouldRecord = true
+  name = BUILDIN_ACTIONS.DARK_MODE;
+  shouldRecord = true;
 
-  private theme = 'sh-dm-dark-mode'
+  private theme = "sh-dm-dark-mode";
 
-  private EXIT_SHORTCUT = 'esc'
+  private EXIT_SHORTCUT = "esc";
 
   private defaultOptions: DarkModeOptions = {
-    lat: '',
-    long: ''
-  }
+    lat: "",
+    long: "",
+  };
 
   start() {
-    this.exec(document.body, {})
+    this.exec(document.body, {});
   }
 
   private shouldStart(options = this.defaultOptions) {
-    const { lat, long } = options; 
+    const { lat, long } = options;
 
     if (lat && long) {
       const flag = isDark(parseInt(lat), parseInt(long));
-  
-      return flag
+
+      return flag;
     } else {
       return true;
     }
@@ -40,23 +40,24 @@ export default class DarkMode extends Base {
 
   exec(elem, options?: DarkModeOptions) {
     if (!this.shouldStart(options)) {
-      return
+      return;
     }
 
-    $('html').attr('theme', this.theme)
-    
-    this.recordIfNeeded(options)
-    
+    $("html").attr("theme", this.theme);
+
+    this.recordIfNeeded(options);
+
     this.unbindFns.push(() => {
-      $('html').attr('theme', '')
-    })
-    
-    const that = this
+      $("html").attr("theme", "");
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const that = this;
     keyboardJS.bind(this.EXIT_SHORTCUT, function exitDarkMode() {
       keyboardJS.unbind(that.EXIT_SHORTCUT, exitDarkMode);
-      that.exit()
+      that.exit();
     });
-    
-    return true
+
+    return true;
   }
 }

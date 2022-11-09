@@ -1,5 +1,5 @@
-import { IAutomation, db } from '../db/database'
-import { RunAt } from '../enum/Automation';
+import { IAutomation, db } from "../db/database";
+import { RunAt } from "../enum/Automation.enum";
 
 export default class Automation implements IAutomation {
   id: number;
@@ -10,9 +10,15 @@ export default class Automation implements IAutomation {
   active?: boolean;
   createTime?: number;
   updateTime?: number;
-  deleted?: boolean
+  deleted?: boolean;
 
-  constructor(instructions: string, runAt: RunAt = RunAt.END, pattern: string, rid?: number, createTime?: number) {
+  constructor(
+    instructions: string,
+    runAt: RunAt = RunAt.END,
+    pattern: string,
+    rid?: number,
+    createTime?: number
+  ) {
     this.instructions = instructions;
     this.runAt = runAt;
     this.pattern = pattern;

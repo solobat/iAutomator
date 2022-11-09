@@ -1,4 +1,4 @@
-import { IRecord, db } from '../db/database'
+import { IRecord, db } from "../db/database";
 
 export default class Record implements IRecord {
   id: number;
@@ -11,7 +11,13 @@ export default class Record implements IRecord {
   updateTime: number;
   deleted: boolean;
 
-  constructor(rid: number, url: string, domain: string, content: string, createTime?: number) {
+  constructor(
+    rid: number,
+    url: string,
+    domain: string,
+    content: string,
+    createTime?: number
+  ) {
     this.rid = rid;
     this.url = url;
     this.content = content;

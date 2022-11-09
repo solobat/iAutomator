@@ -1,109 +1,120 @@
-import Base, { ExecOptions, defaultExecOptions } from './base'
-import { BUILDIN_ACTIONS } from '../common/const';
-import keyboardJS from 'keyboardjs'
-import $ = require('jquery')
+import Base, { ExecOptions } from "./Base";
+import { BUILDIN_ACTIONS } from "../common/const";
+import keyboardJS from "keyboardjs";
+import $ from "jquery";
 
 export default class ReadMode extends Base {
-  name = BUILDIN_ACTIONS.READ_MODE
-  shouldRecord = true
-  cls = 's-a-rm-hn'
-  private excludeSelectors = ['#steward-main', '#wordcard-main', '.sh-zm-layer', '#ext-hp-outline', '.ext-hp-btn']
-  
+  name = BUILDIN_ACTIONS.READ_MODE;
+  shouldRecord = true;
+  cls = "s-a-rm-hn";
+  private excludeSelectors = [
+    "#steward-main",
+    "#wordcard-main",
+    ".sh-zm-layer",
+    "#ext-hp-outline",
+    ".ext-hp-btn",
+  ];
+
   exec(elem, options?: ExecOptions) {
-    const $elem = $(elem)
-  
+    const $elem = $(elem);
+
     this.helper.actionCache.$elem = $elem;
     this.hideSiblings($elem);
-  
+
     elem.scrollIntoView();
 
     if (options.metaKey) {
-      this.initModePlus($elem)
+      this.initModePlus($elem);
     }
 
     this.helper.observe(elem, () => {
-      this.hideSiblings($(elem))
-    })
-  
-    this.recordIfNeeded(options, elem)
+      this.hideSiblings($(elem));
+    });
 
-    return true
+    this.recordIfNeeded(options, elem);
+
+    return true;
   }
 
   checkExecResult(elem, options?: ExecOptions) {
-    const result = document.body.contains(elem)
+    const result = document.body.contains(elem);
     if (!result) {
-      this.autoMationFn()
+      this.autoMationFn();
     }
   }
 
   private hideEl($el) {
-    $el.css({
-      visibility: 'hidden',
-      opacity: 0
-    }).addClass(this.cls)
+    $el
+      .css({
+        visibility: "hidden",
+        opacity: 0,
+      })
+      .addClass(this.cls);
   }
 
   private showEl($el) {
-    $el.css({
-      visibility: 'visible',
-      opacity: 1
-    }).removeClass(this.cls)
+    $el
+      .css({
+        visibility: "visible",
+        opacity: 1,
+      })
+      .removeClass(this.cls);
   }
 
   private layoutEl($el) {
-    const top = $el.offset().top
+    const top = $el.offset().top;
 
-    window.scrollTo(0, top - 200)
+    window.scrollTo(0, top - 200);
   }
 
   private initModePlus($el) {
-    let cur = $el
-    const fnCreator = fn => () => {
-      this.hideEl(cur)
-      const target = fn(cur)
+    let cur = $el;
+    const fnCreator = (fn) => () => {
+      this.hideEl(cur);
+      const target = fn(cur);
 
       if (target && target.length) {
-        if (!target.hasClass('.s-a-rm-hn')) {
-          this.hideSiblings(target)
+        if (!target.hasClass(".s-a-rm-hn")) {
+          this.hideSiblings(target);
         }
-        cur = target
-        this.showEl(target)
-        this.layoutEl(target)
+        cur = target;
+        this.showEl(target);
+        this.layoutEl(target);
       }
-    }
-    const nextFn = fnCreator(cur => cur.next())
-    const prevFn = fnCreator(cur => cur.prev())
+    };
+    const nextFn = fnCreator((cur) => cur.next());
+    const prevFn = fnCreator((cur) => cur.prev());
 
-    keyboardJS.bind('right', nextFn)
-    keyboardJS.bind('left', prevFn)
+    keyboardJS.bind("right", nextFn);
+    keyboardJS.bind("left", prevFn);
 
     this.unbindFns.push(() => {
-      keyboardJS.unbind('right', nextFn)
-      keyboardJS.unbind('left', prevFn)
-    })
+      keyboardJS.unbind("right", nextFn);
+      keyboardJS.unbind("left", prevFn);
+    });
   }
 
   private get excludes() {
     if (this.options.excludes) {
-      return this.excludeSelectors.join(',') + ',' + this.options.excludes
+      return this.excludeSelectors.join(",") + "," + this.options.excludes;
     } else {
-      return this.excludeSelectors.join(',')
+      return this.excludeSelectors.join(",");
     }
   }
 
   private hideSiblings($el) {
-    const that = this
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const that = this;
 
     if ($el && $el.length) {
-      this.hideEl($el.siblings().not(this.excludes))
-      this.hideSiblings($el.parent())
+      this.hideEl($el.siblings().not(this.excludes));
+      this.hideSiblings($el.parent());
     } else {
-      keyboardJS.bind('esc', function showNode() {
-        that.showEl($(that.selector))
+      keyboardJS.bind("esc", function showNode() {
+        that.showEl($(that.selector));
         that.helper.resetActionCache();
-        keyboardJS.unbind('esc', showNode);
-        that.exit()
+        keyboardJS.unbind("esc", showNode);
+        that.exit();
       });
     }
   }
