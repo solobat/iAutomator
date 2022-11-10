@@ -100,7 +100,7 @@ function onInstallAutomation(data, handler) {
         createNotice(
           "Automation installed successfully",
           `Automation: 「${data.name}」`,
-          chrome.extension.getURL("img/success.png")
+          chrome.runtime.getURL("img/success.png")
         );
         loadAutomations().then(() => {
           updateBadgeByCurrentTab();
@@ -112,7 +112,7 @@ function onInstallAutomation(data, handler) {
         createNotice(
           "Automation installed failed",
           `Reason: 「${resp.message}」`,
-          chrome.extension.getURL("img/fail.png")
+          chrome.runtime.getURL("img/fail.png")
         );
       }
     }

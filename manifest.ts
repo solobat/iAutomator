@@ -60,6 +60,7 @@ const manifest: chrome.runtime.ManifestV3 = {
       resources: [
         "assets/js/*.js",
         "assets/css/*.css",
+        "img/*.png",
         "icon16.png",
         "icon48.png",
         "src/pages/helper/index.html",

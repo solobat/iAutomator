@@ -37,7 +37,7 @@ export default class PictureInPicture extends Base {
             data: {
               title: "Video not found",
               message: `Action: PICTURE_IN_PICTURE`,
-              iconUrl: chrome.extension.getURL("/img/fail.png"),
+              iconUrl: chrome.runtime.getURL("/img/fail.png"),
             },
           });
         }
@@ -48,7 +48,7 @@ export default class PictureInPicture extends Base {
         data: {
           title: "PIP mode is invalid",
           message: `Action: PICTURE_IN_PICTURE`,
-          iconUrl: chrome.extension.getURL("/img/fail.png"),
+          iconUrl: chrome.runtime.getURL("/img/fail.png"),
         },
       });
     }
