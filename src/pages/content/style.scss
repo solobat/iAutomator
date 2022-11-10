@@ -68,6 +68,10 @@
   content: "\e66d";
 }
 
+.icon-g-translate:before {
+  content: "\e89b";
+}
+
 .ext-hp-ms-over {
   outline: 2px dotted #ccc !important;
 }
@@ -139,6 +143,14 @@
 .ext-hp-btn-link.br {
   bottom: 10px;
   right: 10px;
+}
+
+.ext-hp-btn-g-translate {
+  float: right;
+  width: auto;
+  height: auto;
+  box-shadow: none;
+  border-radius: none;
 }
 
 /* Code Copy */

@@ -2,13 +2,29 @@ import Base, { ExecOptions, defaultExecOptions } from "./Base";
 import { BUILDIN_ACTIONS } from "../common/const";
 import $ from "jquery";
 
-type ButtonType = "top" | "toggle";
+type ButtonType = "top" | "toggle" | "shortcut" | "translate";
 type ButtonPosition = "tl" | "tr" | "bl" | "br";
 
 interface ButtonExecOptions extends ExecOptions {
   fixed?: boolean;
   pos?: ButtonPosition;
   type: ButtonType;
+}
+
+function formatTrans(raw: Array<Array<Array<string>>>) {
+  const trans = raw[0];
+
+  return trans.map((p) => p[0]).join("");
+}
+
+function translate(text: string, target: string) {
+  return fetch(
+    `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${target}&dt=t&q=${encodeURIComponent(
+      text
+    )}`
+  )
+    .then((response) => response.json())
+    .then(formatTrans);
 }
 
 export default class Button extends Base {
@@ -100,6 +116,43 @@ export default class Button extends Base {
     $("body").append($icon);
   }
 
+  private insertTranslate(scope: HTMLDivElement, options: ButtonExecOptions) {
+    const { icon = "icon-g-translate", pos = "cr" } = options;
+    const iconCls = "ext-hp-translate";
+    const translatedCls = "ext-hp-translated";
+
+    const insertButton = (el: HTMLElement) => {
+      const $translate = this.createBtn("g-translate", icon).addClass(pos);
+
+      $translate.on("click", ".iconfont", (event) => {
+        event.stopPropagation();
+        event.preventDefault();
+        if ($translate.hasClass(translatedCls)) {
+          return false;
+        }
+        const text = $translate.parent().text();
+        translate(text, "zh-CN").then((trans) => {
+          $translate.addClass(translatedCls).prepend(trans);
+        });
+
+        return false;
+      });
+      $(el).addClass(iconCls).append($translate);
+    };
+
+    function run() {
+      const $elems = $(scope)
+        .find<HTMLElement>(options.item)
+        .not(`.${iconCls}`);
+
+      $elems.each((index, elem) => {
+        insertButton(elem);
+      });
+    }
+
+    this.helper.observe(scope, run);
+  }
+
   exec(elem, options: ButtonExecOptions) {
     const { type } = options;
     if (type === "top") {
@@ -108,6 +161,8 @@ export default class Button extends Base {
       this.insertToggleButton(elem, options);
     } else if (type === "shortcut") {
       this.insertShortcut(elem, options);
+    } else if (type === "translate") {
+      this.insertTranslate(elem, options);
     }
 
     return false;
