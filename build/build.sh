@@ -5,7 +5,7 @@ echo "Prepare dir......"
 
 # build
 echo "Compiling....."
-npm run build || { echo "Compilation failed, please check and try again"; exit 1; }
+yarn turbo build || { echo "Compilation failed, please check and try again"; exit 1; }
 
 zip -r ihelpers.zip dist/
 
