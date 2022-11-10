@@ -62,6 +62,7 @@ const manifest: chrome.runtime.ManifestV3 = {
         "assets/css/*.css",
         "icon16.png",
         "icon48.png",
+        "src/pages/helper/index.html",
       ],
       matches: ["*://*/*"],
     },
