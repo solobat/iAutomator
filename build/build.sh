@@ -2,6 +2,7 @@
 
 # prepare
 echo "Prepare dir......"
+rm -fr dist/
 
 # build
 echo "Compiling....."
