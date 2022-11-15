@@ -35,6 +35,8 @@ export default class Button extends Base {
 
   shouldRecord = true;
 
+  private targetLang = chrome.i18n.getUILanguage();
+
   start() {
     return;
   }
@@ -131,8 +133,10 @@ export default class Button extends Base {
           return false;
         }
         const text = $translate.parent().text();
-        translate(text, "zh-CN").then((trans) => {
-          $translate.addClass(translatedCls).prepend(trans);
+        translate(text, this.targetLang).then((trans) => {
+          $translate
+            .addClass(translatedCls)
+            .after(`<div class="ext-hp-trans-result">${trans}</div>`);
         });
 
         return false;
