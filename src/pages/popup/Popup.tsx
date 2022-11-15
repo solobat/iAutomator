@@ -14,6 +14,7 @@ import { TabMeta } from "../../common/types";
 import { AutomationsPanel } from "./components/Automation";
 import { Records } from "./components/Record";
 import { onDbUpdate } from "../../helper/db.helper";
+import { t } from "@src/helper/i18n.helper";
 
 export default function Page(props) {
   const [state, dispatch] = useReducer(pageReducer, getInitialState());
@@ -65,10 +66,10 @@ function TabInfo(props: TabInfoProps) {
           dispatch({ type: ACTIONS.TAB_CHANGE, payload: activeKey })
         }
       >
-        <TabPane tab="Automations" key="automation">
+        <TabPane tab={t("automations")} key="automation">
           <AutomationsPanel />
         </TabPane>
-        <TabPane tab="Records" key="records">
+        <TabPane tab={t("records")} key="records">
           <Records host={host} />
         </TabPane>
       </Tabs>

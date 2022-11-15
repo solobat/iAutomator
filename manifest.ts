@@ -5,6 +5,7 @@ const manifest: chrome.runtime.ManifestV3 = {
   name: packageJson.name,
   version: packageJson.version,
   description: packageJson.description,
+  default_locale: "en",
   options_page: "src/pages/options/index.html",
   background: {
     service_worker: "src/pages/background/index.js",
@@ -28,32 +29,6 @@ const manifest: chrome.runtime.ManifestV3 = {
   ],
   permissions: ["tabs", "contextMenus", "notifications"],
   optional_permissions: ["background", "clipboardWrite"],
-  commands: {
-    readMode: {
-      description: "Read Mode",
-    },
-    killElement: {
-      description: "Kill Elements",
-    },
-    highlightEnglishSyntax: {
-      description: "English Syntax highlighting",
-    },
-    hashElement: {
-      description: "Add anchor for elements",
-    },
-    download: {
-      description: "Download element",
-    },
-    fullScreen: {
-      description: "FullScreen element",
-    },
-    codeCopy: {
-      description: "Code copy",
-    },
-    outline: {
-      description: "Outline",
-    },
-  },
   host_permissions: ["http://*/*", "https://*/*"],
   web_accessible_resources: [
     {

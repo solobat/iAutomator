@@ -16,10 +16,13 @@ import {
   PlusSquareOutlined,
   DeleteOutlined,
   EditOutlined,
+  SearchOutlined,
 } from "@ant-design/icons";
 import { matchAutomations } from "../../../helper/automations";
 import { noticeBg } from "../../../helper/event";
 import { PAGE_ACTIONS } from "../../../common/const";
+import ButtonGroup from "antd/es/button/button-group";
+import { t } from "@src/helper/i18n.helper";
 
 const { Option } = Select;
 
@@ -31,22 +34,57 @@ export function AutomationsPanel() {
       {amFormEditing ? (
         <AutomationEditor />
       ) : (
-        <span
-          onClick={() =>
-            dispatch({
-              type: ACTIONS.AUTOMATION_FORM_UPDATE,
-              payload: { instructions: "", pattern: "" },
-            })
-          }
-        >
-          <PlusSquareOutlined
-            style={{ fontSize: "20px", cursor: "pointer" }}
-            translate="no"
+        <ButtonGroup style={{ marginBottom: "10px" }}>
+          <MenuBtn
+            onClick={() =>
+              chrome.tabs.create({ url: "https://ihelpers.xyz/automations" })
+            }
+            icon={
+              <SearchOutlined
+                style={{ fontSize: "20px", cursor: "pointer" }}
+                translate="no"
+              />
+            }
+            label={t("get_new_automations")}
           />
-        </span>
+
+          <MenuBtn
+            onClick={() =>
+              dispatch({
+                type: ACTIONS.AUTOMATION_FORM_UPDATE,
+                payload: { instructions: "", pattern: "" },
+              })
+            }
+            icon={
+              <PlusSquareOutlined
+                style={{ fontSize: "20px", cursor: "pointer" }}
+                translate="no"
+              />
+            }
+            styles={{ marginLeft: "10px" }}
+            label={t("add_new_automation")}
+          />
+        </ButtonGroup>
       )}
       <Automations />
     </div>
+  );
+}
+
+function MenuBtn(props: {
+  onClick?: () => void;
+  label: string;
+  icon: React.ReactNode;
+  styles?: React.CSSProperties;
+}) {
+  return (
+    <Button
+      onClick={props.onClick}
+      style={{ display: "flex", alignItems: "center", ...props.styles }}
+      icon={props.icon}
+    >
+      {props.label}
+    </Button>
   );
 }
 
@@ -93,7 +131,7 @@ function AutomationEditor() {
     <div className="am-editor">
       <div className="am-editor-fields">
         <Input
-          placeholder="Instructions"
+          placeholder={t("instructions")}
           value={form.instructions}
           className="ipt-ins"
           onChange={(event) => {
@@ -106,7 +144,7 @@ function AutomationEditor() {
           }}
         />
         <Input
-          placeholder="Pattern"
+          placeholder={t("pattern")}
           value={form.pattern}
           className="ipt-pattern"
           onChange={(event) => {
@@ -129,9 +167,9 @@ function AutomationEditor() {
             );
           }}
         >
-          <Option value={0}>Immediately</Option>
-          <Option value={1}>DomReady</Option>
-          <Option value={2}>Delayed</Option>
+          <Option value={0}>{t("run_at_immediately")}</Option>
+          <Option value={1}>{t("run_at_dom_ready")}</Option>
+          <Option value={2}>{t("run_at_delayed")}</Option>
         </Select>
       </div>
       <div className="am-editor-btns">
@@ -139,10 +177,10 @@ function AutomationEditor() {
           onClick={() => onAmEditorCancleClick()}
           style={{ marginRight: "10px" }}
         >
-          Cancel
+          {t("cancel")}
         </Button>
         <Button disabled={saving} onClick={() => onAmEditorSaveClick()}>
-          Save
+          {t("save")}
         </Button>
       </div>
     </div>
@@ -151,20 +189,20 @@ function AutomationEditor() {
 
 const AutomationsColumns = [
   {
-    title: "Instructions",
+    title: t("instructions"),
     dataIndex: "instructions",
     width: "300px",
     textWrap: "word-break",
     ellipsis: true,
   },
-  { title: "Pattern", dataIndex: "pattern" },
+  { title: t("pattern"), dataIndex: "pattern" },
   {
-    title: "RunAt",
+    title: t("run_at"),
     dataIndex: "runAt",
     render: (runAt, record) => <RunAt record={record} />,
   },
   {
-    title: "Operation",
+    title: t("operation"),
     width: "120px",
     render: (text, record) => <OpBtns record={record} />,
   },
@@ -187,9 +225,9 @@ function RunAt(props: any) {
 
   return (
     <Select value={props.record.runAt} onChange={onChange}>
-      <Option value={0}>Immediately</Option>
-      <Option value={1}>DomReady</Option>
-      <Option value={2}>Delayed</Option>
+      <Option value={0}>{t("run_at_immediately")}</Option>
+      <Option value={1}>{t("run_at_dom_ready")}</Option>
+      <Option value={2}>{t("run_at_delayed")}</Option>
     </Select>
   );
 }

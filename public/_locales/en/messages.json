@@ -1,0 +1,98 @@
+{
+    "extName": {
+        "message": "iHelpers"
+    },
+    "extDesc": {
+        "message": "a command launcher with extension management/app launcher/tab management/history search/alfred"
+    },
+    "save_ok": {
+        "message": "Save successfully!"
+    },
+    "add_ok": {
+        "message": "Add successfully!"
+    },
+    "delete_ok": {
+        "message": "Delete successfully!"
+    },
+    "delete_ok_tpl": {
+        "message": "Delete {{text}} successfully!"
+    },
+    "set_ok": {
+        "message": "Set successfully!"
+    },
+    "toggle_ok": {
+        "message": "Toggle {{text}} successfully!"
+    },
+    "confirm_delete_tpl": {
+        "message": "This operation will permanently delete the {{text}}, whether to continue?"
+    },
+    "check_form": {
+        "message": "Please check the form"
+    },
+    "settings_notion_basic": {
+        "message": "Basic"
+    },
+    "settings_notion_export": {
+        "message": "Export"
+    },
+    "get_new_automations": {
+        "message": "Get new automations"
+    },
+    "add_new_automation": {
+        "message": "Add new automation"
+    },
+    "automations": {
+        "message": "Automations"
+    },
+    "records": {
+        "message": "Records"
+    },
+    "instructions": {
+        "message": "Instructions"
+    },
+    "pattern": {
+        "message": "Pattern"
+    },
+    "run_at": {
+        "message": "RunAt"
+    },
+    "operation": {
+        "message": "Operation"
+    },
+    "cancel": {
+        "message": "Cancel"
+    },
+    "save": {
+        "message": "Save"
+    },
+    "run_at_immediately": {
+        "message": "Immediately"
+    },
+    "run_at_dom_ready": {
+        "message": "DomReady"
+    },
+    "run_at_delayed": {
+        "message": "Delayed"
+    },
+    "action": {
+        "message": "Action"
+    },
+    "path": {
+        "message": "Path"
+    },
+    "redo": {
+        "message": "Redo"
+    },
+    "as_automation": {
+        "message": "Create as an automation"
+    },
+    "export": {
+        "message": "Export"
+    },
+    "import": {
+        "message": "Import"
+    },
+    "action_read_mode": {
+        "message": "Read Mode"
+    }
+}

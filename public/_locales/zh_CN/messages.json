@@ -1,0 +1,98 @@
+{
+    "extName": {
+        "message": "iHelpers"
+    },
+    "extDesc": {
+        "message": "浏览器自动化效率工具"
+    },
+    "save_ok": {
+        "message": "保存成功!"
+    },
+    "add_ok": {
+        "message": "添加成功!"
+    },
+    "delete_ok": {
+        "message": "删除成功!"
+    },
+    "delete_ok_tpl": {
+        "message": "删除 {{text}} 成功!"
+    },
+    "set_ok": {
+        "message": "设置成功!"
+    },
+    "toggle_ok": {
+        "message": "切换 {{text}} 成功!"
+    },
+    "confirm_delete_tpl": {
+        "message": "这个操作将永久删除此{{text}}，是否继续？"
+    },
+    "check_form": {
+        "message": "请检查表单"
+    },
+    "settings_notion_basic": {
+        "message": "基本"
+    },
+    "settings_notion_export": {
+        "message": "数据"
+    },
+    "get_new_automations": {
+        "message": "获取新自动操作"
+    },
+    "add_new_automation": {
+        "message": "添加新自动操作"
+    },
+    "automations": {
+        "message": "自动操作"
+    },
+    "records": {
+        "message": "记录"
+    },
+    "instructions": {
+        "message": "指令"
+    },
+    "pattern": {
+        "message": "站点"
+    },
+    "run_at": {
+        "message": "执行于"
+    },
+    "operation": {
+        "message": "操作"
+    },
+    "cancel": {
+        "message": "取消"
+    },
+    "save": {
+        "message": "保存"
+    },
+    "run_at_immediately": {
+        "message": "立即"
+    },
+    "run_at_dom_ready": {
+        "message": "加载完成"
+    },
+    "run_at_delayed": {
+        "message": "延迟"
+    },
+    "action": {
+        "message": "动作"
+    },
+    "path": {
+        "message": "路径"
+    },
+    "redo": {
+        "message": "重放"
+    },
+    "as_automation": {
+        "message": "创建为自动操作"
+    },
+    "export": {
+        "message": "导出"
+    },
+    "import": {
+        "message": "导入"
+    },
+    "action_read_mode": {
+        "message": "阅读模式"
+    }
+}

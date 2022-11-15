@@ -243,10 +243,6 @@ function updateBadgeByCurrentTab() {
   });
 }
 
-chrome.commands.onCommand.addListener(function (command, tab) {
-  runMethod(tab, command);
-});
-
 chrome.tabs.onActivated.addListener(function () {
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
     updateBadge(tabs[0].url);

@@ -1,3 +1,52 @@
+const local_i18n = {
+  en: {
+    read_mode: "Read Mode",
+    dark_mode: "Dark Mode",
+    kill_element: "Kill Element",
+    page_protect: "Page Protect",
+    english_syntax_highlighting: "English Syntax highlighting",
+    add_anchor_for_elements: "Add anchor for elements",
+    add_time_tag_for_video: "Add time tag for video",
+    download_element: "Download element",
+    fullscreen_element: "FullScreen element",
+    code_copy: "Code copy",
+    click: "Click",
+    focus: "Focus",
+    goto_element: "Goto element",
+    start_pip_mode: "Start PIP mode",
+    zen_mode: "Zen mode",
+    outline: "Outline",
+    button: "Button",
+  },
+  zh_CN: {
+    read_mode: "阅读模式",
+    dark_mode: "夜间模式",
+    kill_element: "移除元素",
+    page_protect: "页面保护",
+    english_syntax_highlighting: "英语语法高亮",
+    add_anchor_for_elements: "为元素添加锚点",
+    add_time_tag_for_video: "为视频添加时间标签",
+    download_element: "下载元素",
+    fullscreen_element: "全屏元素",
+    code_copy: "代码拷贝",
+    click: "点击",
+    focus: "聚焦",
+    goto_element: "跳转到元素",
+    start_pip_mode: "开启画中画模式",
+    zen_mode: "禅模式",
+    outline: "大纲",
+    button: "按钮",
+  },
+};
+
+const lang = chrome.i18n.getUILanguage().replace("-", "_");
+
+function t(key: string): string {
+  const texts = local_i18n[lang] ?? local_i18n.en;
+
+  return texts[key] ?? key;
+}
+
 export const PAGE_ACTIONS = {
   RECORD: "recordAction",
   AUTOMATIONS: "getAutomations",
@@ -53,103 +102,103 @@ export const BUILDIN_ACTIONS = {
 export const BUILDIN_ACTION_CONFIGS = [
   {
     name: "READ_MODE",
-    title: "Read Mode",
+    title: t("read_mode"),
     contexts: ["all"] as any[],
     asCommand: true,
   },
   {
     name: "DARK_MODE",
-    title: "Dark Mode",
+    title: t("dark_mode"),
     contexts: ["all"],
     asCommand: true,
   },
   {
     name: "KILL_ELEMENT",
-    title: "Kill Element",
+    title: t("kill_element"),
     contexts: ["all"],
     asCommand: true,
   },
   {
     name: "PROTECT",
-    title: "Page Protect",
+    title: t("page_protect"),
     contexts: ["all"],
     asCommand: true,
   },
   {
     name: "HIGHLIGHT_ENGLISH_SYNTAX",
-    title: "English Syntax highlighting",
+    title: t("english_syntax_highlighting"),
     contexts: ["all"],
     asCommand: true,
   },
   {
     name: "HASH_ELEMENT",
-    title: "Add anchor for elements",
+    title: t("add_anchor_for_elements"),
     contexts: ["all"],
     asCommand: true,
   },
   {
     name: "TIME_UPDATE",
-    title: "Add time tag for video",
+    title: t("add_time_tag_for_video"),
     contexts: ["all"],
     asCommand: true,
   },
   {
     name: "DOWNLOAD",
-    title: "Download element",
+    title: t("download_element"),
     contexts: ["all"],
     asCommand: true,
   },
   {
     name: "FULL_SCREEN",
-    title: "FullScreen element",
+    title: t("fullscreen_element"),
     contexts: ["all"],
     asCommand: true,
   },
   {
     name: "CODE_COPY",
-    title: "Code copy",
+    title: t("code_copy"),
     contexts: ["all"],
     asCommand: true,
   },
   {
     name: "CLICK",
-    title: "Click",
+    title: t("click"),
     contexts: ["all"],
     asCommand: false,
   },
   {
     name: "FOCUS",
-    title: "Focus",
+    title: t("focus"),
     contexts: ["all"],
     asCommand: false,
   },
   {
     name: "GOTO_ELEMENT",
-    title: "Goto element",
+    title: t("goto_element"),
     contexts: ["all"],
     asCommand: false,
   },
   {
     name: "PICTURE_IN_PICTURE",
-    title: "Start PIP mode",
+    title: t("start_pip_mode"),
     contexts: ["all"],
     asCommand: true,
   },
   {
     name: "ZEN_MODE",
-    title: "Zen mode",
+    title: t("zen_mode"),
     contexts: ["all"],
     asCommand: true,
   },
   {
     name: "OUTLINE",
-    title: "Outline",
+    title: t("outline"),
     contexts: ["all"],
     asCommand: true,
   },
   {
     name: "BUTTON",
-    title: "button",
+    title: t("button"),
     contexts: ["all"],
     asCommand: false,
   },

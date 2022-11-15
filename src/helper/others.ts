@@ -1,9 +1,11 @@
-import axios from "axios";
-
 export function highlightEnglish(text) {
-  return axios
-    .post("https://english.edward.io/parse?text=" + text)
-    .then((result) => result.data);
+  return fetch("https://english.edward.io/parse", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+    },
+    body: `text=${text}`,
+  }).then((result) => result.text());
 }
 
 export default async function hanlder(req) {
