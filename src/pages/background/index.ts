@@ -215,8 +215,10 @@ function initCommands() {
       contexts: item.contexts,
     });
   });
-  chrome.contextMenus.onClicked.addListener((info, tab) => {
-    runMethod(tab, BUILDIN_ACTIONS[info.menuItemId]);
+  chrome.contextMenus.onClicked.addListener((info) => {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      runMethod(tabs[0], BUILDIN_ACTIONS[info.menuItemId]);
+    });
   });
 }
 
@@ -259,6 +261,13 @@ function init() {
   loadAutomations();
   chrome.runtime.onInstalled.addListener(() => {
     initCommands();
+    console.log("on installed fired...");
+  });
+  chrome.runtime.onStartup.addListener(() => {
+    console.log("on start up fired..");
+  });
+  chrome.runtime.onConnect.addListener(() => {
+    console.log("on connect fired..");
   });
 }
 
