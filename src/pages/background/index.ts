@@ -176,6 +176,7 @@ function msgHandler(req: PageMsg, sender, resp) {
     recordsController.saveRecord(content, url, domain);
     handler("");
   } else if (action === PAGE_ACTIONS.AUTOMATIONS) {
+    initCommands();
     onAutomations(data, handler);
   } else if (action === PAGE_ACTIONS.REFRESH_AUTOMATIONS) {
     onRefreshAutmations(handler);
@@ -207,7 +208,16 @@ function runMethod(tab, method, data?) {
   });
 }
 
+function onContextMenuClicked(info: chrome.contextMenus.OnClickData) {
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    runMethod(tabs[0], BUILDIN_ACTIONS[info.menuItemId]);
+  });
+}
+
 function initCommands() {
+  console.log("init commands...");
+
+  chrome.contextMenus.removeAll();
   BUILDIN_ACTION_CONFIGS.filter((item) => item.asCommand).forEach((item) => {
     chrome.contextMenus.create({
       id: item.name,
@@ -215,11 +225,8 @@ function initCommands() {
       contexts: item.contexts,
     });
   });
-  chrome.contextMenus.onClicked.addListener((info) => {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      runMethod(tabs[0], BUILDIN_ACTIONS[info.menuItemId]);
-    });
-  });
+  chrome.contextMenus.onClicked.removeListener(onContextMenuClicked);
+  chrome.contextMenus.onClicked.addListener(onContextMenuClicked);
 }
 
 function updateBadgeByURL(url: string) {
@@ -261,13 +268,6 @@ function init() {
   loadAutomations();
   chrome.runtime.onInstalled.addListener(() => {
     initCommands();
-    console.log("on installed fired...");
-  });
-  chrome.runtime.onStartup.addListener(() => {
-    console.log("on start up fired..");
-  });
-  chrome.runtime.onConnect.addListener(() => {
-    console.log("on connect fired..");
   });
 }
 
