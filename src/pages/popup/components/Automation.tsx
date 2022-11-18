@@ -20,9 +20,18 @@ import {
 } from "@ant-design/icons";
 import { matchAutomations } from "../../../helper/automations";
 import { noticeBg } from "../../../helper/event";
-import { PAGE_ACTIONS } from "../../../common/const";
+import { PlayCircleOutlined } from "@ant-design/icons";
+import {
+  BUILDIN_ACTIONS,
+  BUILDIN_ACTION_FIELD_CONFIGS,
+  PAGE_ACTIONS,
+} from "../../../common/const";
 import ButtonGroup from "antd/es/button/button-group";
 import { t } from "@src/helper/i18n.helper";
+import { getURLPatterns } from "@src/helper/url";
+import { AutoComplete, Tooltip } from "antd";
+import { list2options } from "@src/helper/antd";
+import { basicInstruction } from "@src/helper/instruction";
 
 const { Option } = Select;
 
@@ -88,8 +97,7 @@ function MenuBtn(props: {
   );
 }
 
-function validateAmForm(form) {
-  const { instructions, pattern } = form;
+function validateAmForm(instructions: string, pattern: string) {
   if (instructions && pattern) {
     return true;
   } else {
@@ -105,12 +113,26 @@ function AutomationEditor() {
   const { state, dispatch } = useContext(PageContext);
   const { automationForm: form } = state;
   const [saving, setSaving] = useState(false);
-
+  const urlPatterns = getURLPatterns(state.tab.hostname, state.tab.pathname);
+  const actionItem = BUILDIN_ACTION_FIELD_CONFIGS.find(
+    (item) => item.value === form.action
+  );
+  const argsTips =
+    actionItem?.args?.map((arg) => `${arg.name}!${arg.type}`).join("^") ||
+    "No Args";
   function onAmEditorSaveClick() {
-    if (validateAmForm(form)) {
+    const { pattern, action, scope, args } = form;
+    const instructions = basicInstruction.generate({
+      action,
+      args: basicInstruction.argsHandler.parse(args, action),
+      scope,
+      rawArgs: args,
+    });
+
+    if (validateAmForm(instructions, pattern)) {
       setSaving(true);
       automationsController
-        .saveAutomation(form.instructions, form.pattern, form.runAt, form.id)
+        .saveAutomation(instructions, pattern, form.runAt, form.id)
         .then((resp) => {
           if (resp.code === 0) {
             setSaving(false);
@@ -129,33 +151,73 @@ function AutomationEditor() {
 
   return (
     <div className="am-editor">
+      <div>
+        <Input.Group compact>
+          <Select
+            style={{ width: 150 }}
+            value={form.action}
+            defaultValue={BUILDIN_ACTIONS.READ_MODE}
+            onChange={(value) => {
+              onAmFormChange(
+                {
+                  action: value,
+                },
+                dispatch
+              );
+            }}
+          >
+            {BUILDIN_ACTION_FIELD_CONFIGS.map((item) => (
+              <Option value={item.value} key={item.value}>
+                {item.label}
+              </Option>
+            ))}
+          </Select>
+          <Input
+            placeholder={"key1!val1^key2!val2..."}
+            value={form.args}
+            className="ipt-ins"
+            style={{ width: 382 }}
+            prefix={<Tooltip title={argsTips}>?</Tooltip>}
+            onChange={(event) => {
+              onAmFormChange(
+                {
+                  args: event.target.value,
+                },
+                dispatch
+              );
+            }}
+          />
+          <Input
+            prefix="@"
+            placeholder="scope"
+            onChange={(event) => {
+              onAmFormChange(
+                {
+                  scope: event.target.value,
+                },
+                dispatch
+              );
+            }}
+            value={form.scope}
+            style={{ width: 150 }}
+          />
+        </Input.Group>
+      </div>
       <div className="am-editor-fields">
-        <Input
-          placeholder={t("instructions")}
-          value={form.instructions}
-          className="ipt-ins"
-          onChange={(event) => {
-            onAmFormChange(
-              {
-                instructions: event.target.value,
-              },
-              dispatch
-            );
-          }}
-        />
-        <Input
+        <AutoComplete
           placeholder={t("pattern")}
           value={form.pattern}
           className="ipt-pattern"
-          onChange={(event) => {
+          onChange={(value) => {
             onAmFormChange(
               {
-                pattern: event.target.value,
+                pattern: value,
               },
               dispatch
             );
           }}
-        />
+          options={list2options(urlPatterns)}
+        ></AutoComplete>
         <Select
           value={form.runAt}
           onChange={(value) => {
@@ -166,6 +228,7 @@ function AutomationEditor() {
               dispatch
             );
           }}
+          suffixIcon={<PlayCircleOutlined />}
         >
           <Option value={0}>{t("run_at_immediately")}</Option>
           <Option value={1}>{t("run_at_dom_ready")}</Option>
@@ -265,7 +328,14 @@ function SwitchBtn(props: any) {
 function EditBtn(props: any) {
   const { state, dispatch } = useModel();
   const onClick = useCallback(() => {
-    dispatch({ type: ACTIONS.AUTOMATION_FORM_UPDATE, payload: props.record });
+    const data = basicInstruction.parse(props.record.instructions);
+    const record = {
+      ...props.record,
+      action: data.action,
+      args: basicInstruction.argsHandler.stringify(data.args, data.action),
+      scope: data.scope,
+    };
+    dispatch({ type: ACTIONS.AUTOMATION_FORM_UPDATE, payload: record });
   }, []);
 
   return (

@@ -11,6 +11,7 @@ import { noticeBg } from "../../../helper/event";
 import { PAGE_ACTIONS } from "../../../common/const";
 import { t } from "@src/helper/i18n.helper";
 import { Tooltip } from "antd";
+import { basicInstruction } from "@src/helper/instruction";
 
 interface RecordsProps {
   host: string;
@@ -65,9 +66,13 @@ function RunBtn(props: any) {
 }
 
 function onRecordAddAmClick(record, dispatch) {
+  const data = basicInstruction.parse(record.content);
   const payload: AutomationForm = {
-    instructions: record.content,
     pattern: record.url,
+    action: data.action,
+    args: data.rawArgs,
+    scope: data.scope,
+    instructions: record.content,
   };
   dispatch({ type: ACTIONS.TAB_CHANGE, payload: "automation" });
   dispatch({ type: ACTIONS.AUTOMATION_FORM_UPDATE, payload });

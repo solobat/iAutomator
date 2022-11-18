@@ -21,6 +21,9 @@ export interface TabMeta extends chrome.tabs.Tab {
 
 export interface AutomationForm {
   id?: number;
-  instructions: string;
+  instructions?: string;
+  action?: string;
+  args?: string;
+  scope?: string;
   pattern: string;
 }

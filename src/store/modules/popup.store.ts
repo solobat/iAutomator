@@ -1,3 +1,4 @@
+import { BUILDIN_ACTIONS } from "@src/common/const";
 import { createContext, useContext } from "react";
 import { RunAt } from "../../server/enum/Automation.enum";
 
@@ -48,6 +49,9 @@ export const PageContext = createContext(null);
 function getDefaultAutomationForm() {
   return {
     instructions: "",
+    action: BUILDIN_ACTIONS.READ_MODE,
+    args: "",
+    scope: "body",
     pattern: "",
     runAt: RunAt.END,
   };

@@ -36,11 +36,12 @@ body {
 }
 
 .am-editor-fields {
+    margin-top: 5px;
     display: flex;
-    justify-content: space-between;
 
-    .ant-input {
-        width: 270px;
+    .ant-select-auto-complete {
+        width: 400px;
+        margin-right: 10px;
     }
 }
 
