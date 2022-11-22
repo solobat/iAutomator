@@ -16,6 +16,7 @@ import {
   PlusSquareOutlined,
   DeleteOutlined,
   EditOutlined,
+  ShareAltOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
 import { matchAutomations } from "../../../helper/automations";
@@ -32,6 +33,7 @@ import { getURLPatterns } from "@src/helper/url";
 import { AutoComplete, Tooltip } from "antd";
 import { list2options } from "@src/helper/antd";
 import { basicInstruction } from "@src/helper/instruction";
+import Automation from "@src/server/model/Automation";
 
 const { Option } = Select;
 
@@ -300,6 +302,7 @@ function OpBtns(props: any) {
     <div className="op-btns" style={{ minWidth: "120px" }}>
       <SwitchBtn record={props.record} />
       <EditBtn record={props.record} />
+      <ShareBtn item={props.record} />
       <DeleteBtn record={props.record} />
     </div>
   );
@@ -341,6 +344,27 @@ function EditBtn(props: any) {
   return (
     <span onClick={onClick}>
       <EditOutlined translate="no" />
+    </span>
+  );
+}
+
+function getShareURL(item: Automation) {
+  const { instructions, runAt, pattern } = item;
+
+  return `https://ihelpers.xyz/create?instructions=${encodeURIComponent(
+    instructions
+  )}&runAt=${runAt}&pattern=${encodeURIComponent(pattern)}`;
+}
+
+function ShareBtn(props: { item: Automation }) {
+  const onClick = () => {
+    const url = getShareURL(props.item);
+    chrome.tabs.create({ url });
+  };
+
+  return (
+    <span onClick={onClick}>
+      <ShareAltOutlined translate="no" />
     </span>
   );
 }
