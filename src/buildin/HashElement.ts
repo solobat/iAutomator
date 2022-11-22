@@ -4,7 +4,7 @@ import $ from "jquery";
 
 export default class HashElements extends Base {
   name = BUILDIN_ACTIONS.HASH_ELEMENT;
-  declare cls: "ext-hp-hashed";
+  cls = "ext-hp-hashed";
   style = `
   `;
   shouldRedo = true;

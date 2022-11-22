@@ -14,7 +14,7 @@ interface CodeCopyExecOptions extends ExecOptions {
 
 export default class CodeCopy extends Base {
   name = BUILDIN_ACTIONS.CODE_COPY;
-  declare cls: "ext-hp-code-copy";
+  cls = "ext-hp-code-copy";
 
   shouldRedo = true;
 

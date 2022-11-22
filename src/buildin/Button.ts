@@ -29,7 +29,7 @@ function translate(text: string, target: string) {
 
 export default class Button extends Base {
   name = BUILDIN_ACTIONS.BUTTON;
-  declare cls: "ext-hp-btn";
+  cls = "ext-hp-btn";
 
   shouldRedo = false;
 

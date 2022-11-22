@@ -5,7 +5,7 @@ import $ from "jquery";
 
 export default class GotoElement extends Base {
   name = BUILDIN_ACTIONS.GOTO_ELEMENT;
-  declare cls: "ext-hp-goto-element";
+  cls = "ext-hp-goto-element";
   style = `
   `;
   shouldRecord = true;

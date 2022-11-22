@@ -4,7 +4,7 @@ import $ from "jquery";
 
 export default class FullScreen extends Base {
   name = BUILDIN_ACTIONS.FULL_SCREEN;
-  declare cls: "ext-hp-fullscreen";
+  cls = "ext-hp-fullscreen";
 
   private unsetFullScreenElem: () => void;
 
