@@ -23,12 +23,15 @@ import { RunAt } from "../server/enum/Automation.enum";
 import DarkMode from "../buildin/DarkMode";
 import Outline from "../buildin/Outline";
 import Button from "../buildin/Button";
+import Bookmark from "../buildin/Bookmark";
+import mitt from "mitt";
 
 let isSetup, stop, cssInserted;
 
 const outlineCls = "ext-hp-ms-over";
 const startOutlineEvt = "ext-hp-startoutline";
 const stopOutlineEvt = "ext-hp-clearoutline";
+const emitter = mitt();
 
 function insertCss() {
   if (!cssInserted) {
@@ -343,9 +346,35 @@ const helper: DomHelper = {
   actions: [],
 
   observe,
+
+  onRevisible,
 };
 
+function onRevisible(fn: () => void) {
+  emitter.on("revisible", fn);
+
+  return () => emitter.off("revisible", fn);
+}
+
+function setupRevisible(cb: () => void) {
+  let hidden = true;
+
+  const onChange = () => {
+    const newHidden = document.hidden;
+    if (hidden && !newHidden) {
+      cb();
+    }
+    hidden = newHidden;
+  };
+  document.addEventListener("visibilitychange", onChange);
+}
+
+function setupEvents() {
+  setupRevisible(() => emitter.emit("revisible"));
+}
+
 function install() {
+  setupEvents();
   new Download(helper);
   new FullScreen(helper);
   new HashElement(helper);
@@ -363,6 +392,7 @@ function install() {
   new DarkMode(helper);
   new Outline(helper);
   new Button(helper);
+  new Bookmark(helper);
 }
 
 install();

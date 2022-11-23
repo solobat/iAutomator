@@ -97,6 +97,7 @@ export const BUILDIN_ACTIONS = {
   DARK_MODE: "darkMode",
   OUTLINE: "outline",
   BUTTON: "button",
+  BOOKMARK: "bookmark",
 };
 
 export const BUILDIN_ACTION_CONFIGS = [
@@ -109,6 +110,12 @@ export const BUILDIN_ACTION_CONFIGS = [
   {
     name: "DARK_MODE",
     title: t("dark_mode"),
+    contexts: ["all"],
+    asCommand: true,
+  },
+  {
+    name: "BOOKMARK",
+    title: t("bookmark"),
     contexts: ["all"],
     asCommand: true,
   },
@@ -248,6 +255,31 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         tips: "Latitude",
         name: "lat",
         type: "number",
+      },
+    ],
+  },
+  {
+    value: BUILDIN_ACTIONS.BOOKMARK,
+    label: "Bookmark",
+    args: [
+      {
+        tips: "CSS-Selector of the target items",
+        name: "item",
+        type: "string",
+      },
+      {
+        tips: "Refersh type: auto | manual",
+        name: "refresh",
+        type: "string",
+        defaultValue: "manual",
+        value: "manual",
+      },
+      {
+        tips: "should notify on the title?",
+        name: "nofity",
+        type: "boolean",
+        defaultValue: true,
+        value: true,
       },
     ],
   },

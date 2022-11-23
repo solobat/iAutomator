@@ -18,6 +18,7 @@ export interface DomHelper {
   invoke(action, data, callback, target: NOTICE_TARGET);
   actions: Base[];
   observe: (elem, cb: () => void) => void;
+  onRevisible: (fn: () => void) => () => void;
 }
 
 export interface ExecOptions {
@@ -34,6 +35,7 @@ export default class Base {
   autoMationFn?: () => void;
   redo?: (type: string) => void;
   shouldRedo = false;
+  ready = false;
   cls?: string;
   style?: string;
   shouldRecord?: boolean;
@@ -58,6 +60,7 @@ export default class Base {
         metaKey: event.metaKey,
       };
       this.run(elem, options);
+      this.ready = true;
     });
   }
 

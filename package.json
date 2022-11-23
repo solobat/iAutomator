@@ -56,6 +56,7 @@
     "jquery": "^3.4.1",
     "keyboardjs": "^2.5.1",
     "lodash": "^4.17.15",
+    "mitt": "^3.0.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "sunrise-sunset-js": "^2.1.2"
