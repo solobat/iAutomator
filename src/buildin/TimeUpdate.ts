@@ -1,10 +1,17 @@
-import Base, { ExecOptions } from "./Base";
+import Base, { DomHelper, ExecOptions } from "./Base";
 import { BUILDIN_ACTIONS } from "../common/const";
 import throttle from "lodash/throttle";
 
 export default class TimeUpdate extends Base {
   name = BUILDIN_ACTIONS.TIME_UPDATE;
   shouldRecord = true;
+
+  constructor(helper: DomHelper) {
+    super(helper, {
+      shouldRecord: true,
+      esc2exit: true,
+    });
+  }
 
   start() {
     this.exec(document.querySelector("video"), {});

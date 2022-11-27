@@ -1,4 +1,4 @@
-import Base, { ExecOptions, defaultExecOptions } from "./Base";
+import Base, { ExecOptions, defaultExecOptions, DomHelper } from "./Base";
 import { BUILDIN_ACTIONS } from "../common/const";
 import keyboardJS from "keyboardjs";
 import { isDark } from "../helper/sun";
@@ -15,12 +15,17 @@ export default class DarkMode extends Base {
 
   private theme = "sh-dm-dark-mode";
 
-  private EXIT_SHORTCUT = "esc";
-
   private defaultOptions: DarkModeOptions = {
     lat: "",
     long: "",
   };
+
+  constructor(helper: DomHelper) {
+    super(helper, {
+      shouldRecord: true,
+      esc2exit: true,
+    });
+  }
 
   start() {
     this.exec(document.body, {});
@@ -49,13 +54,6 @@ export default class DarkMode extends Base {
 
     this.unbindFns.push(() => {
       $("html").attr("theme", "");
-    });
-
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const that = this;
-    keyboardJS.bind(this.EXIT_SHORTCUT, function exitDarkMode() {
-      keyboardJS.unbind(that.EXIT_SHORTCUT, exitDarkMode);
-      that.exit();
     });
 
     return true;

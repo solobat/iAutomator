@@ -91,6 +91,7 @@ export const BUILDIN_ACTIONS = {
   FULL_SCREEN: "fullScreen",
   TIME_UPDATE: "timeupdate",
   CLICK: "click",
+  SCROLL: "scroll",
   FOCUS: "focus",
   PROTECT: "protect",
   PICTURE_IN_PICTURE: "pictureInPicture",
@@ -172,6 +173,12 @@ export const BUILDIN_ACTION_CONFIGS = [
     title: t("click"),
     contexts: ["all"],
     asCommand: false,
+  },
+  {
+    name: "SCROLL",
+    title: t("scroll"),
+    contexts: ["all"],
+    asCommand: true,
   },
   {
     name: "FOCUS",
@@ -370,6 +377,19 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
   {
     value: BUILDIN_ACTIONS.CLICK,
     label: "Click",
+  },
+  {
+    value: BUILDIN_ACTIONS.SCROLL,
+    label: "Scroll",
+    args: [
+      {
+        tips: "Speed of scrolling with unit px/s",
+        name: "speed",
+        type: "number",
+        value: 20,
+        defaultValue: 20,
+      },
+    ],
   },
   {
     value: BUILDIN_ACTIONS.GOTO_ELEMENT,

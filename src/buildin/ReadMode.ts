@@ -1,4 +1,4 @@
-import Base, { ExecOptions } from "./Base";
+import Base, { DomHelper, ExecOptions } from "./Base";
 import { BUILDIN_ACTIONS } from "../common/const";
 import keyboardJS from "keyboardjs";
 import $ from "jquery";
@@ -14,6 +14,13 @@ export default class ReadMode extends Base {
     "#ext-hp-outline",
     ".ext-hp-btn",
   ];
+
+  constructor(helper: DomHelper) {
+    super(helper, {
+      shouldRecord: true,
+      esc2exit: true,
+    });
+  }
 
   exec(elem, options?: ExecOptions) {
     const $elem = $(elem);
@@ -103,19 +110,11 @@ export default class ReadMode extends Base {
   }
 
   private hideSiblings($el) {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const that = this;
-
     if ($el && $el.length) {
       this.hideEl($el.siblings().not(this.excludes));
       this.hideSiblings($el.parent());
     } else {
-      keyboardJS.bind("esc", function showNode() {
-        that.showEl($(that.selector));
-        that.helper.resetActionCache();
-        keyboardJS.unbind("esc", showNode);
-        that.exit();
-      });
+      this.unbindFns.push(() => this.showEl($(this.selector)));
     }
   }
 }

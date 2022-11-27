@@ -1,5 +1,5 @@
 import { NOTICE_TARGET } from "../common/enum";
-
+import { Emitter, EventType } from "mitt";
 interface execFn {
   (elem, event): void;
 }
@@ -19,6 +19,7 @@ export interface DomHelper {
   actions: Base[];
   observe: (elem, cb: () => void) => void;
   onRevisible: (fn: () => void) => () => void;
+  emitter: Emitter<Record<EventType, unknown>>;
 }
 
 export interface ExecOptions {
@@ -29,6 +30,11 @@ export interface ExecOptions {
 
 export const defaultExecOptions: ExecOptions = {};
 
+interface ActionOptions {
+  shouldRedo?: boolean;
+  esc2exit?: boolean;
+  shouldRecord?: boolean;
+}
 export default class Base {
   name: string;
   helper: DomHelper;
@@ -41,8 +47,16 @@ export default class Base {
   shouldRecord?: boolean;
   unbindFns: Array<() => void>;
   options?: ExecOptions;
+  esc2exit: boolean;
 
-  constructor(helper: DomHelper) {
+  constructor(
+    helper: DomHelper,
+    options: ActionOptions = { shouldRedo: false, esc2exit: false }
+  ) {
+    this.shouldRedo = options.shouldRedo;
+    this.esc2exit = options.esc2exit;
+    this.shouldRecord = options.shouldRecord;
+
     this.helper = helper;
     this.unbindFns = [];
     helper.actions.push(this);
@@ -87,13 +101,30 @@ export default class Base {
   }
 
   bindEvents() {
-    // noop
+    if (this.esc2exit) {
+      this.helper.emitter.on("exit", () => {
+        const shouldContinue = this.beforeExit();
+
+        if (shouldContinue) {
+          this.exit();
+          this.afterExit();
+        }
+      });
+    }
   }
 
   recordIfNeeded(options: ExecOptions, elem?) {
     if (this.shouldRecord && !options.silent) {
       this.helper.recordAction(this.name, elem, options);
     }
+  }
+
+  beforeExit(): boolean {
+    return true;
+  }
+
+  afterExit() {
+    return;
   }
 
   exit() {

@@ -5,6 +5,7 @@ import { noticeBg } from "./event";
 import { PAGE_ACTIONS, REDO_DELAY, ROUTE_CHANGE_TYPE } from "../common/const";
 import Base, { DomHelper, ExecOptions } from "../buildin/Base";
 import { appBridge } from "./bridge";
+import mitt from "mitt";
 import Download from "../buildin/Download";
 import FullScreen from "../buildin/FullScreen";
 import HashElement from "../buildin/HashElement";
@@ -13,6 +14,7 @@ import KillElement from "../buildin/KillElement";
 import ReadMode from "../buildin/ReadMode";
 import TimeUpdate from "../buildin/TimeUpdate";
 import ClickElement from "../buildin/Click";
+import Scroll from "../buildin/Scroll";
 import FocusElement from "../buildin/Focus";
 import ProtectPage from "../buildin/Protect";
 import CodeCopy from "../buildin/CodeCopy";
@@ -24,7 +26,6 @@ import DarkMode from "../buildin/DarkMode";
 import Outline from "../buildin/Outline";
 import Button from "../buildin/Button";
 import Bookmark from "../buildin/Bookmark";
-import mitt from "mitt";
 
 let isSetup, stop, cssInserted;
 
@@ -348,6 +349,8 @@ const helper: DomHelper = {
   observe,
 
   onRevisible,
+
+  emitter,
 };
 
 function onRevisible(fn: () => void) {
@@ -365,12 +368,22 @@ function setupRevisible(cb: () => void) {
       cb();
     }
     hidden = newHidden;
+    helper.emitter.emit("visibilitychange", newHidden);
   };
   document.addEventListener("visibilitychange", onChange);
 }
 
+function setupEsc(cb: () => void) {
+  keyboardJS.bind("esc", function onEsc() {
+    cb();
+    this.helper.resetActionCache();
+    keyboardJS.unbind("esc", onEsc);
+  });
+}
+
 function setupEvents() {
   setupRevisible(() => emitter.emit("revisible"));
+  setupEsc(() => emitter.emit("exit"));
 }
 
 function install() {
@@ -383,6 +396,7 @@ function install() {
   new ReadMode(helper);
   new TimeUpdate(helper);
   new ClickElement(helper);
+  new Scroll(helper);
   new FocusElement(helper);
   new ProtectPage(helper);
   new CodeCopy(helper);
