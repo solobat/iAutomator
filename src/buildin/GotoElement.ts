@@ -1,4 +1,4 @@
-import Base, { ExecOptions, defaultExecOptions } from "./Base";
+import Base, { ExecOptions } from "./Base";
 import { BUILDIN_ACTIONS } from "../common/const";
 import keyboardJS from "keyboardjs";
 import $ from "jquery";
@@ -16,7 +16,7 @@ export default class GotoElement extends Base {
     this.exec(document.body, {});
   }
 
-  checkExecResult(elem, options?: ExecOptions) {
+  checkExecResult() {
     if (!this.inited) {
       this.autoMationFn();
     }

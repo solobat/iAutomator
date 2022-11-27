@@ -1,4 +1,4 @@
-import Base, { ExecOptions, defaultExecOptions } from "./Base";
+import Base, { ExecOptions } from "./Base";
 import { BUILDIN_ACTIONS } from "../common/const";
 import { copyToClipboard } from "../helper/others";
 import $ from "jquery";
@@ -30,7 +30,7 @@ export default class CodeCopy extends Base {
     });
   }
 
-  checkExecResult(elem, options?: CodeCopyExecOptions) {
+  checkExecResult() {
     if (!this.inited) {
       this.autoMationFn();
     }

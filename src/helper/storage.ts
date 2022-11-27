@@ -1,6 +1,6 @@
 import browser from "webextension-polyfill";
 
-export function getAll(tabId, params = {}) {
+export function getAll(tabId) {
   return browser.tabs.sendMessage(tabId, {
     method: "getLocalStorage",
   });
@@ -15,7 +15,7 @@ export default async function hanlder(req) {
 
   if (action === "storages.getAll") {
     const tabs = await getTab();
-    return getAll(data.tabId || tabs[0].id, data);
+    return getAll(data.tabId || tabs[0].id);
   } else {
     return Promise.resolve({});
   }

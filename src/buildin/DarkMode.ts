@@ -1,6 +1,5 @@
-import Base, { ExecOptions, defaultExecOptions, DomHelper } from "./Base";
+import Base, { ExecOptions, DomHelper } from "./Base";
 import { BUILDIN_ACTIONS } from "../common/const";
-import keyboardJS from "keyboardjs";
 import { isDark } from "../helper/sun";
 import $ from "jquery";
 

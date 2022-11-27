@@ -1,7 +1,5 @@
 import cuid from "cuid";
 
-const STORAGE_KEY = "ihelpers_cuid";
-
 function initCuid() {
   const id = cuid();
 

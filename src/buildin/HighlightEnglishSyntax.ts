@@ -1,4 +1,4 @@
-import Base, { ExecOptions } from "./Base";
+import Base from "./Base";
 import { BUILDIN_ACTIONS } from "../common/const";
 import { NOTICE_TARGET } from "../common/enum";
 import $ from "jquery";
@@ -6,7 +6,7 @@ import $ from "jquery";
 export default class HighlightEnglishSyntax extends Base {
   name = BUILDIN_ACTIONS.HIGHLIGHT_ENGLISH_SYNTAX;
 
-  exec(elem, options?: ExecOptions) {
+  exec(elem) {
     const $elem = $(elem);
 
     if ($elem.length) {

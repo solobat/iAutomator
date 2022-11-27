@@ -11,7 +11,7 @@ export async function exportAndDownload() {
 function readBlob(blob) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onabort = (ev) => reject(new Error("file read aborted"));
+    reader.onabort = () => reject(new Error("file read aborted"));
     reader.onerror = (event) => reject(event.target.error);
     reader.onload = (event) => resolve(event.target.result);
     reader.readAsText(blob);

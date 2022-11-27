@@ -1,4 +1,4 @@
-import Base, { ExecOptions, defaultExecOptions } from "./Base";
+import Base, { ExecOptions } from "./Base";
 import { BUILDIN_ACTIONS } from "../common/const";
 import $ from "jquery";
 
@@ -41,7 +41,7 @@ export default class Button extends Base {
     return;
   }
 
-  checkExecResult(elem, options?: ButtonExecOptions) {
+  checkExecResult() {
     this.autoMationFn();
   }
 
@@ -51,7 +51,7 @@ export default class Button extends Base {
     );
   }
 
-  private insertTopButton(elem, options: ButtonExecOptions) {
+  private insertTopButton() {
     const $top = this.createBtn("top", "icon-direction-up");
 
     $top.on("click", () => {
@@ -64,10 +64,14 @@ export default class Button extends Base {
   }
 
   private insertToggleButton(scope: HTMLDocument, options: ButtonExecOptions) {
-    let nextPageEl: any;
+    let nextPageEl: HTMLElement;
     const { mh = 40 } = options;
 
-    const insertButton = (el: any, next: any, isFirst: boolean) => {
+    const insertButton = (
+      el: HTMLElement,
+      next: HTMLElement,
+      isFirst: boolean
+    ) => {
       const $toggle = this.createBtn("toggle", "icon-direction-down-circle");
 
       let [cur, reset] = [
@@ -160,7 +164,7 @@ export default class Button extends Base {
   exec(elem, options: ButtonExecOptions) {
     const { type } = options;
     if (type === "top") {
-      this.insertTopButton(elem, options);
+      this.insertTopButton();
     } else if (type === "toggle") {
       this.insertToggleButton(elem, options);
     } else if (type === "shortcut") {

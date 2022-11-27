@@ -43,7 +43,7 @@ export default class ReadMode extends Base {
     return true;
   }
 
-  checkExecResult(elem, options?: ExecOptions) {
+  checkExecResult(elem) {
     const result = document.body.contains(elem);
     if (!result) {
       this.autoMationFn();

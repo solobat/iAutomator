@@ -4,7 +4,6 @@ import throttle from "lodash/throttle";
 
 export default class TimeUpdate extends Base {
   name = BUILDIN_ACTIONS.TIME_UPDATE;
-  shouldRecord = true;
 
   constructor(helper: DomHelper) {
     super(helper, {

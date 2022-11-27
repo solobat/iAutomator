@@ -81,7 +81,7 @@ export default class Download extends Base {
     }
   }
 
-  checkExecResult(elem, options?: ExecOptions) {
+  checkExecResult() {
     if (!this.downloaded) {
       this.autoMationFn();
     }

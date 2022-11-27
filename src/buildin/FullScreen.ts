@@ -1,4 +1,4 @@
-import Base, { ExecOptions } from "./Base";
+import Base from "./Base";
 import { BUILDIN_ACTIONS } from "../common/const";
 import $ from "jquery";
 
@@ -54,7 +54,7 @@ export default class FullScreen extends Base {
   }
 
   bindEvents() {
-    document.addEventListener("fullscreenchange", (event) => {
+    document.addEventListener("fullscreenchange", () => {
       if (!document.fullscreenElement) {
         if (this.unsetFullScreenElem) {
           this.unsetFullScreenElem();
@@ -63,7 +63,7 @@ export default class FullScreen extends Base {
     });
   }
 
-  exec(elem, options?: ExecOptions) {
+  exec(elem) {
     if (elem.requestFullscreen) {
       this.unsetFullScreenElem = this.setupFullScreenElem(elem, event);
       requestAnimationFrame(() => {

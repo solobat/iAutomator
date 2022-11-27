@@ -35,13 +35,14 @@ interface ActionOptions {
   esc2exit?: boolean;
   shouldRecord?: boolean;
 }
-export default class Base {
+export default abstract class Base {
   name: string;
   helper: DomHelper;
   autoMationFn?: () => void;
-  redo?: (type: string) => void;
+
   shouldRedo = false;
   ready = false;
+  active = false;
   cls?: string;
   style?: string;
   shouldRecord?: boolean;
@@ -60,14 +61,14 @@ export default class Base {
     this.helper = helper;
     this.unbindFns = [];
     helper.actions.push(this);
-    this.bindEvents();
+    this._bindEvents();
   }
 
   get selector() {
     return `.${this.cls}`;
   }
 
-  // only called by UI
+  // NOTE: only called by UI, automation will not call this method
   start() {
     this.helper.exec((elem, event) => {
       const options: ExecOptions = {
@@ -92,15 +93,19 @@ export default class Base {
     return result;
   }
 
-  exec(elem, options?: ExecOptions): boolean {
-    return true;
-  }
+  // the main logic of the action
+  abstract exec(elem, options?: ExecOptions): boolean;
 
   checkExecResult(elem, options?: ExecOptions) {
     // if not ready --> this.autoMationFn()
   }
 
-  bindEvents() {
+  redo(type: string) {
+    console.log("redo caused by: ", type);
+  }
+
+  private _bindEvents() {
+    this.bindEvents();
     if (this.esc2exit) {
       this.helper.emitter.on("exit", () => {
         const shouldContinue = this.beforeExit();
@@ -111,6 +116,10 @@ export default class Base {
         }
       });
     }
+  }
+
+  bindEvents() {
+    return;
   }
 
   recordIfNeeded(options: ExecOptions, elem?) {
@@ -127,7 +136,7 @@ export default class Base {
     return;
   }
 
-  exit() {
+  private exit() {
     this.unbindFns.forEach((fn) => {
       fn();
     });

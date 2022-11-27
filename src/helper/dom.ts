@@ -6,26 +6,8 @@ import { PAGE_ACTIONS, REDO_DELAY, ROUTE_CHANGE_TYPE } from "../common/const";
 import Base, { DomHelper, ExecOptions } from "../buildin/Base";
 import { appBridge } from "./bridge";
 import mitt from "mitt";
-import Download from "../buildin/Download";
-import FullScreen from "../buildin/FullScreen";
-import HashElement from "../buildin/HashElement";
-import HighlightEnglishSyntax from "../buildin/HighlightEnglishSyntax";
-import KillElement from "../buildin/KillElement";
-import ReadMode from "../buildin/ReadMode";
-import TimeUpdate from "../buildin/TimeUpdate";
-import ClickElement from "../buildin/Click";
-import Scroll from "../buildin/Scroll";
-import FocusElement from "../buildin/Focus";
-import ProtectPage from "../buildin/Protect";
-import CodeCopy from "../buildin/CodeCopy";
-import GotoElement from "../buildin/GotoElement";
-import PictureInPicture from "../buildin/PictureInPicture";
-import ZenMode from "../buildin/ZenMode";
+
 import { RunAt } from "../server/enum/Automation.enum";
-import DarkMode from "../buildin/DarkMode";
-import Outline from "../buildin/Outline";
-import Button from "../buildin/Button";
-import Bookmark from "../buildin/Bookmark";
 
 let isSetup, stop, cssInserted;
 
@@ -38,7 +20,6 @@ function insertCss() {
   if (!cssInserted) {
     const css = document.createElement("style");
 
-    css.type = "text/css";
     css.innerHTML = `
     @font-face {
       font-family: 'iconfont';  /* Project id 2357955 */
@@ -157,10 +138,6 @@ function setup() {
   }
 }
 
-function getOutlinedElem() {
-  return $(`.${outlineCls}`).get(0);
-}
-
 export function exec(fn) {
   setup();
   startOutline(fn);
@@ -202,12 +179,8 @@ function getAction(
   }
 }
 
-function openOutline() {
-  exec(() => true);
-}
-
 window.addEventListener("message", (event) => {
-  const { action, callbackId } = event.data;
+  const { callbackId } = event.data;
 
   if (callbackId) {
     appBridge.receiveMessage(event.data);
@@ -285,6 +258,7 @@ export function exceAutomation(content, times = 0, runAt: RunAt) {
       };
     }
     instance.run(elem, options);
+    instance.active = true;
   }
 
   if (elem) {
@@ -300,7 +274,7 @@ export function exceAutomation(content, times = 0, runAt: RunAt) {
 
 declare global {
   interface Window {
-    exceAutomation: any;
+    exceAutomation: (content: string, times: number, runAt: RunAt) => void;
   }
 }
 
@@ -308,7 +282,7 @@ window.exceAutomation = exceAutomation;
 
 function observe(elem, cb: () => void) {
   const config = { childList: true, subtree: true };
-  const callback = (mutationsList, observer) => {
+  const callback: MutationCallback = () => {
     const done = () => {
       cb();
     };
@@ -373,43 +347,22 @@ function setupRevisible(cb: () => void) {
   document.addEventListener("visibilitychange", onChange);
 }
 
-function setupEsc(cb: () => void) {
+function setupEsc(cb: () => void, helper: DomHelper) {
   keyboardJS.bind("esc", function onEsc() {
     cb();
-    this.helper.resetActionCache();
-    keyboardJS.unbind("esc", onEsc);
+    helper.resetActionCache();
   });
 }
 
-function setupEvents() {
+function setupEvents(helper: DomHelper) {
   setupRevisible(() => emitter.emit("revisible"));
-  setupEsc(() => emitter.emit("exit"));
+  setupEsc(() => emitter.emit("exit"), helper);
 }
 
-function install() {
-  setupEvents();
-  new Download(helper);
-  new FullScreen(helper);
-  new HashElement(helper);
-  new HighlightEnglishSyntax(helper);
-  new KillElement(helper);
-  new ReadMode(helper);
-  new TimeUpdate(helper);
-  new ClickElement(helper);
-  new Scroll(helper);
-  new FocusElement(helper);
-  new ProtectPage(helper);
-  new CodeCopy(helper);
-  new GotoElement(helper);
-  new PictureInPicture(helper);
-  new ZenMode(helper);
-  new DarkMode(helper);
-  new Outline(helper);
-  new Button(helper);
-  new Bookmark(helper);
+export function install(actionFns: (helper: DomHelper) => void) {
+  setupEvents(helper);
+  actionFns(helper);
 }
-
-install();
 
 function findAction(name: string): Base | null {
   return helper.actions.find((item) => item.name === name);
@@ -433,23 +386,11 @@ export function startAction(actionName: string) {
   }
 }
 
-export default function (req) {
-  const { data, action } = req;
-
-  if (action === "dom.outline") {
-    openOutline();
-
-    return Promise.resolve({});
-  } else {
-    return Promise.resolve({});
-  }
-}
-
 function onStateChange(type: string) {
   const actions = helper.actions.filter((item) => item.shouldRedo);
 
   actions.forEach((item) => {
-    if (item.redo) {
+    if (item.redo && item.active) {
       item.redo(type);
     }
   });
@@ -475,7 +416,7 @@ function listenEventsAndRedoActions() {
   });
 }
 
-function startAutomations() {
+function fetchAndRunAutomations() {
   noticeBg(
     {
       action: PAGE_ACTIONS.AUTOMATIONS,
@@ -517,4 +458,4 @@ function execAutomations(automations, runAt: RunAt) {
   });
 }
 
-startAutomations();
+fetchAndRunAutomations();

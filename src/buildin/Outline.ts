@@ -24,7 +24,7 @@ export default class Outline extends Base {
     this.exec(document.body, {});
   }
 
-  private getParent(node: any, level: number) {
+  private getParent(node: OutlineNode, level: number) {
     let pNode = node;
 
     while (pNode.parent) {
@@ -111,7 +111,7 @@ export default class Outline extends Base {
     }
   }
 
-  private createOutlineBtn(scope: any, options?: ExecOptions) {
+  private createOutlineBtn(scope: string, options?: ExecOptions) {
     const pos = options.pos || "tr";
     const html = `
 <div id="${this.cls}" class="${pos}">
@@ -133,7 +133,7 @@ export default class Outline extends Base {
     $("#ext-hp-outline .content > ul").toggle();
   }
 
-  private createOutline(scope: any, options?: ExecOptions) {
+  private createOutline(scope: string, options?: ExecOptions) {
     const elems = this.generateOutline(scope);
     const outline = this.renderOutline(elems, options);
 

@@ -1,5 +1,5 @@
 import Base, { DomHelper, ExecOptions } from "./Base";
-import { BUILDIN_ACTIONS } from "../common/const";
+import { BUILDIN_ACTIONS, ROUTE_CHANGE_TYPE } from "../common/const";
 
 interface ScrollExecOptions extends ExecOptions {
   // unit: px/s
@@ -8,14 +8,13 @@ interface ScrollExecOptions extends ExecOptions {
 
 export default class Scroll extends Base {
   name = BUILDIN_ACTIONS.SCROLL;
-  shouldRecord = true;
-  esc2exit = true;
 
   constructor(helper: DomHelper) {
-    super(helper, { esc2exit: true });
+    super(helper, { esc2exit: true, shouldRecord: true, shouldRedo: true });
   }
 
-  private scrolling = true;
+  private afId = 0;
+  private speed = 20;
   private scrollToSmoothly(pos: number, time: number) {
     const currentPos = window.pageYOffset;
     let start = null;
@@ -28,10 +27,6 @@ export default class Scroll extends Base {
     time = +time;
 
     const step = (currentTime: number) => {
-      if (!this.scrolling) {
-        return;
-      }
-
       start = !start ? currentTime : start;
       const progress = currentTime - start;
       if (currentPos < pos) {
@@ -40,36 +35,49 @@ export default class Scroll extends Base {
         window.scrollTo(0, currentPos - ((currentPos - pos) * progress) / time);
       }
       if (progress < time) {
-        window.requestAnimationFrame(step);
+        this.afId = window.requestAnimationFrame(step);
       } else {
         window.scrollTo(0, pos);
       }
     };
 
-    window.requestAnimationFrame(step);
+    this.afId = window.requestAnimationFrame(step);
+  }
+
+  private stopScroll() {
+    window.cancelAnimationFrame(this.afId);
   }
 
   private startScroll(speed: number) {
-    const scrollHeight = document.body.scrollHeight;
-    this.scrollToSmoothly(scrollHeight, (scrollHeight / speed) * 1000);
+    const restHeight = document.body.scrollHeight - window.pageYOffset;
+    this.scrollToSmoothly(
+      document.body.scrollHeight,
+      (restHeight / speed) * 1000
+    );
   }
 
   private initScroll(speed: number) {
+    this.speed = speed;
     this.startScroll(speed);
     const onVisibleChange = (hidden: boolean) => {
-      if (!this.scrolling && !hidden) {
+      if (hidden) {
+        this.stopScroll();
+      } else {
         this.startScroll(speed);
       }
-      this.scrolling = !hidden;
     };
     this.helper.emitter.on("visibilitychange", onVisibleChange);
 
     this.unbindFns.push(() => {
-      this.scrolling = false;
+      this.stopScroll();
     });
-    this.unbindFns.push(() =>
-      this.helper.emitter.off("visibilitychange", onVisibleChange)
-    );
+  }
+
+  redo(type: string) {
+    if (type !== ROUTE_CHANGE_TYPE.POP_STATE) {
+      window.scrollTo(0, 0);
+      this.startScroll(this.speed);
+    }
   }
 
   exec(elem, options?: ScrollExecOptions) {
