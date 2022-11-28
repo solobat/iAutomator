@@ -17,6 +17,8 @@ const local_i18n = {
     zen_mode: "Zen mode",
     outline: "Outline",
     button: "Button",
+    bookmark: "Bookmark",
+    scroll: "Scroll",
   },
   zh_CN: {
     read_mode: "阅读模式",
@@ -36,6 +38,8 @@ const local_i18n = {
     zen_mode: "禅模式",
     outline: "大纲",
     button: "按钮",
+    bookmark: "书签",
+    scroll: "自动滚动",
   },
 };
 
@@ -238,7 +242,7 @@ export interface BUILDIN_ACTION_FIELD_CONFIG {
 export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
   {
     value: BUILDIN_ACTIONS.READ_MODE,
-    label: "Read Mode",
+    label: t("read_mode"),
     args: [
       {
         tips: "metaKey",
@@ -251,7 +255,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
   },
   {
     value: BUILDIN_ACTIONS.DARK_MODE,
-    label: "Dark Mode",
+    label: t("dark_mode"),
     args: [
       {
         tips: "Longitude",
@@ -267,7 +271,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
   },
   {
     value: BUILDIN_ACTIONS.BOOKMARK,
-    label: "Bookmark",
+    label: t("bookmark"),
     args: [
       {
         tips: "CSS-Selector of the target items",
@@ -290,57 +294,10 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
       },
     ],
   },
-  {
-    value: BUILDIN_ACTIONS.ZEN_MODE,
-    label: "Zen Mode",
-    args: [
-      {
-        tips: "Text to be displayed",
-        name: "word",
-        type: "string",
-        value: "Zen",
-        defaultValue: "Zen",
-      },
-      {
-        tips: "How long to delay displaying the page",
-        name: "delay",
-        type: "string",
-        value: 0,
-        defaultValue: 0,
-        placeholder: "0 means never display",
-      },
-      {
-        tips: "Background Color",
-        name: "bgcolor",
-        type: "string",
-        value: "#35363a",
-        defaultValue: "#35363a",
-      },
-      {
-        tips: "Font Color",
-        name: "color",
-        type: "string",
-        value: "#ffffff",
-        defaultValue: "#ffffff",
-      },
-    ],
-  },
-  {
-    value: BUILDIN_ACTIONS.PICTURE_IN_PICTURE,
-    label: "PIP Mode",
-    args: [],
-  },
-  {
-    value: BUILDIN_ACTIONS.HASH_ELEMENT,
-    label: "Add anchor for elements",
-  },
-  {
-    value: BUILDIN_ACTIONS.TIME_UPDATE,
-    label: "Add time tag for video",
-  },
+
   {
     value: BUILDIN_ACTIONS.CODE_COPY,
-    label: "Code copy",
+    label: t("code_copy"),
     args: [
       {
         tips: "child of <pre> tag",
@@ -376,11 +333,11 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
   },
   {
     value: BUILDIN_ACTIONS.CLICK,
-    label: "Click",
+    label: t("click"),
   },
   {
     value: BUILDIN_ACTIONS.SCROLL,
-    label: "Scroll",
+    label: t("scroll"),
     args: [
       {
         tips: "Speed of scrolling with unit px/s",
@@ -391,9 +348,99 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
       },
     ],
   },
+
+  {
+    value: BUILDIN_ACTIONS.BUTTON,
+    label: t("button"),
+    args: [
+      {
+        tips: "Button Type, available types are: {top|toggle|shortcut|translate}",
+        name: "type",
+        type: "string",
+        value: "",
+        defaultValue: "",
+      },
+      {
+        tips: "CSS selector of the items",
+        name: "item",
+        type: "string",
+        value: "",
+        defaultValue: "",
+        placeholder: "css selector",
+      },
+      {
+        tips: "Position of btn",
+        name: "pos",
+        type: "string",
+        value: "",
+        defaultValue: "",
+        placeholder: "tl|tr|bl|br",
+      },
+      {
+        tips: "Min-height of btn",
+        name: "mh",
+        type: "string",
+        value: 35,
+        defaultValue: 35,
+      },
+    ],
+  },
+  {
+    value: BUILDIN_ACTIONS.OUTLINE,
+    label: t("outline"),
+  },
+  {
+    value: BUILDIN_ACTIONS.ZEN_MODE,
+    label: t("zen_mode"),
+    args: [
+      {
+        tips: "Text to be displayed",
+        name: "word",
+        type: "string",
+        value: "Zen",
+        defaultValue: "Zen",
+      },
+      {
+        tips: "How long to delay displaying the page",
+        name: "delay",
+        type: "string",
+        value: 0,
+        defaultValue: 0,
+        placeholder: "0 means never display",
+      },
+      {
+        tips: "Background Color",
+        name: "bgcolor",
+        type: "string",
+        value: "#35363a",
+        defaultValue: "#35363a",
+      },
+      {
+        tips: "Font Color",
+        name: "color",
+        type: "string",
+        value: "#ffffff",
+        defaultValue: "#ffffff",
+      },
+    ],
+  },
+  {
+    value: BUILDIN_ACTIONS.PICTURE_IN_PICTURE,
+    label: t("start_pip_mode"),
+    args: [],
+  },
+  {
+    value: BUILDIN_ACTIONS.HASH_ELEMENT,
+    label: t("add_anchor_for_elements"),
+  },
+  {
+    value: BUILDIN_ACTIONS.TIME_UPDATE,
+    label: t("add_time_tag_for_video"),
+  },
+
   {
     value: BUILDIN_ACTIONS.GOTO_ELEMENT,
-    label: "Goto element",
+    label: t("goto_element"),
     args: [
       {
         tips: "Auto Goto",
@@ -425,42 +472,6 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         value: "",
         defaultValue: "",
         placeholder: "[.selector,fn]",
-      },
-    ],
-  },
-  {
-    value: BUILDIN_ACTIONS.BUTTON,
-    label: "Add button",
-    args: [
-      {
-        tips: "Button Type, available types are: {top|toggle|shortcut|translate}",
-        name: "type",
-        type: "string",
-        value: "",
-        defaultValue: "",
-      },
-      {
-        tips: "CSS selector of the items",
-        name: "item",
-        type: "string",
-        value: "",
-        defaultValue: "",
-        placeholder: "css selector",
-      },
-      {
-        tips: "Position of btn",
-        name: "pos",
-        type: "string",
-        value: "",
-        defaultValue: "",
-        placeholder: "tl|tr|bl|br",
-      },
-      {
-        tips: "Min-height of btn",
-        name: "mh",
-        type: "string",
-        value: 35,
-        defaultValue: 35,
       },
     ],
   },
