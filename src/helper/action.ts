@@ -1,23 +1,25 @@
-import $ from "jquery";
-import keyboardJS from "keyboardjs";
 import getCssSelector from "css-selector-generator";
-import { noticeBg } from "./event";
-import { PAGE_ACTIONS, REDO_DELAY, ROUTE_CHANGE_TYPE } from "../common/const";
-import Base from "../buildin/Base";
-import { appBridge } from "./bridge";
+import keyboardJS from "keyboardjs";
 import mitt from "mitt";
 
-import { RunAt } from "../server/enum/Automation.enum";
+import { ActionHelper, ExecOptions } from "@src/buildin/types";
 import { IAutomation } from "@src/server/db/database";
+
+import Base from "../buildin/Base";
+import { PAGE_ACTIONS, REDO_DELAY, ROUTE_CHANGE_TYPE } from "../common/const";
+import { RunAt } from "../server/enum/Automation.enum";
+import { appBridge } from "./bridge";
 import {
   getElem,
   insertCss,
   listenRouteChangeEvents,
   observe,
+  onReady,
   setupOutline,
   startOutline,
 } from "./dom";
-import { ActionHelper, ExecOptions } from "@src/buildin/types";
+import { noticeBg } from "./event";
+import { Stack } from "./data";
 
 let isSetup;
 const emitter = mitt();
@@ -147,7 +149,6 @@ export function exceAutomation(content, times = 0, runAt: RunAt) {
       };
     }
     instance.makeExecution(elem, options);
-    instance.active = true;
   }
 
   if (elem) {
@@ -199,7 +200,7 @@ export const helper: ActionHelper<Base> = {
 
   actions: [],
 
-  activeActions: [],
+  activeActions: Stack(),
 
   observe,
 
@@ -301,7 +302,7 @@ function fetchAndRunAutomations() {
 
         execAutomations(immediateItems, RunAt.START);
 
-        $(() => {
+        onReady(() => {
           helper.insertCss(getStyles());
           execAutomations(readyItems, RunAt.END);
 

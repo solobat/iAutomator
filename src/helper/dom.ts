@@ -1,5 +1,6 @@
 import $ from "jquery";
 import keyboardJS from "keyboardjs";
+
 import { ROUTE_CHANGE_TYPE } from "../common/const";
 
 let stop, cssInserted;
@@ -149,4 +150,8 @@ export function listenRouteChangeEvents(onChange: (type: string) => void) {
   window.addEventListener("popstate", () => {
     onChange(ROUTE_CHANGE_TYPE.POP_STATE);
   });
+}
+
+export function onReady(fn: () => void) {
+  $(fn);
 }

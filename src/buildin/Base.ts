@@ -6,7 +6,7 @@ export default abstract class Base<T extends ExecOptions = ExecOptions> {
   autoMationFn?: () => void;
 
   ready = false;
-  active = false;
+  private _active = false;
   cls?: string;
   style?: string;
   resetFns: Array<() => void>;
@@ -38,6 +38,22 @@ export default abstract class Base<T extends ExecOptions = ExecOptions> {
     return `.${this.cls}`;
   }
 
+  get active() {
+    return this._active;
+  }
+
+  // NOTE: only esc2exit can set active to false
+  set active(val: boolean) {
+    if (val !== this._active) {
+      if (val) {
+        this.helper.activeActions.push(this);
+      } else {
+        this.helper.activeActions.pop();
+      }
+      this._active = val;
+    }
+  }
+
   // NOTE: only called by UI, automation will not call this method
   startByCommand() {
     this.helper.prepare((elem, event) => {
@@ -55,7 +71,9 @@ export default abstract class Base<T extends ExecOptions = ExecOptions> {
   makeExecution(elem, options: Partial<T>) {
     this.runtimeOptions = options;
     const result = this.execute(elem, options);
-
+    if (this.options.esc2exit) {
+      this.active = true;
+    }
     if (result) {
       setTimeout(() => {
         this.checkExecResult(elem, options);
@@ -80,11 +98,19 @@ export default abstract class Base<T extends ExecOptions = ExecOptions> {
     this.bindEvents();
     if (this.options.esc2exit) {
       this.helper.emitter.on("exit", () => {
-        const shouldContinue = this.beforeExit();
+        // NOTE: only the top action should to call exit
+        if (this.helper.activeActions.top() === this) {
+          // FIXME: avoid to affect other action
+          setTimeout(() => {
+            this.active = false;
+          });
 
-        if (shouldContinue) {
-          this.exit();
-          this.afterExit();
+          const shouldContinue = this.beforeExit();
+
+          if (shouldContinue) {
+            this.exit();
+            this.afterExit();
+          }
         }
       });
     }
@@ -115,7 +141,6 @@ export default abstract class Base<T extends ExecOptions = ExecOptions> {
   }
 
   private exit() {
-    this.active = false;
     this.resetFns.forEach((fn) => {
       fn();
     });

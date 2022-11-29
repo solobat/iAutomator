@@ -1,5 +1,7 @@
-import { NOTICE_TARGET } from "@src/common/enum";
 import { Emitter, EventType } from "mitt";
+
+import { NOTICE_TARGET } from "@src/common/enum";
+import { Stack } from "@src/helper/data";
 
 export interface execFn {
   (elem, event): void;
@@ -18,7 +20,7 @@ export interface ActionHelper<A, T extends ExecOptions = ExecOptions> {
   insertCss(styles: string);
   invoke(action, data, callback, target: NOTICE_TARGET);
   actions: A[];
-  activeActions: A[];
+  activeActions: Stack<A>;
   observe: (elem, cb: () => void) => void;
   onRevisible: (fn: () => void) => () => void;
   emitter: Emitter<Record<EventType, unknown>>;
