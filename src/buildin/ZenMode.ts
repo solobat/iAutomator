@@ -2,7 +2,14 @@ import Base, { ExecOptions } from "./Base";
 import { BUILDIN_ACTIONS } from "../common/const";
 import $ from "jquery";
 
-export default class ZenMode extends Base {
+interface ZenModeExecOptions extends ExecOptions {
+  delay?: number;
+  bgcolor?: string;
+  color?: string;
+  word?: string;
+}
+
+export default class ZenMode extends Base<ZenModeExecOptions> {
   name = BUILDIN_ACTIONS.ZEN_MODE;
   shouldRecord = true;
   cls = "sh-zm-layer";

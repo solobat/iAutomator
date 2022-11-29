@@ -10,7 +10,7 @@ interface BookmarkExecOptions extends ExecOptions {
   notify?: boolean;
 }
 
-export default class Bookmark extends Base {
+export default class Bookmark extends Base<BookmarkExecOptions> {
   name = BUILDIN_ACTIONS.BOOKMARK;
   cls = "ext-hp-bookmark";
 

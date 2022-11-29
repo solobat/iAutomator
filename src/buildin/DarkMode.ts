@@ -8,7 +8,7 @@ interface DarkModeOptions extends ExecOptions {
   long?: string;
 }
 
-export default class DarkMode extends Base {
+export default class DarkMode extends Base<DarkModeOptions> {
   name = BUILDIN_ACTIONS.DARK_MODE;
   shouldRecord = true;
 

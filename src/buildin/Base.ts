@@ -1,5 +1,6 @@
 import { NOTICE_TARGET } from "../common/enum";
 import { Emitter, EventType } from "mitt";
+import { exceAutomationById } from "@src/helper/dom";
 interface execFn {
   (elem, event): void;
 }
@@ -25,6 +26,7 @@ export interface DomHelper {
 export interface ExecOptions {
   silent?: boolean;
   metaKey?: boolean;
+  next?: number;
   [prop: string]: any;
 }
 
@@ -35,7 +37,7 @@ interface ActionOptions {
   esc2exit?: boolean;
   shouldRecord?: boolean;
 }
-export default abstract class Base {
+export default abstract class Base<T extends ExecOptions = ExecOptions> {
   name: string;
   helper: DomHelper;
   autoMationFn?: () => void;
@@ -47,7 +49,7 @@ export default abstract class Base {
   style?: string;
   shouldRecord?: boolean;
   unbindFns: Array<() => void>;
-  options?: ExecOptions;
+  options?: T;
   esc2exit: boolean;
 
   constructor(
@@ -74,14 +76,14 @@ export default abstract class Base {
       const options: ExecOptions = {
         metaKey: event.metaKey,
       };
-      this.run(elem, options);
+      this.run(elem, options as T);
       this.ready = true;
     });
   }
 
   // called by UI or automation
   // run and check result if needed
-  run(elem, options) {
+  run(elem, options: T) {
     this.options = options;
     const result = this.exec(elem, options);
 
@@ -94,9 +96,9 @@ export default abstract class Base {
   }
 
   // the main logic of the action
-  abstract exec(elem, options?: ExecOptions): boolean;
+  abstract exec(elem, options?: T): boolean;
 
-  checkExecResult(elem, options?: ExecOptions) {
+  checkExecResult(elem, options?: T) {
     // if not ready --> this.autoMationFn()
   }
 
@@ -118,11 +120,17 @@ export default abstract class Base {
     }
   }
 
+  callNext() {
+    if (this.options.next) {
+      exceAutomationById(this.options.next);
+    }
+  }
+
   bindEvents() {
     return;
   }
 
-  recordIfNeeded(options: ExecOptions, elem?) {
+  recordIfNeeded(options: T, elem?) {
     if (this.shouldRecord && !options.silent) {
       this.helper.recordAction(this.name, elem, options);
     }

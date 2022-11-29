@@ -12,7 +12,7 @@ interface CodeCopyExecOptions extends ExecOptions {
   pos?: string;
 }
 
-export default class CodeCopy extends Base {
+export default class CodeCopy extends Base<CodeCopyExecOptions> {
   name = BUILDIN_ACTIONS.CODE_COPY;
   cls = "ext-hp-code-copy";
 
