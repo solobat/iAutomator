@@ -8,8 +8,10 @@ import { appBridge } from "./bridge";
 import mitt from "mitt";
 
 import { RunAt } from "../server/enum/Automation.enum";
+import { IAutomation } from "@src/server/db/database";
 
 let isSetup, stop, cssInserted;
+let automations: Array<IAutomation> = [];
 
 const outlineCls = "ext-hp-ms-over";
 const startOutlineEvt = "ext-hp-startoutline";
@@ -424,6 +426,7 @@ function fetchAndRunAutomations() {
     },
     (result) => {
       if (result.data && result.data.length) {
+        automations = result.data;
         const activeItems = result.data.filter((item) => item.active);
         const immediateItems = activeItems.filter(
           (item) => item.runAt === RunAt.START
@@ -456,6 +459,14 @@ function execAutomations(automations, runAt: RunAt) {
   automations.forEach((item) => {
     exceAutomation(item.instructions, 0, runAt);
   });
+}
+
+export function exceAutomationById(id: number) {
+  const item = automations.find((a) => a.id === id);
+
+  if (item) {
+    exceAutomation(item.instructions, 0, item.runAt);
+  }
 }
 
 fetchAndRunAutomations();

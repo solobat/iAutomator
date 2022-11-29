@@ -254,6 +254,11 @@ function AutomationEditor() {
 
 const AutomationsColumns = [
   {
+    title: "ID",
+    dataIndex: "id",
+    width: "50px",
+  },
+  {
     title: t("instructions"),
     dataIndex: "instructions",
     width: "300px",
