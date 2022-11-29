@@ -1,20 +1,23 @@
+import "./Popup.scss";
+
+import Tabs from "antd/es/tabs";
 import * as React from "react";
 import { useEffect, useReducer } from "react";
-import "./Popup.scss";
+
+import { t } from "@src/helper/i18n.helper";
+
+import { TabMeta } from "../../common/types";
+import { onDbUpdate } from "../../helper/db.helper";
 import { getTabs } from "../../helper/tab";
-import Tabs from "antd/es/tabs";
 import {
   ACTIONS,
-  pageReducer,
-  PageContext,
   getInitialState,
+  PageContext,
+  pageReducer,
   useModel,
 } from "../../store/modules/popup.store";
-import { TabMeta } from "../../common/types";
 import { AutomationsPanel } from "./components/Automation";
 import { Records } from "./components/Record";
-import { onDbUpdate } from "../../helper/db.helper";
-import { t } from "@src/helper/i18n.helper";
 
 export default function Page(props) {
   const [state, dispatch] = useReducer(pageReducer, getInitialState());

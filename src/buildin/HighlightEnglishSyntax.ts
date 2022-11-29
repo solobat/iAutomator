@@ -1,10 +1,18 @@
-import Base from "./Base";
+import $ from "jquery";
+
 import { BUILDIN_ACTIONS } from "../common/const";
 import { NOTICE_TARGET } from "../common/enum";
-import $ from "jquery";
+import Base from "./Base";
+import { ActionHelper } from "./types";
 
 export default class HighlightEnglishSyntax extends Base {
   name = BUILDIN_ACTIONS.HIGHLIGHT_ENGLISH_SYNTAX;
+
+  constructor(helper: ActionHelper<Base>) {
+    super(helper, {
+      withOutline: true,
+    });
+  }
 
   execute(elem) {
     const $elem = $(elem);

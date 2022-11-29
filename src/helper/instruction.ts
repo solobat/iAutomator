@@ -1,4 +1,4 @@
-import { ExecOptions } from "@src/buildin/Base";
+import { ExecOptions } from "@src/buildin/types";
 
 export interface InstructionData {
   action: string;

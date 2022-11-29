@@ -1,18 +1,19 @@
 import reloadOnUpdate from "virtual:reload-on-update-in-background-script";
-import * as recordsController from "../../server/controller/records.controller";
-import * as automationController from "../../server/controller/automations.controller";
-import { PageMsg, BackMsg } from "../../common/types";
-import { IAutomation } from "../../server/db/database";
-import { matchAutomations, installAutomation } from "../../helper/automations";
+
 import {
-  BUILDIN_ACTIONS,
-  PAGE_ACTIONS,
   APP_ACTIONS,
   BUILDIN_ACTION_CONFIGS,
+  BUILDIN_ACTIONS,
+  PAGE_ACTIONS,
   WEB_ACTIONS,
 } from "../../common/const";
-import { highlightEnglish } from "../../helper/others";
+import { BackMsg, PageMsg } from "../../common/types";
+import { installAutomation, matchAutomations } from "../../helper/automations";
 import { create as createNotice } from "../../helper/notifications";
+import { highlightEnglish } from "../../helper/others";
+import * as automationController from "../../server/controller/automations.controller";
+import * as recordsController from "../../server/controller/records.controller";
+import { IAutomation } from "../../server/db/database";
 
 reloadOnUpdate("pages/background");
 

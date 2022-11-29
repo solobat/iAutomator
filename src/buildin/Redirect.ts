@@ -1,6 +1,8 @@
-import Base, { ExecOptions } from "./Base";
-import { BUILDIN_ACTIONS } from "../common/const";
 import URLPattern from "url-pattern";
+
+import { BUILDIN_ACTIONS } from "../common/const";
+import Base from "./Base";
+import { ExecOptions } from "./types";
 
 interface RedirectExecOptions extends ExecOptions {
   host?: string;
@@ -28,7 +30,7 @@ export default class Redirect extends Base {
     }
   }
 
-  execute(_, options?: RedirectExecOptions) {
+  execute(_, options: Partial<RedirectExecOptions>) {
     const { from, to, host = window.location.hostname } = options;
 
     if (from && to) {

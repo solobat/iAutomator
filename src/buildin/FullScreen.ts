@@ -1,10 +1,18 @@
-import Base from "./Base";
-import { BUILDIN_ACTIONS } from "../common/const";
 import $ from "jquery";
+
+import { BUILDIN_ACTIONS } from "../common/const";
+import Base from "./Base";
+import { ActionHelper } from "./types";
 
 export default class FullScreen extends Base {
   name = BUILDIN_ACTIONS.FULL_SCREEN;
   cls = "ext-hp-fullscreen";
+
+  constructor(helper: ActionHelper<Base>) {
+    super(helper, {
+      withOutline: true,
+    });
+  }
 
   private unsetFullScreenElem: () => void;
 

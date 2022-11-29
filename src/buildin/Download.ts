@@ -1,13 +1,19 @@
-import Base, { ExecOptions } from "./Base";
 import { BUILDIN_ACTIONS } from "../common/const";
 import { getHost } from "../helper/url";
+import Base from "./Base";
+import { ActionHelper, ExecOptions } from "./types";
 
 export default class Download extends Base {
   name = BUILDIN_ACTIONS.DOWNLOAD;
-  shouldRecord = true;
 
   private downloaded = true;
   private autoclose = false;
+
+  constructor(helper: ActionHelper<Base>) {
+    super(helper, {
+      withOutline: true,
+    });
+  }
 
   private downloadURL(url, fileName?, type?: string) {
     if (url.startsWith("//")) {
@@ -87,7 +93,7 @@ export default class Download extends Base {
     }
   }
 
-  execute(elem, options?: ExecOptions) {
+  execute(elem, options: Partial<ExecOptions>) {
     const tagName = elem.tagName;
 
     this.autoclose = options.autoclose;

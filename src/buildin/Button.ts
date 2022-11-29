@@ -1,6 +1,8 @@
-import Base, { ExecOptions } from "./Base";
-import { BUILDIN_ACTIONS } from "../common/const";
 import $ from "jquery";
+
+import { BUILDIN_ACTIONS } from "../common/const";
+import Base from "./Base";
+import { ExecOptions } from "./types";
 
 type ButtonType = "top" | "toggle" | "shortcut" | "translate";
 type ButtonPosition = "tl" | "tr" | "bl" | "br";
@@ -31,15 +33,7 @@ export default class Button extends Base {
   name = BUILDIN_ACTIONS.BUTTON;
   cls = "ext-hp-btn";
 
-  shouldRedo = false;
-
-  shouldRecord = true;
-
   private targetLang = chrome.i18n.getUILanguage();
-
-  startByCommand() {
-    return;
-  }
 
   checkExecResult() {
     this.autoMationFn();
@@ -63,7 +57,10 @@ export default class Button extends Base {
     $("body").append($top);
   }
 
-  private insertToggleButton(scope: HTMLDocument, options: ButtonExecOptions) {
+  private insertToggleButton(
+    scope: HTMLElement,
+    options: Partial<ButtonExecOptions>
+  ) {
     let nextPageEl: HTMLElement;
     const { mh = 40 } = options;
 
@@ -111,7 +108,10 @@ export default class Button extends Base {
     this.helper.observe(scope, run);
   }
 
-  private insertShortcut(elem: HTMLDivElement, options: ButtonExecOptions) {
+  private insertShortcut(
+    elem: HTMLDivElement,
+    options: Partial<ButtonExecOptions>
+  ) {
     const { icon = "icon-link", pos = "cr" } = options;
     const $icon = this.createBtn("link", icon).addClass(pos);
 
@@ -122,7 +122,10 @@ export default class Button extends Base {
     $("body").append($icon);
   }
 
-  private insertTranslate(scope: HTMLDivElement, options: ButtonExecOptions) {
+  private insertTranslate(
+    scope: HTMLDivElement,
+    options: Partial<ButtonExecOptions>
+  ) {
     const { icon = "icon-g-translate", pos = "cr" } = options;
     const iconCls = "ext-hp-translate";
     const translatedCls = "ext-hp-translated";
@@ -161,7 +164,7 @@ export default class Button extends Base {
     this.helper.observe(scope, run);
   }
 
-  execute(elem, options: ButtonExecOptions) {
+  execute(elem, options: Partial<ButtonExecOptions>) {
     const { type } = options;
     if (type === "top") {
       this.insertTopButton();

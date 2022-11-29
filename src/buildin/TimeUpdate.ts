@@ -1,22 +1,21 @@
-import Base, { DomHelper, ExecOptions } from "./Base";
-import { BUILDIN_ACTIONS } from "../common/const";
 import throttle from "lodash/throttle";
+
+import { BUILDIN_ACTIONS } from "../common/const";
+import Base from "./Base";
+import { ActionHelper, ExecOptions } from "./types";
 
 export default class TimeUpdate extends Base {
   name = BUILDIN_ACTIONS.TIME_UPDATE;
 
-  constructor(helper: DomHelper) {
+  constructor(helper: ActionHelper<Base>) {
     super(helper, {
       shouldRecord: true,
       esc2exit: true,
+      defaultScope: document.querySelector("video"),
     });
   }
 
-  startByCommand() {
-    this.execute(document.querySelector("video"), {});
-  }
-
-  execute(elem, options?: ExecOptions) {
+  execute(elem, options: Partial<ExecOptions>) {
     // https://github.com/lodash/lodash/issues/3192#issuecomment-411963038
     const updateURL = throttle((currentTime) => {
       const uo = new URLSearchParams(window.location.search);
@@ -32,7 +31,7 @@ export default class TimeUpdate extends Base {
     if (elem) {
       elem.addEventListener("timeupdate", onTimeupdate, false);
 
-      this.unbindFns.push(() => {
+      this.resetFns.push(() => {
         elem.removeEventListener("timeupdate", onTimeupdate);
       });
 

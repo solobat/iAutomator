@@ -1,6 +1,6 @@
 import { db } from "../db/database";
-import Automation from "../model/Automation";
 import { RunAt } from "../enum/Automation.enum";
+import Automation from "../model/Automation";
 
 export function save(instructions: string, runAt: RunAt, pattern?: string) {
   const automation: Automation = new Automation(instructions, runAt, pattern);

@@ -1,7 +1,9 @@
-import Base, { ExecOptions } from "./Base";
+import $ from "jquery";
+
 import { BUILDIN_ACTIONS } from "../common/const";
 import { copyToClipboard } from "../helper/others";
-import $ from "jquery";
+import Base from "./Base";
+import { ActionHelper, ExecOptions } from "./types";
 
 interface CodeCopyExecOptions extends ExecOptions {
   inpre?: boolean;
@@ -16,17 +18,15 @@ export default class CodeCopy extends Base<CodeCopyExecOptions> {
   name = BUILDIN_ACTIONS.CODE_COPY;
   cls = "ext-hp-code-copy";
 
-  shouldRedo = true;
-
-  shouldRecord = true;
-
   private inited = false;
 
-  startByCommand() {
-    this.execute(document.body, {
-      block: true,
-      inline: true,
-      inpre: true,
+  constructor(helper: ActionHelper<Base, CodeCopyExecOptions>) {
+    super(helper, {
+      defaultArgs: {
+        block: true,
+        inline: true,
+        inpre: true,
+      },
     });
   }
 
@@ -40,7 +40,10 @@ export default class CodeCopy extends Base<CodeCopyExecOptions> {
     return `ext-hp-code-copy-${position}`;
   }
 
-  private insertCopyBtn(codeElem: HTMLElement, options?: CodeCopyExecOptions) {
+  private insertCopyBtn(
+    codeElem: HTMLElement,
+    options: Partial<CodeCopyExecOptions>
+  ) {
     const position = options ? options.pos : "tl";
 
     if (options.inpre) {
@@ -58,7 +61,7 @@ export default class CodeCopy extends Base<CodeCopyExecOptions> {
     }
   }
 
-  private handleBlockCode(options?: CodeCopyExecOptions): boolean {
+  private handleBlockCode(options: Partial<CodeCopyExecOptions>): boolean {
     if (options.block !== false) {
       const selected = options.pre ? "pre" : "code";
       const elems = Array.from(document.querySelectorAll(selected));
@@ -87,7 +90,7 @@ export default class CodeCopy extends Base<CodeCopyExecOptions> {
     }
   }
 
-  private handleInlineCode(options?: CodeCopyExecOptions): boolean {
+  private handleInlineCode(options: Partial<CodeCopyExecOptions>): boolean {
     if (options.inline) {
       const validTags = ["P", "LI", "TD"];
       const inlineElems = Array.from(document.querySelectorAll("code")).filter(
@@ -112,7 +115,7 @@ export default class CodeCopy extends Base<CodeCopyExecOptions> {
     }
   }
 
-  execute(elem, options?: CodeCopyExecOptions) {
+  execute(elem, options: Partial<CodeCopyExecOptions>) {
     const blockResult = this.handleBlockCode(options);
     const inlineResult = this.handleInlineCode(options);
 

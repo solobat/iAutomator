@@ -1,17 +1,19 @@
-import * as React from "react";
-import { useState, useEffect, useContext } from "react";
-import { PageContext, ACTIONS } from "../../../store/modules/popup.store";
-import * as recordsController from "../../../server/controller/records.controller";
-import Response from "../../../server/common/response";
-import Table, { ColumnsType } from "antd/es/table";
-import { PlayCircleOutlined, PlusCircleOutlined } from "@ant-design/icons";
-import { AutomationForm } from "../../../common/types";
-import { getPath } from "../../../helper/url";
-import { noticeBg } from "../../../helper/event";
-import { PAGE_ACTIONS } from "../../../common/const";
-import { t } from "@src/helper/i18n.helper";
 import { Tooltip } from "antd";
+import Table, { ColumnsType } from "antd/es/table";
+import * as React from "react";
+import { useContext, useEffect, useState } from "react";
+
+import { PlayCircleOutlined, PlusCircleOutlined } from "@ant-design/icons";
+import { t } from "@src/helper/i18n.helper";
 import { basicInstruction } from "@src/helper/instruction";
+
+import { PAGE_ACTIONS } from "../../../common/const";
+import { AutomationForm } from "../../../common/types";
+import { noticeBg } from "../../../helper/event";
+import { getPath } from "../../../helper/url";
+import Response from "../../../server/common/response";
+import * as recordsController from "../../../server/controller/records.controller";
+import { ACTIONS, PageContext } from "../../../store/modules/popup.store";
 
 interface RecordsProps {
   host: string;

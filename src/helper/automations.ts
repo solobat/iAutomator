@@ -1,9 +1,9 @@
-import { IAutomation } from "../server/db/database";
-import { getAll } from "../server/service/automations.service";
-import Response from "../server/common/response";
 import { EXISTS } from "../server/common/code";
+import Response from "../server/common/response";
 import { saveAutomation } from "../server/controller/automations.controller";
+import { IAutomation } from "../server/db/database";
 import { RunAt } from "../server/enum/Automation.enum";
+import { getAll } from "../server/service/automations.service";
 
 export function matchAutomations(
   list: IAutomation[],

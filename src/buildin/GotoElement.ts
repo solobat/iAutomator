@@ -1,20 +1,17 @@
-import Base, { ExecOptions } from "./Base";
-import { BUILDIN_ACTIONS } from "../common/const";
-import keyboardJS from "keyboardjs";
 import $ from "jquery";
+import keyboardJS from "keyboardjs";
+
+import { BUILDIN_ACTIONS } from "../common/const";
+import Base from "./Base";
+import { ExecOptions } from "./types";
 
 export default class GotoElement extends Base {
   name = BUILDIN_ACTIONS.GOTO_ELEMENT;
   cls = "ext-hp-goto-element";
   style = `
   `;
-  shouldRecord = true;
 
   private inited = false;
-
-  startByCommand() {
-    this.execute(document.body, {});
-  }
 
   checkExecResult() {
     if (!this.inited) {
@@ -32,7 +29,7 @@ export default class GotoElement extends Base {
   private elems: HTMLElement[];
   private cursor = -1;
 
-  private handleElems(elems: HTMLElement[], options: ExecOptions) {
+  private handleElems(elems: HTMLElement[], options: Partial<ExecOptions>) {
     if (options.handle) {
       const [selector, ...actions] = options.handle;
       const results = elems

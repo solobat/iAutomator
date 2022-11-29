@@ -125,7 +125,7 @@ export const BUILDIN_ACTION_CONFIGS = [
     name: "BOOKMARK",
     title: t("bookmark"),
     contexts: ["all"],
-    asCommand: true,
+    asCommand: false,
   },
   {
     name: "KILL_ELEMENT",

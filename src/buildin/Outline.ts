@@ -1,7 +1,10 @@
-import Base, { ExecOptions } from "./Base";
-import { BUILDIN_ACTIONS } from "../common/const";
 import "is-in-viewport";
+
 import $ from "jquery";
+
+import { BUILDIN_ACTIONS } from "../common/const";
+import Base from "./Base";
+import { ExecOptions } from "./types";
 
 interface OutlineNode {
   name: string;
@@ -15,14 +18,8 @@ export default class Outline extends Base {
   name = BUILDIN_ACTIONS.OUTLINE;
   cls = "ext-hp-outline";
   style = ``;
-  shouldRedo = true;
-  shouldRecord = true;
 
   private headerElems = [];
-
-  startByCommand() {
-    this.execute(document.body, {});
-  }
 
   private getParent(node: OutlineNode, level: number) {
     let pNode = node;
@@ -83,7 +80,7 @@ export default class Outline extends Base {
     return root;
   }
 
-  private renderOutline(node: OutlineNode, options?: ExecOptions) {
+  private renderOutline(node: OutlineNode, options?: Partial<ExecOptions>) {
     if (node.name === "root") {
       const children = node.children.map((child) => this.renderOutline(child));
       const pos = options.pos || "tr";
@@ -111,7 +108,7 @@ export default class Outline extends Base {
     }
   }
 
-  private createOutlineBtn(scope: string, options?: ExecOptions) {
+  private createOutlineBtn(scope: string, options: Partial<ExecOptions>) {
     const pos = options.pos || "tr";
     const html = `
 <div id="${this.cls}" class="${pos}">
@@ -133,7 +130,7 @@ export default class Outline extends Base {
     $("#ext-hp-outline .content > ul").toggle();
   }
 
-  private createOutline(scope: string, options?: ExecOptions) {
+  private createOutline(scope: string, options: Partial<ExecOptions>) {
     const elems = this.generateOutline(scope);
     const outline = this.renderOutline(elems, options);
 
@@ -151,7 +148,7 @@ export default class Outline extends Base {
     });
   }
 
-  execute(elem, options?: ExecOptions) {
+  execute(elem, options: Partial<ExecOptions>) {
     if (!options.lazy) {
       this.createOutline(elem, options);
     } else {

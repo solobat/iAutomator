@@ -1,6 +1,8 @@
-import Base, { DomHelper, ExecOptions } from "./Base";
-import { BUILDIN_ACTIONS, ROUTE_CHANGE_TYPE } from "../common/const";
 import $ from "jquery";
+
+import { BUILDIN_ACTIONS, ROUTE_CHANGE_TYPE } from "../common/const";
+import Base from "./Base";
+import { ActionHelper, ExecOptions } from "./types";
 
 interface ScrollExecOptions extends ExecOptions {
   // unit: px/s
@@ -16,8 +18,15 @@ function isAtBottom() {
 export default class Scroll extends Base<ScrollExecOptions> {
   name = BUILDIN_ACTIONS.SCROLL;
 
-  constructor(helper: DomHelper) {
-    super(helper, { esc2exit: true, shouldRecord: true, shouldRedo: true });
+  constructor(helper: ActionHelper<Base>) {
+    super(helper, {
+      esc2exit: true,
+      shouldRecord: true,
+      shouldRedo: true,
+      defaultArgs: {
+        speed: 20,
+      },
+    });
   }
 
   private afId = 0;
@@ -72,15 +81,15 @@ export default class Scroll extends Base<ScrollExecOptions> {
     this.speed = speed;
     this.startScroll(speed);
     const onVisibleChange = (hidden: boolean) => {
-      if (hidden) {
-        this.stopScroll();
-      } else {
+      if (!hidden && this.active) {
         this.startScroll(speed);
+      } else {
+        this.stopScroll();
       }
     };
     this.helper.emitter.on("visibilitychange", onVisibleChange);
 
-    this.unbindFns.push(() => {
+    this.resetFns.push(() => {
       this.stopScroll();
     });
   }
@@ -89,7 +98,7 @@ export default class Scroll extends Base<ScrollExecOptions> {
     $(document).on("click", "button", (event) => {
       const elem = event.target;
 
-      if ($(elem).is(this.options.nextBtn)) {
+      if ($(elem).is(this.runtimeOptions.nextBtn)) {
         setTimeout(() => {
           this.reExecute(ROUTE_CHANGE_TYPE.LINK);
         }, 1000);
@@ -99,14 +108,15 @@ export default class Scroll extends Base<ScrollExecOptions> {
 
   reExecute(type: string) {
     if (type !== ROUTE_CHANGE_TYPE.POP_STATE) {
+      this.active = true;
       window.scrollTo(0, 0);
       this.startScroll(this.speed);
     }
   }
 
-  execute(elem, options?: ScrollExecOptions) {
+  execute(elem, options: Partial<ScrollExecOptions>) {
     const { speed = 20 } = options;
-    this.options = options;
+    this.runtimeOptions = options;
 
     this.initScroll(speed);
     this.recordIfNeeded(options);

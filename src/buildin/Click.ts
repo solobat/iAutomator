@@ -1,11 +1,11 @@
-import Base, { ExecOptions } from "./Base";
 import { BUILDIN_ACTIONS } from "../common/const";
+import Base from "./Base";
+import { ExecOptions } from "./types";
 
 export default class ClickElement extends Base {
   name = BUILDIN_ACTIONS.CLICK;
-  shouldRecord = true;
 
-  execute(elem, options?: ExecOptions) {
+  execute(elem, options: Partial<ExecOptions>) {
     elem.click();
     this.recordIfNeeded(options);
 

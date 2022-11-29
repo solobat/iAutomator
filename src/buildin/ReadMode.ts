@@ -1,11 +1,12 @@
-import Base, { DomHelper, ExecOptions } from "./Base";
-import { BUILDIN_ACTIONS } from "../common/const";
-import keyboardJS from "keyboardjs";
 import $ from "jquery";
+import keyboardJS from "keyboardjs";
+
+import { BUILDIN_ACTIONS } from "../common/const";
+import Base from "./Base";
+import { ActionHelper, ExecOptions } from "./types";
 
 export default class ReadMode extends Base {
   name = BUILDIN_ACTIONS.READ_MODE;
-  shouldRecord = true;
   cls = "s-a-rm-hn";
   private excludeSelectors = [
     "#steward-main",
@@ -15,14 +16,15 @@ export default class ReadMode extends Base {
     ".ext-hp-btn",
   ];
 
-  constructor(helper: DomHelper) {
+  constructor(helper: ActionHelper<Base>) {
     super(helper, {
       shouldRecord: true,
       esc2exit: true,
+      withOutline: true,
     });
   }
 
-  execute(elem, options?: ExecOptions) {
+  execute(elem, options: Partial<ExecOptions>) {
     const $elem = $(elem);
 
     this.helper.actionCache.$elem = $elem;
@@ -95,15 +97,17 @@ export default class ReadMode extends Base {
     keyboardJS.bind("right", nextFn);
     keyboardJS.bind("left", prevFn);
 
-    this.unbindFns.push(() => {
+    this.resetFns.push(() => {
       keyboardJS.unbind("right", nextFn);
       keyboardJS.unbind("left", prevFn);
     });
   }
 
   private get excludes() {
-    if (this.options.excludes) {
-      return this.excludeSelectors.join(",") + "," + this.options.excludes;
+    if (this.runtimeOptions.excludes) {
+      return (
+        this.excludeSelectors.join(",") + "," + this.runtimeOptions.excludes
+      );
     } else {
       return this.excludeSelectors.join(",");
     }
@@ -114,7 +118,7 @@ export default class ReadMode extends Base {
       this.hideEl($el.siblings().not(this.excludes));
       this.hideSiblings($el.parent());
     } else {
-      this.unbindFns.push(() => this.showEl($(this.selector)));
+      this.resetFns.push(() => this.showEl($(this.selector)));
     }
   }
 }

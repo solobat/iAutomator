@@ -1,11 +1,11 @@
-import Base, { ExecOptions } from "./Base";
 import { BUILDIN_ACTIONS } from "../common/const";
+import Base from "./Base";
+import { ExecOptions } from "./types";
 
 export default class FocusElement extends Base {
   name = BUILDIN_ACTIONS.FOCUS;
-  shouldRecord = true;
 
-  execute(elem, options?: ExecOptions) {
+  execute(elem, options: Partial<ExecOptions>) {
     if (options.blur) {
       elem.blur();
     } else {

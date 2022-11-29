@@ -1,15 +1,17 @@
-import Base, { ExecOptions } from "./Base";
 import { BUILDIN_ACTIONS, PAGE_ACTIONS } from "../common/const";
 import { noticeBg } from "../helper/event";
+import Base from "./Base";
+import { ActionHelper, ExecOptions } from "./types";
 
 export default class PictureInPicture extends Base {
   name = BUILDIN_ACTIONS.PICTURE_IN_PICTURE;
-  shouldRecord = true;
 
   private started = false;
 
-  startByCommand() {
-    this.execute(document.querySelector("video"), {});
+  constructor(helper: ActionHelper<Base>) {
+    super(helper, {
+      defaultScope: document.querySelector("video"),
+    });
   }
 
   private startPIP(elem) {
@@ -22,7 +24,7 @@ export default class PictureInPicture extends Base {
     this.started = false;
   }
 
-  execute(elem, options?: ExecOptions) {
+  execute(elem, options: Partial<ExecOptions>) {
     if (document.pictureInPictureEnabled) {
       if (this.started) {
         this.stopPIP();

@@ -1,15 +1,18 @@
-import Base, { ExecOptions } from "./Base";
 import { BUILDIN_ACTIONS } from "../common/const";
+import Base from "./Base";
+import { ActionHelper, ExecOptions } from "./types";
 
 export default class ProtectPage extends Base {
   name = BUILDIN_ACTIONS.PROTECT;
-  shouldRecord = true;
+  private rawTitle: string;
 
-  startByCommand() {
-    this.execute(document.body, {});
+  constructor(helper: ActionHelper<Base>) {
+    super(helper, {});
+    this.rawTitle = document.title;
   }
 
-  execute(elem, options?: ExecOptions) {
+  execute(elem, options: Partial<ExecOptions>) {
+    document.title = `Locked:${this.rawTitle}`;
     window.onbeforeunload = function () {
       return "This page has been protect by yourself";
     };

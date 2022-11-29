@@ -1,67 +1,35 @@
-import { NOTICE_TARGET } from "../common/enum";
-import { Emitter, EventType } from "mitt";
-import { exceAutomationById } from "@src/helper/dom";
-interface execFn {
-  (elem, event): void;
-}
-
-interface ActionCache {
-  $elem: any;
-  subActions: null;
-}
-
-export interface DomHelper {
-  exec(fn: execFn): void;
-  actionCache: ActionCache;
-  resetActionCache();
-  recordAction(actionName: string, elem?, options?: ExecOptions);
-  insertCss();
-  invoke(action, data, callback, target: NOTICE_TARGET);
-  actions: Base[];
-  observe: (elem, cb: () => void) => void;
-  onRevisible: (fn: () => void) => () => void;
-  emitter: Emitter<Record<EventType, unknown>>;
-}
-
-export interface ExecOptions {
-  silent?: boolean;
-  metaKey?: boolean;
-  next?: number;
-  [prop: string]: any;
-}
-
-export const defaultExecOptions: ExecOptions = {};
-
-interface ActionOptions {
-  shouldRedo?: boolean;
-  esc2exit?: boolean;
-  shouldRecord?: boolean;
-}
+import { exceAutomationById } from "@src/helper/action";
+import { ActionHelper, ActionOptions, ExecOptions } from "./types";
 export default abstract class Base<T extends ExecOptions = ExecOptions> {
   name: string;
-  helper: DomHelper;
+  helper: ActionHelper<Base, T>;
   autoMationFn?: () => void;
 
-  shouldRedo = false;
   ready = false;
   active = false;
   cls?: string;
   style?: string;
-  shouldRecord?: boolean;
-  unbindFns: Array<() => void>;
-  options?: T;
-  esc2exit: boolean;
+  resetFns: Array<() => void>;
+  // action options
+  options: ActionOptions;
+  // args
+  runtimeOptions?: Partial<T>;
 
   constructor(
-    helper: DomHelper,
-    options: ActionOptions = { shouldRedo: false, esc2exit: false }
+    helper: ActionHelper<Base, T>,
+    options: ActionOptions<T> = {
+      shouldRedo: false,
+      esc2exit: false,
+      withOutline: false,
+      defaultArgs: {},
+      defaultScope: document.body,
+    }
   ) {
-    this.shouldRedo = options.shouldRedo;
-    this.esc2exit = options.esc2exit;
-    this.shouldRecord = options.shouldRecord;
+    this.options = options;
+    this.runtimeOptions = options.defaultArgs;
 
     this.helper = helper;
-    this.unbindFns = [];
+    this.resetFns = [];
     helper.actions.push(this);
     this._bindEvents();
   }
@@ -72,19 +40,20 @@ export default abstract class Base<T extends ExecOptions = ExecOptions> {
 
   // NOTE: only called by UI, automation will not call this method
   startByCommand() {
-    this.helper.exec((elem, event) => {
-      const options: ExecOptions = {
-        metaKey: event.metaKey,
-      };
-      this.makeExecution(elem, options as T);
+    this.helper.prepare((elem, event) => {
+      const options = {
+        ...this.options.defaultArgs,
+        metaKey: event?.metaKey,
+      } as T;
+      this.makeExecution(elem, options);
       this.ready = true;
-    });
+    }, this.options);
   }
 
   // called by UI or automation
   // execute and check result if needed
-  makeExecution(elem, options: T) {
-    this.options = options;
+  makeExecution(elem, options: Partial<T>) {
+    this.runtimeOptions = options;
     const result = this.execute(elem, options);
 
     if (result) {
@@ -97,9 +66,9 @@ export default abstract class Base<T extends ExecOptions = ExecOptions> {
 
   // the main logic of the action
   // NOTE: options will be partial of T when called by `this.startByEvent`
-  abstract execute(elem, options?: T): boolean;
+  abstract execute(elem, options?: Partial<T>): boolean;
 
-  checkExecResult(elem, options?: T) {
+  checkExecResult(elem, options?: Partial<T>) {
     // if not ready --> this.autoMationFn()
   }
 
@@ -109,7 +78,7 @@ export default abstract class Base<T extends ExecOptions = ExecOptions> {
 
   private _bindEvents() {
     this.bindEvents();
-    if (this.esc2exit) {
+    if (this.options.esc2exit) {
       this.helper.emitter.on("exit", () => {
         const shouldContinue = this.beforeExit();
 
@@ -122,8 +91,8 @@ export default abstract class Base<T extends ExecOptions = ExecOptions> {
   }
 
   callNext() {
-    if (this.options.next) {
-      exceAutomationById(this.options.next);
+    if (this.runtimeOptions.next) {
+      exceAutomationById(this.runtimeOptions.next);
     }
   }
 
@@ -132,7 +101,7 @@ export default abstract class Base<T extends ExecOptions = ExecOptions> {
   }
 
   recordIfNeeded(options: T, elem?) {
-    if (this.shouldRecord && !options.silent) {
+    if (this.options.shouldRecord && !options.silent) {
       this.helper.recordAction(this.name, elem, options);
     }
   }
@@ -146,9 +115,10 @@ export default abstract class Base<T extends ExecOptions = ExecOptions> {
   }
 
   private exit() {
-    this.unbindFns.forEach((fn) => {
+    this.active = false;
+    this.resetFns.forEach((fn) => {
       fn();
     });
-    this.unbindFns = [];
+    this.resetFns = [];
   }
 }

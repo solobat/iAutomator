@@ -1,6 +1,6 @@
-import * as recordService from "../service/records.service";
-import Response from "../common/response";
 import * as Code from "../common/code";
+import Response from "../common/response";
+import * as recordService from "../service/records.service";
 
 export async function saveRecord(
   content: string,

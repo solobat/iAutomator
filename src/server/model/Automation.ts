@@ -1,4 +1,4 @@
-import { IAutomation, db } from "../db/database";
+import { db, IAutomation } from "../db/database";
 import { RunAt } from "../enum/Automation.enum";
 
 export default class Automation implements IAutomation {

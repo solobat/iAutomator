@@ -1,4 +1,5 @@
 import Dexie from "dexie";
+
 import { RunAt } from "../enum/Automation.enum";
 
 export class StewardHelperDatabase extends Dexie {

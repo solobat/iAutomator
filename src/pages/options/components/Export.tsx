@@ -1,14 +1,16 @@
+import Button from "antd/es/button";
+import message from "antd/es/message";
+import Upload from "antd/es/upload";
 import * as React from "react";
 import { useCallback } from "react";
-import Button from "antd/es/button";
-import Upload from "antd/es/upload";
-import message from "antd/es/message";
-import { exportAndDownload, importDBFile } from "../../../helper/db.helper";
-import { convertFile2Blob } from "../../../helper/file.helper";
-import { noticeBg } from "../../../helper/event";
-import { PageMsg } from "../../../common/types";
-import { APP_ACTIONS } from "../../../common/const";
+
 import { t } from "@src/helper/i18n.helper";
+
+import { APP_ACTIONS } from "../../../common/const";
+import { PageMsg } from "../../../common/types";
+import { exportAndDownload, importDBFile } from "../../../helper/db.helper";
+import { noticeBg } from "../../../helper/event";
+import { convertFile2Blob } from "../../../helper/file.helper";
 
 function reload() {
   const msg: PageMsg = {

@@ -1,7 +1,9 @@
-import Base, { ExecOptions, DomHelper } from "./Base";
+import $ from "jquery";
+
 import { BUILDIN_ACTIONS } from "../common/const";
 import { isDark } from "../helper/sun";
-import $ from "jquery";
+import Base from "./Base";
+import { ActionHelper, ExecOptions } from "./types";
 
 interface DarkModeOptions extends ExecOptions {
   lat?: string;
@@ -10,7 +12,6 @@ interface DarkModeOptions extends ExecOptions {
 
 export default class DarkMode extends Base<DarkModeOptions> {
   name = BUILDIN_ACTIONS.DARK_MODE;
-  shouldRecord = true;
 
   private theme = "sh-dm-dark-mode";
 
@@ -19,15 +20,11 @@ export default class DarkMode extends Base<DarkModeOptions> {
     long: "",
   };
 
-  constructor(helper: DomHelper) {
+  constructor(helper: ActionHelper<Base, DarkModeOptions>) {
     super(helper, {
       shouldRecord: true,
       esc2exit: true,
     });
-  }
-
-  startByCommand() {
-    this.execute(document.body, {});
   }
 
   private shouldStart(options = this.defaultOptions) {
@@ -42,7 +39,7 @@ export default class DarkMode extends Base<DarkModeOptions> {
     }
   }
 
-  execute(elem, options?: DarkModeOptions) {
+  execute(elem, options: Partial<DarkModeOptions>) {
     if (!this.shouldStart(options)) {
       return;
     }
@@ -51,7 +48,7 @@ export default class DarkMode extends Base<DarkModeOptions> {
 
     this.recordIfNeeded(options);
 
-    this.unbindFns.push(() => {
+    this.resetFns.push(() => {
       $("html").attr("theme", "");
     });
 

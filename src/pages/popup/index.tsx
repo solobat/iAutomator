@@ -1,7 +1,8 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import Popup from "./Popup";
 import refreshOnUpdate from "virtual:reload-on-update-in-view";
+
+import Popup from "./Popup";
 
 refreshOnUpdate("pages/popup");
 

@@ -1,39 +1,41 @@
-import * as React from "react";
-import { useState, useEffect, useContext, useCallback } from "react";
-import {
-  PageContext,
-  ACTIONS,
-  useModel,
-} from "../../../store/modules/popup.store";
-import * as automationsController from "../../../server/controller/automations.controller";
-import Response from "../../../server/common/response";
-import Table from "antd/es/table";
+import { AutoComplete, Tooltip } from "antd";
 import Button from "antd/es/button";
+import ButtonGroup from "antd/es/button/button-group";
 import Input from "antd/es/input";
-import Switch from "antd/es/switch";
 import Select from "antd/es/select";
+import Switch from "antd/es/switch";
+import Table from "antd/es/table";
+import * as React from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
+
 import {
-  PlusSquareOutlined,
   DeleteOutlined,
   EditOutlined,
-  ShareAltOutlined,
+  PlusSquareOutlined,
   SearchOutlined,
+  ShareAltOutlined,
 } from "@ant-design/icons";
-import { matchAutomations } from "../../../helper/automations";
-import { noticeBg } from "../../../helper/event";
 import { PlayCircleOutlined } from "@ant-design/icons";
+import { list2options } from "@src/helper/antd";
+import { t } from "@src/helper/i18n.helper";
+import { basicInstruction } from "@src/helper/instruction";
+import { getURLPatterns } from "@src/helper/url";
+import Automation from "@src/server/model/Automation";
+
 import {
-  BUILDIN_ACTIONS,
   BUILDIN_ACTION_FIELD_CONFIGS,
+  BUILDIN_ACTIONS,
   PAGE_ACTIONS,
 } from "../../../common/const";
-import ButtonGroup from "antd/es/button/button-group";
-import { t } from "@src/helper/i18n.helper";
-import { getURLPatterns } from "@src/helper/url";
-import { AutoComplete, Tooltip } from "antd";
-import { list2options } from "@src/helper/antd";
-import { basicInstruction } from "@src/helper/instruction";
-import Automation from "@src/server/model/Automation";
+import { matchAutomations } from "../../../helper/automations";
+import { noticeBg } from "../../../helper/event";
+import Response from "../../../server/common/response";
+import * as automationsController from "../../../server/controller/automations.controller";
+import {
+  ACTIONS,
+  PageContext,
+  useModel,
+} from "../../../store/modules/popup.store";
 
 const { Option } = Select;
 

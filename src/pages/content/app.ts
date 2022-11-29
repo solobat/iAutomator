@@ -1,28 +1,28 @@
-import { startAction, exceAutomation, install } from "../../helper/dom";
-import { WEB_ACTIONS, PAGE_ACTIONS, APP_ACTIONS } from "../../common/const";
-import { handleWebEvents, noticeWeb } from "../../helper/web";
-import { RunAt } from "../../server/enum/Automation.enum";
-import { appBridge } from "../../helper/bridge";
+import Bookmark from "../../buildin/Bookmark";
+import Button from "../../buildin/Button";
+import ClickElement from "../../buildin/Click";
+import CodeCopy from "../../buildin/CodeCopy";
+import DarkMode from "../../buildin/DarkMode";
 import Download from "../../buildin/Download";
+import FocusElement from "../../buildin/Focus";
 import FullScreen from "../../buildin/FullScreen";
+import GotoElement from "../../buildin/GotoElement";
 import HashElement from "../../buildin/HashElement";
 import HighlightEnglishSyntax from "../../buildin/HighlightEnglishSyntax";
 import KillElement from "../../buildin/KillElement";
-import ReadMode from "../../buildin/ReadMode";
-import TimeUpdate from "../../buildin/TimeUpdate";
-import ClickElement from "../../buildin/Click";
-import Scroll from "../../buildin/Scroll";
-import FocusElement from "../../buildin/Focus";
-import ProtectPage from "../../buildin/Protect";
-import CodeCopy from "../../buildin/CodeCopy";
-import GotoElement from "../../buildin/GotoElement";
-import PictureInPicture from "../../buildin/PictureInPicture";
-import ZenMode from "../../buildin/ZenMode";
-import DarkMode from "../../buildin/DarkMode";
 import Outline from "../../buildin/Outline";
-import Button from "../../buildin/Button";
-import Bookmark from "../../buildin/Bookmark";
+import PictureInPicture from "../../buildin/PictureInPicture";
+import ProtectPage from "../../buildin/Protect";
+import ReadMode from "../../buildin/ReadMode";
 import Redirect from "../../buildin/Redirect";
+import Scroll from "../../buildin/Scroll";
+import TimeUpdate from "../../buildin/TimeUpdate";
+import ZenMode from "../../buildin/ZenMode";
+import { APP_ACTIONS, PAGE_ACTIONS, WEB_ACTIONS } from "../../common/const";
+import { exceAutomation, install, startAction } from "../../helper/action";
+import { appBridge } from "../../helper/bridge";
+import { handleWebEvents, noticeWeb } from "../../helper/web";
+import { RunAt } from "../../server/enum/Automation.enum";
 
 function bindAppEvents() {
   chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {

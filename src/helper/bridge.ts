@@ -1,9 +1,10 @@
-import { getHtml } from "./iframe";
+import $ from "jquery";
+
 import { IFRAME_ID } from "../common/const";
 import { NOTICE_TARGET } from "../common/enum";
 import { PageMsg } from "../common/types";
 import { noticeBg, noticeIframe } from "./event";
-import $ from "jquery";
+import { getHtml } from "./iframe";
 
 export function createBridge() {
   const callbacks = {};

@@ -1,9 +1,7 @@
-import * as automationService from "../service/automations.service";
-import * as browser from "webextension-polyfill";
-import Response from "../common/response";
 import * as Code from "../common/code";
-import { IAutomation, db } from "../db/database";
+import Response from "../common/response";
 import { RunAt } from "../enum/Automation.enum";
+import * as automationService from "../service/automations.service";
 
 export async function saveAutomation(
   instructions: string,

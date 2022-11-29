@@ -1,6 +1,8 @@
-import Base, { ExecOptions } from "./Base";
-import { BUILDIN_ACTIONS } from "../common/const";
 import $ from "jquery";
+
+import { BUILDIN_ACTIONS } from "../common/const";
+import Base from "./Base";
+import { ExecOptions } from "./types";
 
 interface ZenModeExecOptions extends ExecOptions {
   delay?: number;
@@ -11,18 +13,13 @@ interface ZenModeExecOptions extends ExecOptions {
 
 export default class ZenMode extends Base<ZenModeExecOptions> {
   name = BUILDIN_ACTIONS.ZEN_MODE;
-  shouldRecord = true;
   cls = "sh-zm-layer";
   style = ``;
-
-  startByCommand() {
-    this.execute(document.body, {});
-  }
 
   private layer;
   private timer = 0;
 
-  execute(elem, options?: ExecOptions) {
+  execute(elem, options: Partial<ZenModeExecOptions>) {
     const { word = "Zen", delay, bgcolor, color } = options;
 
     if (!this.layer) {

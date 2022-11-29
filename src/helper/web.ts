@@ -1,5 +1,5 @@
-import { appBridge } from "./bridge";
 import { WEB_ACTIONS } from "../common/const";
+import { appBridge } from "./bridge";
 
 export function handleWebEvents(event) {
   const { action, data } = event.detail;

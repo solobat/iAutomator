@@ -1,6 +1,8 @@
-import Base, { ExecOptions } from "./Base";
-import { BUILDIN_ACTIONS } from "../common/const";
 import $ from "jquery";
+
+import { BUILDIN_ACTIONS } from "../common/const";
+import Base from "./Base";
+import { ExecOptions } from "./types";
 
 type RefreshType = "auto" | "manual";
 
@@ -13,10 +15,6 @@ interface BookmarkExecOptions extends ExecOptions {
 export default class Bookmark extends Base<BookmarkExecOptions> {
   name = BUILDIN_ACTIONS.BOOKMARK;
   cls = "ext-hp-bookmark";
-
-  shouldRedo = false;
-
-  shouldRecord = true;
 
   private $elem: JQuery<HTMLElement>;
   private rawTitle = "";
@@ -60,7 +58,7 @@ export default class Bookmark extends Base<BookmarkExecOptions> {
       }, this.autoRefreshDelay);
     });
 
-    this.unbindFns.push(unbindFn);
+    this.resetFns.push(unbindFn);
   }
 
   private setupManualRefresh(item: string) {
@@ -98,10 +96,10 @@ export default class Bookmark extends Base<BookmarkExecOptions> {
     const unbindFn = this.helper.onRevisible(() => {
       this.$elem[0].scrollIntoView();
     });
-    this.unbindFns.push(unbindFn);
+    this.resetFns.push(unbindFn);
   }
 
-  execute(elem, options: BookmarkExecOptions) {
+  execute(elem, options: Partial<BookmarkExecOptions>) {
     const { item, refresh = "manual", notify = true } = options;
 
     if (item) {
