@@ -19,6 +19,7 @@ const local_i18n = {
     button: "Button",
     bookmark: "Bookmark",
     scroll: "Scroll",
+    redirect: "Redirect",
   },
   zh_CN: {
     read_mode: "阅读模式",
@@ -40,6 +41,7 @@ const local_i18n = {
     button: "按钮",
     bookmark: "书签",
     scroll: "自动滚动",
+    redirect: "重定向",
   },
 };
 
@@ -95,6 +97,7 @@ export const BUILDIN_ACTIONS = {
   FULL_SCREEN: "fullScreen",
   TIME_UPDATE: "timeupdate",
   CLICK: "click",
+  REDIRECT: "redirect",
   SCROLL: "scroll",
   FOCUS: "focus",
   PROTECT: "protect",
@@ -183,6 +186,12 @@ export const BUILDIN_ACTION_CONFIGS = [
     title: t("scroll"),
     contexts: ["all"],
     asCommand: true,
+  },
+  {
+    name: "REDIRECT",
+    title: t("redirect"),
+    contexts: ["all"],
+    asCommand: false,
   },
   {
     name: "FOCUS",
@@ -388,6 +397,27 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
   {
     value: BUILDIN_ACTIONS.OUTLINE,
     label: t("outline"),
+  },
+  {
+    value: BUILDIN_ACTIONS.REDIRECT,
+    label: t("redirect"),
+    args: [
+      {
+        tips: "path pattern of from page",
+        name: "from",
+        type: "string",
+      },
+      {
+        tips: "path pattern of to page",
+        name: "to",
+        type: "string",
+      },
+      {
+        tips: "hostname of to page",
+        name: "host",
+        type: "string",
+      },
+    ],
   },
   {
     value: BUILDIN_ACTIONS.ZEN_MODE,

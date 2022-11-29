@@ -22,6 +22,7 @@ import DarkMode from "../../buildin/DarkMode";
 import Outline from "../../buildin/Outline";
 import Button from "../../buildin/Button";
 import Bookmark from "../../buildin/Bookmark";
+import Redirect from "../../buildin/Redirect";
 
 function bindAppEvents() {
   chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
@@ -76,6 +77,7 @@ function init() {
     new Outline(helper);
     new Button(helper);
     new Bookmark(helper);
+    new Redirect(helper);
   });
 
   bindAppEvents();
