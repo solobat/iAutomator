@@ -87,7 +87,7 @@ export default class Download extends Base {
     }
   }
 
-  exec(elem, options?: ExecOptions) {
+  execute(elem, options?: ExecOptions) {
     const tagName = elem.tagName;
 
     this.autoclose = options.autoclose;

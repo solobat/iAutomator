@@ -22,7 +22,7 @@ export default class ReadMode extends Base {
     });
   }
 
-  exec(elem, options?: ExecOptions) {
+  execute(elem, options?: ExecOptions) {
     const $elem = $(elem);
 
     this.helper.actionCache.$elem = $elem;

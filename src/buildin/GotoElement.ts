@@ -12,8 +12,8 @@ export default class GotoElement extends Base {
 
   private inited = false;
 
-  start() {
-    this.exec(document.body, {});
+  startByCommand() {
+    this.execute(document.body, {});
   }
 
   checkExecResult() {
@@ -86,7 +86,7 @@ export default class GotoElement extends Base {
     }
   }
 
-  exec(elem, options?: ExecOptions) {
+  execute(elem, options?: ExecOptions) {
     const selected = options.to;
     const elems: HTMLElement[] = Array.from(
       document.querySelectorAll(selected)

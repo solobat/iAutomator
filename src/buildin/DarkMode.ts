@@ -26,8 +26,8 @@ export default class DarkMode extends Base<DarkModeOptions> {
     });
   }
 
-  start() {
-    this.exec(document.body, {});
+  startByCommand() {
+    this.execute(document.body, {});
   }
 
   private shouldStart(options = this.defaultOptions) {
@@ -42,7 +42,7 @@ export default class DarkMode extends Base<DarkModeOptions> {
     }
   }
 
-  exec(elem, options?: DarkModeOptions) {
+  execute(elem, options?: DarkModeOptions) {
     if (!this.shouldStart(options)) {
       return;
     }

@@ -15,14 +15,14 @@ export default class ZenMode extends Base<ZenModeExecOptions> {
   cls = "sh-zm-layer";
   style = ``;
 
-  start() {
-    this.exec(document.body, {});
+  startByCommand() {
+    this.execute(document.body, {});
   }
 
   private layer;
   private timer = 0;
 
-  exec(elem, options?: ExecOptions) {
+  execute(elem, options?: ExecOptions) {
     const { word = "Zen", delay, bgcolor, color } = options;
 
     if (!this.layer) {

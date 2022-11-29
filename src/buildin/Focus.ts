@@ -5,7 +5,7 @@ export default class FocusElement extends Base {
   name = BUILDIN_ACTIONS.FOCUS;
   shouldRecord = true;
 
-  exec(elem, options?: ExecOptions) {
+  execute(elem, options?: ExecOptions) {
     if (options.blur) {
       elem.blur();
     } else {

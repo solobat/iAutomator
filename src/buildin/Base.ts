@@ -71,21 +71,21 @@ export default abstract class Base<T extends ExecOptions = ExecOptions> {
   }
 
   // NOTE: only called by UI, automation will not call this method
-  start() {
+  startByCommand() {
     this.helper.exec((elem, event) => {
       const options: ExecOptions = {
         metaKey: event.metaKey,
       };
-      this.run(elem, options as T);
+      this.makeExecution(elem, options as T);
       this.ready = true;
     });
   }
 
   // called by UI or automation
-  // run and check result if needed
-  run(elem, options: T) {
+  // execute and check result if needed
+  makeExecution(elem, options: T) {
     this.options = options;
-    const result = this.exec(elem, options);
+    const result = this.execute(elem, options);
 
     if (result) {
       setTimeout(() => {
@@ -96,13 +96,14 @@ export default abstract class Base<T extends ExecOptions = ExecOptions> {
   }
 
   // the main logic of the action
-  abstract exec(elem, options?: T): boolean;
+  // NOTE: options will be partial of T when called by `this.startByEvent`
+  abstract execute(elem, options?: T): boolean;
 
   checkExecResult(elem, options?: T) {
     // if not ready --> this.autoMationFn()
   }
 
-  redo(type: string) {
+  reExecute(type: string) {
     console.log("redo caused by: ", type);
   }
 

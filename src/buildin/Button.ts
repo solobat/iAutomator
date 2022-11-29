@@ -37,7 +37,7 @@ export default class Button extends Base {
 
   private targetLang = chrome.i18n.getUILanguage();
 
-  start() {
+  startByCommand() {
     return;
   }
 
@@ -161,7 +161,7 @@ export default class Button extends Base {
     this.helper.observe(scope, run);
   }
 
-  exec(elem, options: ButtonExecOptions) {
+  execute(elem, options: ButtonExecOptions) {
     const { type } = options;
     if (type === "top") {
       this.insertTopButton();

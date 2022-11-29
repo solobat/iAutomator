@@ -22,8 +22,8 @@ export default class CodeCopy extends Base<CodeCopyExecOptions> {
 
   private inited = false;
 
-  start() {
-    this.exec(document.body, {
+  startByCommand() {
+    this.execute(document.body, {
       block: true,
       inline: true,
       inpre: true,
@@ -112,7 +112,7 @@ export default class CodeCopy extends Base<CodeCopyExecOptions> {
     }
   }
 
-  exec(elem, options?: CodeCopyExecOptions) {
+  execute(elem, options?: CodeCopyExecOptions) {
     const blockResult = this.handleBlockCode(options);
     const inlineResult = this.handleInlineCode(options);
 

@@ -6,7 +6,7 @@ import $ from "jquery";
 export default class HighlightEnglishSyntax extends Base {
   name = BUILDIN_ACTIONS.HIGHLIGHT_ENGLISH_SYNTAX;
 
-  exec(elem) {
+  execute(elem) {
     const $elem = $(elem);
 
     if ($elem.length) {

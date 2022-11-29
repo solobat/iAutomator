@@ -20,8 +20,8 @@ export default class Outline extends Base {
 
   private headerElems = [];
 
-  start() {
-    this.exec(document.body, {});
+  startByCommand() {
+    this.execute(document.body, {});
   }
 
   private getParent(node: OutlineNode, level: number) {
@@ -151,7 +151,7 @@ export default class Outline extends Base {
     });
   }
 
-  exec(elem, options?: ExecOptions) {
+  execute(elem, options?: ExecOptions) {
     if (!options.lazy) {
       this.createOutline(elem, options);
     } else {

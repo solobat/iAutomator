@@ -5,11 +5,11 @@ export default class ProtectPage extends Base {
   name = BUILDIN_ACTIONS.PROTECT;
   shouldRecord = true;
 
-  start() {
-    this.exec(document.body, {});
+  startByCommand() {
+    this.execute(document.body, {});
   }
 
-  exec(elem, options?: ExecOptions) {
+  execute(elem, options?: ExecOptions) {
     window.onbeforeunload = function () {
       return "This page has been protect by yourself";
     };

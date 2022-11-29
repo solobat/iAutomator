@@ -101,7 +101,7 @@ export default class Bookmark extends Base<BookmarkExecOptions> {
     this.unbindFns.push(unbindFn);
   }
 
-  exec(elem, options: BookmarkExecOptions) {
+  execute(elem, options: BookmarkExecOptions) {
     const { item, refresh = "manual", notify = true } = options;
 
     if (item) {

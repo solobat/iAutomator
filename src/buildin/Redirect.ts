@@ -28,7 +28,7 @@ export default class Redirect extends Base {
     }
   }
 
-  exec(_, options?: RedirectExecOptions) {
+  execute(_, options?: RedirectExecOptions) {
     const { from, to, host = window.location.hostname } = options;
 
     if (from && to) {

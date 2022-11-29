@@ -8,8 +8,8 @@ export default class PictureInPicture extends Base {
 
   private started = false;
 
-  start() {
-    this.exec(document.querySelector("video"), {});
+  startByCommand() {
+    this.execute(document.querySelector("video"), {});
   }
 
   private startPIP(elem) {
@@ -22,7 +22,7 @@ export default class PictureInPicture extends Base {
     this.started = false;
   }
 
-  exec(elem, options?: ExecOptions) {
+  execute(elem, options?: ExecOptions) {
     if (document.pictureInPictureEnabled) {
       if (this.started) {
         this.stopPIP();

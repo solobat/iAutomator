@@ -5,7 +5,7 @@ export default class ClickElement extends Base {
   name = BUILDIN_ACTIONS.CLICK;
   shouldRecord = true;
 
-  exec(elem, options?: ExecOptions) {
+  execute(elem, options?: ExecOptions) {
     elem.click();
     this.recordIfNeeded(options);
 

@@ -12,11 +12,11 @@ export default class TimeUpdate extends Base {
     });
   }
 
-  start() {
-    this.exec(document.querySelector("video"), {});
+  startByCommand() {
+    this.execute(document.querySelector("video"), {});
   }
 
-  exec(elem, options?: ExecOptions) {
+  execute(elem, options?: ExecOptions) {
     // https://github.com/lodash/lodash/issues/3192#issuecomment-411963038
     const updateURL = throttle((currentTime) => {
       const uo = new URLSearchParams(window.location.search);

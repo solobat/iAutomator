@@ -251,15 +251,15 @@ export function exceAutomation(content, times = 0, runAt: RunAt) {
     const options = getExecOptions(modifiers);
 
     if (instance.shouldRedo) {
-      instance.redo = (type: string) => {
+      instance.reExecute = (type: string) => {
         const delay = getDelayByRouteChangeType(type);
 
         setTimeout(() => {
-          instance.run(elem, options);
+          instance.makeExecution(elem, options);
         }, delay);
       };
     }
-    instance.run(elem, options);
+    instance.makeExecution(elem, options);
     instance.active = true;
   }
 
@@ -384,7 +384,7 @@ export function startAction(actionName: string) {
   const action = findAction(actionName);
 
   if (action) {
-    action.start();
+    action.startByCommand();
   }
 }
 
@@ -392,8 +392,8 @@ function onStateChange(type: string) {
   const actions = helper.actions.filter((item) => item.shouldRedo);
 
   actions.forEach((item) => {
-    if (item.redo && item.active) {
-      item.redo(type);
+    if (item.reExecute && item.active) {
+      item.reExecute(type);
     }
   });
 }

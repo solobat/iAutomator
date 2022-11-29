@@ -91,20 +91,20 @@ export default class Scroll extends Base<ScrollExecOptions> {
 
       if ($(elem).is(this.options.nextBtn)) {
         setTimeout(() => {
-          this.redo(ROUTE_CHANGE_TYPE.LINK);
+          this.reExecute(ROUTE_CHANGE_TYPE.LINK);
         }, 1000);
       }
     });
   }
 
-  redo(type: string) {
+  reExecute(type: string) {
     if (type !== ROUTE_CHANGE_TYPE.POP_STATE) {
       window.scrollTo(0, 0);
       this.startScroll(this.speed);
     }
   }
 
-  exec(elem, options?: ScrollExecOptions) {
+  execute(elem, options?: ScrollExecOptions) {
     const { speed = 20 } = options;
     this.options = options;
 

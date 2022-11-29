@@ -63,7 +63,7 @@ export default class FullScreen extends Base {
     });
   }
 
-  exec(elem) {
+  execute(elem) {
     if (elem.requestFullscreen) {
       this.unsetFullScreenElem = this.setupFullScreenElem(elem, event);
       requestAnimationFrame(() => {

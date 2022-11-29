@@ -12,11 +12,11 @@ export default class HashElements extends Base {
 
   private shouldHashedTags = ["h1", "h2", "h3", "h4", "h5", "h6"];
 
-  start() {
-    this.exec(document.body, {});
+  startByCommand() {
+    this.execute(document.body, {});
   }
 
-  exec(elem, options?: ExecOptions) {
+  execute(elem, options?: ExecOptions) {
     $(this.shouldHashedTags.join(","))
       .filter(`[id]:not(.${this.cls})`)
       .on("click", function () {
