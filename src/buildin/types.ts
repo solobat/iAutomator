@@ -1,7 +1,6 @@
-import { Emitter, EventType } from "mitt";
-
 import { NOTICE_TARGET } from "@src/common/enum";
 import { Stack } from "@src/helper/data";
+import { SimpleEvent } from "@src/utils/event";
 
 export interface execFn {
   (elem, event): void;
@@ -23,7 +22,7 @@ export interface ActionHelper<A, T extends ExecOptions = ExecOptions> {
   activeActions: Stack<A>;
   observe: (elem, cb: () => void) => void;
   onRevisible: (fn: () => void) => () => void;
-  emitter: Emitter<Record<EventType, unknown>>;
+  emitter: SimpleEvent;
 }
 
 export interface ExecOptions {

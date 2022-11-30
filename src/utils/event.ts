@@ -1,4 +1,4 @@
-export class SimpleEvent<T extends string> {
+export class SimpleEvent<T extends string = string> {
   callbacks: {
     [propName: string]: any;
   } = {};
@@ -7,7 +7,7 @@ export class SimpleEvent<T extends string> {
     //
   }
 
-  on(name: T, fn: () => void) {
+  on(name: T, fn: (...args) => void) {
     if (this.callbacks[name]) {
       this.callbacks[name].push(fn);
     } else {
@@ -23,7 +23,7 @@ export class SimpleEvent<T extends string> {
     }
   }
 
-  off(name: T, fn: () => void) {
+  off(name: T, fn: (...args) => void) {
     const fns = this.callbacks[name];
 
     if (fns && fns.length) {

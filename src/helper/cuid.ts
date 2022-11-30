@@ -1,7 +1,5 @@
-import cuid from "cuid";
-
 function initCuid() {
-  const id = cuid();
+  const id = crypto.randomUUID();
 
   return id;
 }

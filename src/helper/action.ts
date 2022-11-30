@@ -1,6 +1,5 @@
 import getCssSelector from "css-selector-generator";
 import keyboardJS from "keyboardjs";
-import mitt from "mitt";
 
 import { ActionHelper, ExecOptions } from "@src/buildin/types";
 import { IAutomation } from "@src/server/db/database";
@@ -20,9 +19,10 @@ import {
 } from "./dom";
 import { noticeBg } from "./event";
 import { Stack } from "./data";
+import { SimpleEvent } from "@src/utils/event";
 
 let isSetup;
-const emitter = mitt();
+const emitter = new SimpleEvent();
 let automations: Array<IAutomation> = [];
 
 function serializeOptions(options?: ExecOptions): string {
