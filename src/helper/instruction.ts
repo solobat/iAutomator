@@ -9,15 +9,24 @@ export interface InstructionData {
 
 export interface Instruction<T = string> {
   name: string;
-  parse: (raw: T) => InstructionData;
+  parse: (raw: T) => InstructionData | null;
   generate: (data: InstructionData) => T;
   argsHandler: ArgsHandler;
+  is: (raw: T) => boolean;
 }
 
-interface ArgsHandler {
-  parse: (raw: string, action: string) => ExecOptions;
-  stringify: (args: ExecOptions, action: string) => string;
+interface ArgsHandler<T = string> {
+  parse: (raw: T, action: string) => ExecOptions;
+  stringify: (args: ExecOptions, action: string) => T;
 }
+
+const argsFilter = (args: ExecOptions) => {
+  const clone = Object.assign({}, args);
+
+  delete clone.silent;
+
+  return clone;
+};
 
 export const basicArgsHandler: ArgsHandler = {
   parse(raw) {
@@ -47,9 +56,9 @@ export const basicArgsHandler: ArgsHandler = {
   },
 
   stringify(args: ExecOptions) {
-    const argPairs = Object.entries(args)
-      .filter((pair) => pair[0] !== "silent")
-      .map((arg) => arg.join("!"));
+    const argPairs = Object.entries(argsFilter(args)).map((arg) =>
+      arg.join("!")
+    );
 
     return argPairs.join("^");
   },
@@ -80,5 +89,60 @@ export const basicInstruction: Instruction = {
     return [fullAction, "@", scope].join("");
   },
 
+  is(raw) {
+    return raw.indexOf("^") > -1 && raw.indexOf("@") > -1;
+  },
+
   argsHandler: basicArgsHandler,
 };
+
+const jsonArgsHandler: ArgsHandler = {
+  parse(raw) {
+    try {
+      return JSON.parse(raw);
+    } catch (erroar) {
+      return {};
+    }
+  },
+
+  stringify(args) {
+    return JSON.stringify(argsFilter(args));
+  },
+};
+
+export const jsonInstruction: Instruction = {
+  name: "json",
+
+  parse(content) {
+    try {
+      const data = JSON.parse(content);
+      const { action, scope, args } = data;
+
+      return {
+        action,
+        scope,
+        args,
+        rawArgs: JSON.stringify(args),
+      };
+    } catch (error) {
+      return null;
+    }
+  },
+
+  generate(data) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { rawArgs, ...info } = data;
+
+    return JSON.stringify(info);
+  },
+
+  is(raw) {
+    return raw.startsWith("{") && raw.endsWith("}");
+  },
+
+  argsHandler: jsonArgsHandler,
+};
+
+export function getInstruction<T extends string>(raw: T) {
+  return [basicInstruction, jsonInstruction].find((t) => t.is(raw));
+}
