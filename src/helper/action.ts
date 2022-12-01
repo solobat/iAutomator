@@ -1,10 +1,10 @@
 import getCssSelector from "css-selector-generator";
 import keyboardJS from "keyboardjs";
 
-import { ActionHelper, ExecOptions } from "@src/buildin/types";
+import { ActionHelper, ExecOptions } from "@src/builtin/types";
 import { IAutomation } from "@src/server/db/database";
 
-import Base from "../buildin/Base";
+import { Base } from "../builtin/Base";
 import { PAGE_ACTIONS, REDO_DELAY, ROUTE_CHANGE_TYPE } from "../common/const";
 import { RunAt } from "../server/enum/Automation.enum";
 import { appBridge } from "./bridge";
