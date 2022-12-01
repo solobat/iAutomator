@@ -11,6 +11,7 @@
 - [Chrome Web Store](https://chrome.google.com/webstore/detail/hcnekoladldejmeindnhpjkfhjadcick)
 
 ### Usage
+[Documents](https://const.app/iHelpers/index.html)
 
 #### Videos
 

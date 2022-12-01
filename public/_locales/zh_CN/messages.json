@@ -94,5 +94,14 @@
     },
     "action_read_mode": {
         "message": "阅读模式"
+    },
+    "help": {
+        "message": "帮助"
+    },
+    "website": {
+        "message": "官网"
+    },
+    "documents": {
+        "message": "帮助文档"
     }
 }

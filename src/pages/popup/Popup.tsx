@@ -18,6 +18,7 @@ import {
 } from "../../store/modules/popup.store";
 import { AutomationsPanel } from "./components/Automation";
 import { Records } from "./components/Record";
+import { Help } from "./components/Help";
 
 export default function Page(props) {
   const [state, dispatch] = useReducer(pageReducer, getInitialState());
@@ -74,6 +75,9 @@ function TabInfo(props: TabInfoProps) {
         </TabPane>
         <TabPane tab={t("records")} key="records">
           <Records host={host} />
+        </TabPane>
+        <TabPane tab={t("help")} key="help">
+          <Help />
         </TabPane>
       </Tabs>
     </div>

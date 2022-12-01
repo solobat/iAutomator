@@ -94,5 +94,14 @@
     },
     "action_read_mode": {
         "message": "Read Mode"
+    },
+    "help": {
+        "message": "Help"
+    },
+    "website": {
+        "message": "Website"
+    },
+    "documents": {
+        "message": "Documents"
     }
 }
