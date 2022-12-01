@@ -2,13 +2,13 @@
 <p align="center">Some useful tools for Chrome</p>
 <p align="center">
    <a href="https://github.com/solobat/iHelpers/releases"><img src="https://img.shields.io/badge/lastest_version-1.6.6-blue.svg"></a>
-   <a target="_blank" href="https://chrome.google.com/webstore/detail/jglmompgeddkbcdamdknmebaimldkkbl"><img src="https://img.shields.io/badge/download-_chrome_webstore-brightgreen.svg"></a>
+   <a target="_blank" href="https://chrome.google.com/webstore/detail/ihelpers/hcnekoladldejmeindnhpjkfhjadcick"><img src="https://img.shields.io/badge/download-_chrome_webstore-brightgreen.svg"></a>
 </p>
 
 ***
 
 ### Install
-- [Chrome Web Store](https://chrome.google.com/webstore/detail/hcnekoladldejmeindnhpjkfhjadcick)
+- [Chrome Web Store](https://chrome.google.com/webstore/detail/ihelpers/hcnekoladldejmeindnhpjkfhjadcick)
 
 ### Usage
 [Documents](https://const.app/iHelpers/index.html)
