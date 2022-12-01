@@ -32,6 +32,16 @@ export default class Scroll extends Base<ScrollExecOptions> {
   private afId = 0;
   private speed = 20;
 
+  private tryNextPage() {
+    if (this.runtimeOptions.nextBtn) {
+      document
+        .querySelector<HTMLDivElement | HTMLButtonElement>(
+          this.runtimeOptions.nextBtn
+        )
+        .click();
+    }
+  }
+
   private scrollToSmoothly(pos: number, time: number) {
     const currentPos = window.pageYOffset;
     let start = null;
@@ -45,7 +55,10 @@ export default class Scroll extends Base<ScrollExecOptions> {
 
     const step = (currentTime: number) => {
       if (isAtBottom()) {
-        this.callNext();
+        setTimeout(() => {
+          this.tryNextPage();
+          this.callNext();
+        }, 1000);
         return;
       }
       start = !start ? currentTime : start;
