@@ -4,7 +4,7 @@ import * as React from "react";
 
 export function Help() {
   return (
-    <ul>
+    <ul style={{ listStyle: "none", paddingLeft: 0 }}>
       <li>
         <Button href="https://ihelpers.xyz/" target="_blank" type="link">
           {t("website")}
