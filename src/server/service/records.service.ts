@@ -1,33 +1,44 @@
-import { db } from "../db/database";
+import { getDb } from "../db/database";
 import Record from "../model/Record";
 
-export function save(
+export async function save(
   rid: number,
   url: string,
   domain: string,
   content: string
 ) {
   const record: Record = new Record(rid, url, domain, content);
+  const db = await getDb();
 
   return db.records.put(record);
 }
 
-export function selectOne(id: number) {
+export async function selectOne(id: number) {
+  const db = await getDb();
+
   return db.records.get(id);
 }
 
-export function getAll() {
+export async function getAll() {
+  const db = await getDb();
+
   return db.records.toArray();
 }
 
-export function update(key, changes) {
+export async function update(key, changes) {
+  const db = await getDb();
+
   return db.records.update(key, changes);
 }
 
-export function deleteRecord(recordId: number) {
+export async function deleteRecord(recordId: number) {
+  const db = await getDb();
+
   return db.records.delete(recordId);
 }
 
-export function query(attrs = {}) {
+export async function query(attrs = {}) {
+  const db = await getDb();
+
   return db.records.where(attrs).reverse().sortBy("createTime");
 }

@@ -13,7 +13,7 @@ import { create as createNotice } from "../../helper/notifications";
 import { highlightEnglish } from "../../helper/others";
 import * as automationController from "../../server/controller/automations.controller";
 import * as recordsController from "../../server/controller/records.controller";
-import { IAutomation } from "../../server/db/database";
+import { checkUpdate, IAutomation } from "../../server/db/database";
 
 reloadOnUpdate("pages/background");
 
@@ -265,7 +265,8 @@ function loadAutomations() {
   });
 }
 
-function init() {
+async function init() {
+  await checkUpdate();
   loadAutomations();
   chrome.runtime.onInstalled.addListener(() => {
     initCommands();

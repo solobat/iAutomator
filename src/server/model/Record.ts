@@ -1,4 +1,4 @@
-import { IRecord, db } from "../db/database";
+import { IRecord } from "../db/database";
 
 export default class Record implements IRecord {
   id: number;
@@ -33,5 +33,3 @@ export default class Record implements IRecord {
     }
   }
 }
-
-db.records.mapToClass(Record);

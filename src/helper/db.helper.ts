@@ -1,9 +1,10 @@
 import { exportDB, importInto } from "dexie-export-import";
 import download from "downloadjs";
 
-import { db } from "../server/db/database";
+import { getDb } from "../server/db/database";
 
 export async function exportAndDownload() {
+  const db = await getDb();
   const blob = await exportDB(db);
 
   download(blob, "iHelpers-export.json", "application/json");
@@ -20,21 +21,24 @@ function readBlob(blob) {
 }
 
 export async function exportAsJson() {
+  const db = await getDb();
   const blob = await exportDB(db);
 
   return readBlob(blob);
 }
 
 export async function importDBFile(blob) {
+  const db = await getDb();
   await importInto(db, blob, {
     clearTablesBeforeImport: true,
   });
 }
 
-export function onDbUpdate(callback) {
+export async function onDbUpdate(callback) {
   const dbNames = ["automations", "records"];
   const eventNames = ["creating", "updating", "deleting"];
   const unbindFns = [];
+  const db = await getDb();
 
   dbNames.forEach((name) => {
     eventNames.forEach((event) => {

@@ -1,4 +1,4 @@
-import { db, IAutomation } from "../db/database";
+import { getDb, IAutomation } from "../db/database";
 import { RunAt } from "../enum/Automation.enum";
 
 export default class Automation implements IAutomation {
@@ -35,5 +35,3 @@ export default class Automation implements IAutomation {
     }
   }
 }
-
-db.automations.mapToClass(Automation);

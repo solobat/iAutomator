@@ -32,7 +32,7 @@ export default function Page(props) {
     });
 
     return () => {
-      unbindFns.forEach((fn) => fn());
+      unbindFns.then((fns) => fns.forEach((fn) => fn()));
     };
   }, []);
 
