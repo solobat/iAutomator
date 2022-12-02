@@ -37,6 +37,7 @@ export class ReadMode extends Base {
     }
 
     this.helper.observe(elem, () => {
+      this.active = true;
       this.hideSiblings($(elem));
     });
 
