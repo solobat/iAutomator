@@ -103,5 +103,20 @@
     },
     "documents": {
         "message": "帮助文档"
+    },
+    "shortcuts": {
+        "message": "快捷键"
+    },
+    "shortcut": {
+        "message": "快捷键"
+    },
+    "name": {
+        "message": "名称"
+    },
+    "id_of_automation": {
+        "message": "自动操作ID"
+    },
+    "add_new_shortcut": {
+        "message": "添加新快捷键"
     }
 }

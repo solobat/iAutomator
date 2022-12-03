@@ -14,6 +14,7 @@ import {
   PlusSquareOutlined,
   SearchOutlined,
   ShareAltOutlined,
+  MacCommandOutlined,
 } from "@ant-design/icons";
 import { PlayCircleOutlined } from "@ant-design/icons";
 import { list2options } from "@src/helper/antd";
@@ -263,11 +264,17 @@ const AutomationsColumns = [
   {
     title: t("instructions"),
     dataIndex: "instructions",
-    width: "300px",
+    width: "180px",
     textWrap: "word-break",
     ellipsis: true,
   },
-  { title: t("pattern"), dataIndex: "pattern" },
+  {
+    title: t("pattern"),
+    dataIndex: "pattern",
+    width: "180px",
+    textWrap: "word-break",
+    ellipsis: true,
+  },
   {
     title: t("run_at"),
     dataIndex: "runAt",
@@ -310,6 +317,7 @@ function OpBtns(props: any) {
       <SwitchBtn record={props.record} />
       <EditBtn record={props.record} />
       <ShareBtn item={props.record} />
+      <ShortcutBtn item={props.record} />
       <DeleteBtn record={props.record} />
     </div>
   );
@@ -372,6 +380,24 @@ function ShareBtn(props: { item: Automation }) {
   return (
     <span onClick={onClick}>
       <ShareAltOutlined translate="no" />
+    </span>
+  );
+}
+
+function onShortcutBtnClick(record, dispatch) {
+  const payload = {
+    aid: record.id,
+  };
+  dispatch({ type: ACTIONS.TAB_CHANGE, payload: "shortcuts" });
+  dispatch({ type: ACTIONS.SHORTCUT_FORM_UPDATE, payload });
+}
+
+function ShortcutBtn(props: { item: Automation }) {
+  const { dispatch } = useModel();
+
+  return (
+    <span onClick={() => onShortcutBtnClick(props.item, dispatch)}>
+      <MacCommandOutlined translate="no" />
     </span>
   );
 }

@@ -13,11 +13,13 @@ import { create as createNotice } from "../../helper/notifications";
 import { highlightEnglish } from "../../helper/others";
 import * as automationController from "../../server/controller/automations.controller";
 import * as recordsController from "../../server/controller/records.controller";
-import { checkUpdate, IAutomation } from "../../server/db/database";
+import * as shortcutsController from "../../server/controller/shortcuts.controller";
+import { checkUpdate, IAutomation, IShortcut } from "../../server/db/database";
 
 reloadOnUpdate("pages/background");
 
 let automations: IAutomation[] = [];
+let shortcuts: IShortcut[] = [];
 interface BadgeItem {
   url: string;
   text: string;
@@ -73,11 +75,16 @@ function updateBadge(url) {
   }
 }
 
-function onAutomations(data, handler) {
-  const records = updateBadgeByURL(data.url);
+function onPageData(data, handler) {
+  const automations = getAutomationsByURL(data.url);
+  const aids = automations.map((item) => item.id);
+  const currentShortcuts = shortcuts.filter((item) => aids.includes(item.aid));
 
   if (handler) {
-    handler(records);
+    handler({
+      automations,
+      shortcuts: currentShortcuts,
+    });
   }
 }
 
@@ -85,6 +92,11 @@ function onRefreshAutmations(handler) {
   loadAutomations().then(() => {
     updateBadgeByCurrentTab();
   });
+  handler("");
+}
+
+function onRefreshShortcuts(handler) {
+  loadShortcuts(automations.map((item) => item.id));
   handler("");
 }
 
@@ -176,11 +188,13 @@ function msgHandler(req: PageMsg, sender, resp) {
 
     recordsController.saveRecord(content, url, domain);
     handler("");
-  } else if (action === PAGE_ACTIONS.AUTOMATIONS) {
+  } else if (action === PAGE_ACTIONS.PAGE_DATA) {
     initCommands();
-    onAutomations(data, handler);
+    onPageData(data, handler);
   } else if (action === PAGE_ACTIONS.REFRESH_AUTOMATIONS) {
     onRefreshAutmations(handler);
+  } else if (action === PAGE_ACTIONS.REFRESH_SHORTCUTS) {
+    onRefreshShortcuts(handler);
   } else if (action === APP_ACTIONS.IMPORT_DATA) {
     init();
     handler("");
@@ -230,17 +244,21 @@ function initCommands() {
   chrome.contextMenus.onClicked.addListener(onContextMenuClicked);
 }
 
+function getAutomationsByURL(url: string) {
+  const pageAutomations = matchAutomations(automations, url);
+
+  return pageAutomations;
+}
+
 function updateBadgeByURL(url: string) {
-  const records = matchAutomations(automations, url);
-  const realNum = records.filter((item) => item.active).length;
+  const pageAutomations = getAutomationsByURL(url);
+  const realNum = pageAutomations.filter((item) => item.active).length;
 
   badgesHelper.setItem({
     url: url,
     text: realNum ? String(realNum) : "",
   });
   updateBadge(url);
-
-  return records;
 }
 
 function updateBadgeByCurrentTab() {
@@ -262,12 +280,22 @@ chrome.tabs.onActivated.addListener(function () {
 function loadAutomations() {
   return automationController.getList().then((resp) => {
     automations = <IAutomation[]>resp.data;
+
+    return automations;
+  });
+}
+
+function loadShortcuts(aids: number[]) {
+  return shortcutsController.queryByAids(aids).then((resp) => {
+    shortcuts = resp.data;
   });
 }
 
 async function init() {
   await checkUpdate();
-  loadAutomations();
+  loadAutomations().then((automations) => {
+    loadShortcuts(automations.map((item) => item.id));
+  });
   chrome.runtime.onInstalled.addListener(() => {
     initCommands();
   });

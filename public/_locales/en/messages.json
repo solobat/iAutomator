@@ -103,5 +103,20 @@
     },
     "documents": {
         "message": "Documents"
+    },
+    "shortcuts": {
+        "message": "Shortcuts"
+    },
+    "shortcut": {
+        "message": "Shortcut"
+    },
+    "name": {
+        "message": "Name"
+    },
+    "id_of_automation": {
+        "message": "ID of automation"
+    },
+    "add_new_shortcut": {
+        "message": "Add new shortcut"
     }
 }

@@ -18,6 +18,7 @@ import {
 } from "../../store/modules/popup.store";
 import { AutomationsPanel } from "./components/Automation";
 import { Records } from "./components/Record";
+import { ShortcutsPanel } from "./components/Shortcut";
 import { Help } from "./components/Help";
 
 export default function Page(props) {
@@ -75,6 +76,9 @@ function TabInfo(props: TabInfoProps) {
         </TabPane>
         <TabPane tab={t("records")} key="records">
           <Records host={host} />
+        </TabPane>
+        <TabPane tab={t("shortcuts")} key="shortcuts">
+          <ShortcutsPanel />
         </TabPane>
         <TabPane tab={t("help")} key="help">
           <Help />

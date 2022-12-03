@@ -8,13 +8,13 @@ import Record from "../model/Record";
 import Shortcut from "../model/Shortcut";
 
 const DB_NAME = "StewardHelperDatabase";
-export const MIN_VERSION = 6;
+export const MIN_VERSION = 9;
 const schema: Schema = {
   rules: "++id,pattern,createTime,updateTime,deleted",
   records: "++id,rid,domain,url,content,times,createTime,updateTime,deleted",
   automations:
     "++id,rid,instructions,runAt,pattern,active,createTime,updateTime,deleted",
-  shortcuts: "++id,shortcuts,aid,wid,createTime,updateTime,deleted",
+  shortcuts: "++id,name,shortcut,aid,wid,action,createTime,updateTime,deleted",
 };
 
 export class IHelpersDatabase extends Dexie {
@@ -64,9 +64,11 @@ export interface IAutomation {
 
 export interface IShortcut {
   id?: number;
+  name?: string;
   shortcut: string;
   aid?: number;
   wid?: number;
+  action?: string;
   createTime?: number;
   updateTime?: number;
   deleted?: boolean;

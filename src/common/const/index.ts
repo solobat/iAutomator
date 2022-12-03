@@ -56,7 +56,9 @@ function t(key: string): string {
 export const PAGE_ACTIONS = {
   RECORD: "recordAction",
   AUTOMATIONS: "getAutomations",
+  PAGE_DATA: "getPageData",
   REFRESH_AUTOMATIONS: "refreshAutomations",
+  REFRESH_SHORTCUTS: "refreshShortcuts",
   NOTICE: "createNotice",
   EXEC_INSTRUCTIONS: "execInstructions",
 };

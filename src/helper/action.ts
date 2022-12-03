@@ -2,7 +2,7 @@ import getCssSelector from "css-selector-generator";
 import keyboardJS from "keyboardjs";
 
 import { ActionHelper, ExecOptions } from "@src/builtin/types";
-import { IAutomation } from "@src/server/db/database";
+import { IAutomation, IShortcut } from "@src/server/db/database";
 
 import { Base } from "../builtin/Base";
 import { PAGE_ACTIONS, REDO_DELAY, ROUTE_CHANGE_TYPE } from "../common/const";
@@ -24,6 +24,7 @@ import { SimpleEvent } from "@src/utils/event";
 let isSetup;
 const emitter = new SimpleEvent();
 let automations: Array<IAutomation> = [];
+let shortcuts: IShortcut[] = [];
 
 function serializeOptions(options?: ExecOptions): string {
   if (options) {
@@ -280,41 +281,60 @@ function findAction(name: string): Base | null {
   return helper.actions.find((item) => item.name === name);
 }
 
-function fetchAndRunAutomations() {
+function fetchPageDataAndApply() {
   noticeBg(
     {
-      action: PAGE_ACTIONS.AUTOMATIONS,
+      action: PAGE_ACTIONS.PAGE_DATA,
       data: { url: window.location.href },
     },
     (result) => {
-      if (result.data && result.data.length) {
-        automations = result.data;
-        const activeItems = result.data.filter((item) => item.active);
-        const immediateItems = activeItems.filter(
-          (item) => item.runAt === RunAt.START
-        );
-        const readyItems = activeItems.filter(
-          (item) => item.runAt === RunAt.END
-        );
-        const delayedItems = activeItems.filter(
-          (item) => item.runAt === RunAt.IDLE
-        );
+      automations = result.data.automations;
+      shortcuts = result.data.shortcuts;
 
-        execAutomations(immediateItems, RunAt.START);
-
-        onReady(() => {
-          helper.insertCss(getStyles());
-          execAutomations(readyItems, RunAt.END);
-
-          window.setTimeout(() => {
-            execAutomations(delayedItems, RunAt.END);
-          }, 1000);
-        });
-
-        listenRouteChangeEvents(onStateChange);
-      }
+      initAutomations();
+      initShortcuts();
     }
   );
+}
+
+function initAutomations() {
+  if (automations.length) {
+    const activeItems = automations.filter((item) => item.active);
+    const immediateItems = activeItems.filter(
+      (item) => item.runAt === RunAt.START
+    );
+    const readyItems = activeItems.filter((item) => item.runAt === RunAt.END);
+    const delayedItems = activeItems.filter(
+      (item) => item.runAt === RunAt.IDLE
+    );
+
+    execAutomations(immediateItems, RunAt.START);
+
+    onReady(() => {
+      helper.insertCss(getStyles());
+      execAutomations(readyItems, RunAt.END);
+
+      window.setTimeout(() => {
+        execAutomations(delayedItems, RunAt.END);
+      }, 1000);
+    });
+
+    listenRouteChangeEvents(onStateChange);
+  }
+}
+
+function initShortcuts() {
+  shortcuts.map((shortcut) => {
+    const onTrigger = (event) => {
+      event.preventDefault();
+      exceAutomationById(shortcut.aid);
+    };
+    keyboardJS.bind(shortcut.shortcut, onTrigger);
+
+    return () => {
+      keyboardJS.unbind(shortcut.shortcut, onTrigger);
+    };
+  });
 }
 
 function execAutomations(automations, runAt: RunAt) {
@@ -331,7 +351,7 @@ export function exceAutomationById(id: number) {
   }
 }
 
-fetchAndRunAutomations();
+fetchPageDataAndApply();
 
 export function exec(fn, withOutline?: boolean) {
   setup(withOutline);

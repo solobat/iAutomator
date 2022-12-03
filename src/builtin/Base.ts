@@ -96,10 +96,14 @@ export abstract class Base<T extends ExecOptions = ExecOptions> {
   }
 
   /**
-   * called by UI or automation
+   * called by UI or automation or shortcuts
    * execute and check result if needed
    */
   makeExecution(elem, options: Partial<T>) {
+    // NOTE: Avoid repeated execution
+    if (this.active) {
+      return;
+    }
     this.runtimeOptions = options;
     const result = this.execute(elem, options);
     if (this.options.esc2exit) {
