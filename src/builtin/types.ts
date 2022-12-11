@@ -11,6 +11,17 @@ export interface ActionCache {
   subActions: null;
 }
 
+export interface GlobalEvent<T = any> {
+  action: string;
+  payload: T;
+}
+
+interface Broadcast {
+  init: () => void;
+
+  emit: <T = any>(name: string, data: T) => void;
+}
+
 export interface ActionHelper<A, T extends ExecOptions = ExecOptions> {
   prepare(fn: execFn, options: ActionOptions): void;
   actionCache: ActionCache;
@@ -23,6 +34,7 @@ export interface ActionHelper<A, T extends ExecOptions = ExecOptions> {
   observe: (elem, cb: () => void) => void;
   onRevisible: (fn: () => void) => () => void;
   emitter: SimpleEvent;
+  broadcast: Broadcast;
 }
 
 export interface ExecOptions {
@@ -38,6 +50,14 @@ export interface ExecOptions {
    * ID of the next automation to be executed
    */
   next?: number;
+
+  value?: string;
+
+  /**
+   * Name of event to be emitted
+   */
+  emit?: string;
+
   [prop: string]: any;
 }
 

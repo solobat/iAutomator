@@ -142,8 +142,9 @@ export function listenRouteChangeEvents(onChange: (type: string) => void) {
 
   $(document).on("click", "a", function () {
     const $a = $(this);
+    const href = $a.attr("href");
 
-    if (!$a.attr("href").startsWith("http") && !$a.hasClass("ext-hp-link")) {
+    if (!href?.startsWith("http") && !$a.hasClass("ext-hp-link")) {
       onChange(ROUTE_CHANGE_TYPE.LINK);
     }
   });

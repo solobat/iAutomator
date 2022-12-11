@@ -118,5 +118,11 @@
     },
     "add_new_shortcut": {
         "message": "Add new shortcut"
+    },
+    "event": {
+        "message": "Event"
+    },
+    "set_value": {
+        "message": "Set value"
     }
 }

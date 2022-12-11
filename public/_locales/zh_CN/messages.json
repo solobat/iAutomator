@@ -118,5 +118,11 @@
     },
     "add_new_shortcut": {
         "message": "添加新快捷键"
+    },
+    "event": {
+        "message": "事件"
+    },
+    "set_value": {
+        "message": "设值"
     }
 }

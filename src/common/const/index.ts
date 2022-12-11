@@ -20,6 +20,9 @@ const local_i18n = {
     bookmark: "Bookmark",
     scroll: "Scroll",
     redirect: "Redirect",
+    event: "event",
+    set_value: "Set value",
+    active: "active",
   },
   zh_CN: {
     read_mode: "阅读模式",
@@ -42,6 +45,9 @@ const local_i18n = {
     bookmark: "书签",
     scroll: "自动滚动",
     redirect: "重定向",
+    event: "事件",
+    set_value: "设值",
+    active: "选中",
   },
 };
 
@@ -57,8 +63,11 @@ export const PAGE_ACTIONS = {
   RECORD: "recordAction",
   AUTOMATIONS: "getAutomations",
   PAGE_DATA: "getPageData",
+  GLOABL_EVENT_EMITTED: "globalEventEmitted",
+  GLOBAL_EVENT_RECEIVED: "globalEventReceived",
   REFRESH_AUTOMATIONS: "refreshAutomations",
   REFRESH_SHORTCUTS: "refreshShortcuts",
+  ACTIVE_PAGE: "activePage",
   NOTICE: "createNotice",
   EXEC_INSTRUCTIONS: "execInstructions",
 };
@@ -99,6 +108,9 @@ export const BUILDIN_ACTIONS = {
   FULL_SCREEN: "fullScreen",
   TIME_UPDATE: "timeupdate",
   CLICK: "click",
+  ACTIVE: "active",
+  SET_VALUE: "setValue",
+  EVENT: "event",
   REDIRECT: "redirect",
   SCROLL: "scroll",
   FOCUS: "focus",
@@ -345,6 +357,39 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
   {
     value: BUILDIN_ACTIONS.CLICK,
     label: t("click"),
+  },
+  {
+    value: BUILDIN_ACTIONS.EVENT,
+    label: t("event"),
+    args: [
+      {
+        tips: "Name of event",
+        name: "events",
+        type: "string",
+      },
+      {
+        tips: "css selector of target",
+        name: "selector",
+        type: "string",
+      },
+    ],
+  },
+  {
+    value: BUILDIN_ACTIONS.SET_VALUE,
+    label: t("set_value"),
+    args: [
+      {
+        tips: "Value",
+        name: "value",
+        type: "string",
+        value: "",
+        defaultValue: "",
+      },
+    ],
+  },
+  {
+    value: BUILDIN_ACTIONS.ACTIVE,
+    label: t("active"),
   },
   {
     value: BUILDIN_ACTIONS.SCROLL,

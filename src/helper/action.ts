@@ -1,7 +1,7 @@
 import getCssSelector from "css-selector-generator";
 import keyboardJS from "keyboardjs";
 
-import { ActionHelper, ExecOptions } from "@src/builtin/types";
+import { ActionHelper, ExecOptions, GlobalEvent } from "@src/builtin/types";
 import { IAutomation, IShortcut } from "@src/server/db/database";
 
 import { Base } from "../builtin/Base";
@@ -17,7 +17,7 @@ import {
   setupOutline,
   startOutline,
 } from "./dom";
-import { noticeBg } from "./event";
+import { GlobalEvents, noticeBg } from "./event";
 import { Stack } from "./data";
 import { SimpleEvent } from "@src/utils/event";
 
@@ -25,6 +25,7 @@ let isSetup;
 const emitter = new SimpleEvent();
 let automations: Array<IAutomation> = [];
 let shortcuts: IShortcut[] = [];
+const globalEvents = GlobalEvents();
 
 function serializeOptions(options?: ExecOptions): string {
   if (options) {
@@ -119,7 +120,12 @@ function recordAction(actionName, elem?: HTMLElement, options?: ExecOptions) {
   );
 }
 
-export function exceAutomation(content, times = 0, runAt: RunAt) {
+export function exceAutomation(
+  content,
+  times = 0,
+  runAt: RunAt,
+  runtimeOptions: ExecOptions = {}
+) {
   const [actionStr, selector] = content.split("@");
   const [action, ...modifiers] = actionStr.split("^");
   const elem = getElem(selector);
@@ -129,7 +135,7 @@ export function exceAutomation(content, times = 0, runAt: RunAt) {
       const delay = runAt === RunAt.START ? 16 : 1000;
 
       setTimeout(() => {
-        exceAutomation(content, times + 1, runAt);
+        exceAutomation(content, times + 1, runAt, runtimeOptions);
       }, delay);
     }
   }
@@ -138,7 +144,10 @@ export function exceAutomation(content, times = 0, runAt: RunAt) {
       times = 0;
       tryAgain();
     };
-    const options = getExecOptions(modifiers);
+    const staticOptions: ExecOptions = getExecOptions(modifiers);
+    const options = Object.assign(staticOptions, runtimeOptions, {
+      next: staticOptions.next,
+    });
 
     if (instance.options.shouldRedo) {
       instance.reExecute = (type: string) => {
@@ -165,7 +174,12 @@ export function exceAutomation(content, times = 0, runAt: RunAt) {
 
 declare global {
   interface Window {
-    exceAutomation: (content: string, times: number, runAt: RunAt) => void;
+    exceAutomation: (
+      content: string,
+      times: number,
+      runAt: RunAt,
+      options?: ExecOptions
+    ) => void;
   }
 }
 
@@ -208,6 +222,27 @@ export const helper: ActionHelper<Base> = {
   onRevisible,
 
   emitter,
+
+  broadcast: {
+    init() {
+      helper.emitter.on(
+        globalEvents.nameForSend(),
+        (name: string, data: any) => {
+          noticeBg({
+            action: PAGE_ACTIONS.GLOABL_EVENT_EMITTED,
+            data: {
+              action: name,
+              payload: data,
+            } as GlobalEvent,
+          });
+        }
+      );
+    },
+
+    emit(name, data) {
+      helper.emitter.emit(globalEvents.nameForSend(), name, data);
+    },
+  },
 };
 
 function onRevisible(fn: () => void) {
@@ -243,6 +278,7 @@ function setupEvents(helper: ActionHelper<Base>) {
 }
 
 export function install(actionFns: (helper: ActionHelper<Base>) => void) {
+  helper.broadcast.init();
   setupEvents(helper);
   actionFns(helper);
 }
@@ -343,11 +379,11 @@ function execAutomations(automations, runAt: RunAt) {
   });
 }
 
-export function exceAutomationById(id: number) {
+export function exceAutomationById(id: number, options?: ExecOptions) {
   const item = automations.find((a) => a.id === id);
 
   if (item) {
-    exceAutomation(item.instructions, 0, item.runAt);
+    exceAutomation(item.instructions, 0, item.runAt, options);
   }
 }
 
@@ -366,4 +402,10 @@ function getStyles() {
 
     return memo;
   }, "");
+}
+
+export function receiveGlobalEvent(event: GlobalEvent) {
+  const { action, payload } = event;
+
+  helper.emitter.emit(globalEvents.nameForReceive(action), payload);
 }

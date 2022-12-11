@@ -1,3 +1,5 @@
+import { GlobalEvent } from "@src/builtin/types";
+import hanlder from "@src/helper/cookies";
 import reloadOnUpdate from "virtual:reload-on-update-in-background-script";
 
 import {
@@ -88,6 +90,15 @@ function onPageData(data, handler) {
   }
 }
 
+function onEventEmitted(data: GlobalEvent, hanlder) {
+  chrome.tabs.query({ active: false }, function (tabs) {
+    tabs.forEach((tab) => {
+      runMethod(tab, PAGE_ACTIONS.GLOBAL_EVENT_RECEIVED, data);
+    });
+  });
+  hanlder("");
+}
+
 function onRefreshAutmations(handler) {
   loadAutomations().then(() => {
     updateBadgeByCurrentTab();
@@ -165,7 +176,7 @@ function onHightlighting(data, handler) {
   });
 }
 
-function msgHandler(req: PageMsg, sender, resp) {
+function msgHandler(req: PageMsg, sender: chrome.runtime.MessageSender, resp) {
   const { action, data, callbackId } = req;
   console.log("msgHandler -> req", req);
 
@@ -191,10 +202,15 @@ function msgHandler(req: PageMsg, sender, resp) {
   } else if (action === PAGE_ACTIONS.PAGE_DATA) {
     initCommands();
     onPageData(data, handler);
+  } else if (action === PAGE_ACTIONS.GLOABL_EVENT_EMITTED) {
+    onEventEmitted(data, hanlder);
   } else if (action === PAGE_ACTIONS.REFRESH_AUTOMATIONS) {
     onRefreshAutmations(handler);
   } else if (action === PAGE_ACTIONS.REFRESH_SHORTCUTS) {
     onRefreshShortcuts(handler);
+  } else if (action === PAGE_ACTIONS.ACTIVE_PAGE) {
+    activePage(sender.tab);
+    handler("");
   } else if (action === APP_ACTIONS.IMPORT_DATA) {
     init();
     handler("");
@@ -210,6 +226,14 @@ function msgHandler(req: PageMsg, sender, resp) {
     onExecInstructions(data, handler);
   } else if (action === BUILDIN_ACTIONS.HIGHLIGHT_ENGLISH_SYNTAX) {
     onHightlighting(data, handler);
+  }
+}
+
+function activePage(tab?: chrome.tabs.Tab) {
+  if (tab) {
+    chrome.tabs.update(tab.id, {
+      active: true,
+    });
   }
 }
 

@@ -18,8 +18,16 @@ import { Redirect } from "../../builtin/Redirect";
 import { Scroll } from "../../builtin/Scroll";
 import { TimeUpdate } from "../../builtin/TimeUpdate";
 import { ZenMode } from "../../builtin/ZenMode";
+import { OnEvent } from "../../builtin/Event";
+import { SetValue } from "../../builtin/SetValue";
+import { ActivePage } from "../../builtin/Active";
 import { APP_ACTIONS, PAGE_ACTIONS, WEB_ACTIONS } from "../../common/const";
-import { exceAutomation, install, startAction } from "../../helper/action";
+import {
+  exceAutomation,
+  install,
+  receiveGlobalEvent,
+  startAction,
+} from "../../helper/action";
 import { appBridge } from "../../helper/bridge";
 import { handleWebEvents, noticeWeb } from "../../helper/web";
 import { RunAt } from "../../server/enum/Automation.enum";
@@ -32,6 +40,8 @@ function bindAppEvents() {
       noticeWeb(method, data);
     } else if (method === PAGE_ACTIONS.EXEC_INSTRUCTIONS) {
       exceAutomation(data.instructions, 0, RunAt.END);
+    } else if (method === PAGE_ACTIONS.GLOBAL_EVENT_RECEIVED) {
+      receiveGlobalEvent(data);
     } else if (method === APP_ACTIONS.MSG_RESP) {
       appBridge.receiveMessage(data);
     } else {
@@ -78,6 +88,9 @@ function init() {
     new Button(helper);
     new Bookmark(helper);
     new Redirect(helper);
+    new OnEvent(helper);
+    new SetValue(helper);
+    new ActivePage(helper);
   });
 
   bindAppEvents();

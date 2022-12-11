@@ -8,6 +8,9 @@ export class ClickElement extends Base {
   execute(elem, options: Partial<ExecOptions>) {
     elem.click();
     this.recordIfNeeded(options);
+    setTimeout(() => {
+      this.callNext(options);
+    }, 1000);
 
     return true;
   }

@@ -14,3 +14,24 @@ export function noticeIframe(msg) {
 
   iframeWindow.postMessage(msg, "*");
 }
+
+export function GlobalEvents() {
+  const globalId = "global";
+  const delimiter = "::";
+  const eventType = {
+    send: "send",
+    receive: "receive",
+  };
+
+  return {
+    nameForReceive(name: string) {
+      return [globalId, eventType.receive, name].join(delimiter);
+    },
+    nameForSend() {
+      return [globalId, eventType.send].join(delimiter);
+    },
+    isGlobal(name: string) {
+      return name.startsWith(`${globalId}${delimiter}`);
+    },
+  };
+}

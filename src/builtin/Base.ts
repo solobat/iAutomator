@@ -162,9 +162,20 @@ export abstract class Base<T extends ExecOptions = ExecOptions> {
   /**
    * Run the next automation specified
    */
-  callNext() {
+  callNext(options?: ExecOptions) {
     if (this.runtimeOptions.next) {
-      exceAutomationById(this.runtimeOptions.next);
+      exceAutomationById(this.runtimeOptions.next, options);
+    }
+  }
+
+  /**
+   * Emit global event with payload
+   */
+  broadcast(payload?: any) {
+    const { emit } = this.runtimeOptions;
+
+    if (emit) {
+      this.helper.broadcast.emit(emit, payload);
     }
   }
 
