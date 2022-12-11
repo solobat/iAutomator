@@ -37,6 +37,7 @@ export abstract class Base<T extends ExecOptions = ExecOptions> {
   options: ActionOptions;
   /**
    * arguments of action execution
+   * only valid while action is a singleton
    */
   runtimeOptions?: Partial<T>;
 
@@ -162,17 +163,17 @@ export abstract class Base<T extends ExecOptions = ExecOptions> {
   /**
    * Run the next automation specified
    */
-  callNext(options?: ExecOptions) {
-    if (this.runtimeOptions.next) {
-      exceAutomationById(this.runtimeOptions.next, options);
+  callNext(options: ExecOptions, nextOptions?: ExecOptions) {
+    if (options.next) {
+      exceAutomationById(options.next, nextOptions);
     }
   }
 
   /**
    * Emit global event with payload
    */
-  broadcast(payload?: any) {
-    const { emit } = this.runtimeOptions;
+  broadcast(options: ExecOptions, payload?: any) {
+    const { emit } = options;
 
     if (emit) {
       this.helper.broadcast.emit(emit, payload);

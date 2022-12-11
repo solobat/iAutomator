@@ -9,7 +9,7 @@ export class ClickElement extends Base {
     elem.click();
     this.recordIfNeeded(options);
     setTimeout(() => {
-      this.callNext(options);
+      this.callNext(options, options);
     }, 1000);
 
     return true;

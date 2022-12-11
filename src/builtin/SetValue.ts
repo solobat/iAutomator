@@ -12,9 +12,8 @@ export class SetValue extends Base {
   execute(elem, options: Partial<SetValueExecOptions>) {
     if (options.value) {
       elem.value = options.value;
-      console.log("callnext", options);
 
-      this.callNext();
+      this.callNext(options, options);
     }
     this.recordIfNeeded(options);
 

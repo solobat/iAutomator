@@ -14,7 +14,7 @@ export class ActivePage extends Base {
         action: PAGE_ACTIONS.ACTIVE_PAGE,
       },
       () => {
-        this.callNext(options);
+        this.callNext(options, options);
       }
     );
     return true;

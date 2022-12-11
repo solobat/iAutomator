@@ -47,21 +47,18 @@ export class OnEvent extends Base {
     return ["paste"].includes(eventName);
   }
 
-  private listenEvents(
-    eventName: string,
-    elem: HTMLElement,
-    selector?: string
-  ) {
+  private listenEvents(elem: HTMLElement, options: Partial<EventExecOptions>) {
+    const { events: eventName, selector } = options;
     const isGlobal = GlobalEvents().isGlobal(eventName);
     const handler = async (event) => {
-      const options: ExecOptions = isGlobal
+      const nextOptions: ExecOptions = isGlobal
         ? event
         : {
             value: await this.getEventValue(eventName, event),
           };
 
-      this.callNext(options);
-      this.broadcast(options);
+      this.callNext(options, nextOptions);
+      this.broadcast(options, nextOptions);
     };
     if (isGlobal) {
       this.helper.emitter.on(eventName, handler);
@@ -77,9 +74,9 @@ export class OnEvent extends Base {
   }
 
   execute(elem, options: Partial<EventExecOptions>) {
-    const { events, selector } = options;
+    const { events } = options;
     if (events) {
-      this.listenEvents(events, elem, selector);
+      this.listenEvents(elem, options);
     }
     this.recordIfNeeded(options);
 
