@@ -1,13 +1,21 @@
 import getCssSelector from "css-selector-generator";
 import keyboardJS from "keyboardjs";
 
-import { ActionHelper, ExecOptions, GlobalEvent } from "@src/builtin/types";
+import {
+  ActionHelper,
+  ActionRunMode,
+  ExecOptions,
+  GlobalEvent,
+} from "@src/builtin/types";
 import { IAutomation, IShortcut } from "@src/server/db/database";
+import { SimpleEvent } from "@src/utils/event";
+import { show } from "@src/utils/log";
 
 import { Base } from "../builtin/Base";
 import { PAGE_ACTIONS, REDO_DELAY, ROUTE_CHANGE_TYPE } from "../common/const";
 import { RunAt } from "../server/enum/Automation.enum";
 import { appBridge } from "./bridge";
+import { Stack } from "./data";
 import {
   getElem,
   insertCss,
@@ -18,8 +26,6 @@ import {
   startOutline,
 } from "./dom";
 import { GlobalEvents, noticeBg } from "./event";
-import { Stack } from "./data";
-import { SimpleEvent } from "@src/utils/event";
 
 let isSetup;
 const emitter = new SimpleEvent();
@@ -121,12 +127,20 @@ function recordAction(actionName, elem?: HTMLElement, options?: ExecOptions) {
 }
 
 export function exceAutomation(
-  content,
+  content: string,
   times = 0,
   runAt: RunAt,
-  runtimeOptions: ExecOptions = {}
+  runtimeOptions: ExecOptions = { index: 0, mode: "single" }
 ) {
-  const [actionStr, selector] = content.split("@");
+  const instructions = content.split(";");
+  const instruction = instructions[runtimeOptions.index];
+
+  if (!instruction) {
+    show("current is the latest instruction, group is done", runtimeOptions);
+    return;
+  }
+
+  const [actionStr, selector] = instruction.split("@");
   const [action, ...modifiers] = actionStr.split("^");
   const elem = getElem(selector);
 
@@ -146,7 +160,10 @@ export function exceAutomation(
     };
     const staticOptions: ExecOptions = getExecOptions(modifiers);
     const options = Object.assign(staticOptions, runtimeOptions, {
-      next: staticOptions.next,
+      next:
+        runtimeOptions.mode === "group"
+          ? runtimeOptions.next
+          : staticOptions.next,
     });
 
     if (instance.options.shouldRedo) {
@@ -373,9 +390,26 @@ function initShortcuts() {
   });
 }
 
-function execAutomations(automations, runAt: RunAt) {
+function getMode(instructions: string) {
+  const mode: ActionRunMode =
+    instructions.split(";").length > 1 ? "group" : "single";
+
+  return mode;
+}
+
+function getOptions(
+  item: IAutomation,
+  options: ExecOptions = { mode: "single", index: 0 }
+) {
+  const mode = getMode(item.instructions);
+  const next = mode === "single" ? options.next : item.id;
+
+  return { ...options, mode, next, index: options.index ?? 0 };
+}
+
+function execAutomations(automations: IAutomation[], runAt: RunAt) {
   automations.forEach((item) => {
-    exceAutomation(item.instructions, 0, runAt);
+    exceAutomation(item.instructions, 0, runAt, getOptions(item));
   });
 }
 
@@ -383,7 +417,7 @@ export function exceAutomationById(id: number, options?: ExecOptions) {
   const item = automations.find((a) => a.id === id);
 
   if (item) {
-    exceAutomation(item.instructions, 0, item.runAt, options);
+    exceAutomation(item.instructions, 0, item.runAt, getOptions(item, options));
   }
 }
 

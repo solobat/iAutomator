@@ -163,9 +163,17 @@ export abstract class Base<T extends ExecOptions = ExecOptions> {
   /**
    * Run the next automation specified
    */
-  callNext(options: ExecOptions, nextOptions?: ExecOptions) {
-    if (options.next) {
-      exceAutomationById(options.next, nextOptions);
+  callNext(
+    options: ExecOptions,
+    nextOptions: ExecOptions = { mode: "single", index: 0 }
+  ) {
+    const { next, mode, index } = options;
+
+    if (next) {
+      exceAutomationById(next, {
+        ...nextOptions,
+        index: mode === "group" ? index + 1 : 0,
+      });
     }
   }
 

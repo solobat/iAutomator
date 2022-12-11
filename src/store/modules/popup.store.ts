@@ -1,14 +1,18 @@
 import { createContext, useContext } from "react";
 
 import { BUILDIN_ACTIONS } from "@src/common/const";
+import { InstructionData } from "@src/helper/instruction";
+import { IShortcut } from "@src/server/db/database";
 
 import { RunAt } from "../../server/enum/Automation.enum";
-import { IShortcut } from "@src/server/db/database";
 
 export const ACTIONS = {
   TAB_META: "tabMeta",
   TAB_CHANGE: "tabChange",
   AUTOMATION_FORM_UPDATE: "initAutomationForm",
+  AUTOMATION_FORM_UPDATE_INS: "initAutomationFormIns",
+  AUTOMATION_FORM_NEW_INS: "automationFormNewIns",
+  AUTOMATION_FORM_DEL_INS: "automationFormDelIns",
   AUTOMATION_FORM_CLOSE: "automationFormClose",
   AUTOMATIONS: "AUTOMATIONS",
   SHORTCUT_FORM_UPDATE: "initShortcutForm",
@@ -18,7 +22,7 @@ export const ACTIONS = {
 
 export function pageReducer(state: PageState, action) {
   const { type, payload } = action;
-  const newState: any = {};
+  const newState: Partial<PageState> = {};
 
   switch (type) {
     case ACTIONS.TAB_META:
@@ -34,9 +38,35 @@ export function pageReducer(state: PageState, action) {
         ...payload,
       };
       break;
+    case ACTIONS.AUTOMATION_FORM_NEW_INS:
+      newState.automationForm = {
+        ...(state.automationForm || ({} as AutomationForm)),
+      };
+      newState.automationForm.data.splice(payload.index, 0, getDefaultNewIns());
+      break;
+    case ACTIONS.AUTOMATION_FORM_DEL_INS:
+      newState.automationForm = {
+        ...(state.automationForm || ({} as AutomationForm)),
+      };
+      newState.automationForm.data.splice(payload.index, 1);
+      if (!newState.automationForm.data.length) {
+        newState.automationForm.data.push(getDefaultNewIns());
+      }
+      break;
+    case ACTIONS.AUTOMATION_FORM_UPDATE_INS:
+      newState.automationForm = {
+        ...(state.automationForm || ({} as AutomationForm)),
+      };
+
+      Object.assign(
+        newState.automationForm.data[payload.index],
+        payload.changes
+      );
+
+      break;
     case ACTIONS.AUTOMATION_FORM_CLOSE:
       newState.amFormEditing = false;
-      newState.automationForm = getDefaultAutomationForm();
+      newState.automationForm = getDefaultAutomationForm() as AutomationForm;
       break;
     case ACTIONS.AUTOMATIONS:
       newState.automations = payload;
@@ -66,12 +96,26 @@ export function pageReducer(state: PageState, action) {
 
 export const PageContext = createContext(null);
 
+export interface AutomationForm {
+  instructions: string;
+  data: Omit<InstructionData, "args">[];
+  pattern: string;
+  runAt: RunAt.END;
+  id?: number;
+}
+
+function getDefaultNewIns() {
+  return {
+    action: BUILDIN_ACTIONS.READ_MODE,
+    rawArgs: "",
+    scope: "body",
+  };
+}
+
 function getDefaultAutomationForm() {
   return {
     instructions: "",
-    action: BUILDIN_ACTIONS.READ_MODE,
-    args: "",
-    scope: "body",
+    data: [getDefaultNewIns()] as Omit<InstructionData, "args">[],
     pattern: "",
     runAt: RunAt.END,
   };
@@ -87,13 +131,13 @@ function getDefaultShortcutForm() {
   };
 }
 
-type PageState = ReturnType<typeof getInitialState>;
+export type PageState = ReturnType<typeof getInitialState>;
 
 export function getInitialState() {
   return {
     tab: null,
     tabKey: "automation",
-    automationForm: getDefaultAutomationForm(),
+    automationForm: getDefaultAutomationForm() as AutomationForm,
     amFormEditing: false,
     automations: [],
     shortcutForm: getDefaultShortcutForm(),

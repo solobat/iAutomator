@@ -71,9 +71,7 @@ function onRecordAddAmClick(record, dispatch) {
   const data = basicInstruction.parse(record.content);
   const payload: AutomationForm = {
     pattern: record.url,
-    action: data.action,
-    args: data.rawArgs,
-    scope: data.scope,
+    data: [{ action: data.action, rawArgs: data.rawArgs, scope: data.scope }],
     instructions: record.content,
   };
   dispatch({ type: ACTIONS.TAB_CHANGE, payload: "automation" });

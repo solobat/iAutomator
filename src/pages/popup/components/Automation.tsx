@@ -11,16 +11,18 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import {
   DeleteOutlined,
   EditOutlined,
+  MacCommandOutlined,
+  MinusSquareOutlined,
   PlusSquareOutlined,
   SearchOutlined,
   ShareAltOutlined,
-  MacCommandOutlined,
 } from "@ant-design/icons";
 import { PlayCircleOutlined } from "@ant-design/icons";
 import { list2options } from "@src/helper/antd";
 import { t } from "@src/helper/i18n.helper";
-import { basicInstruction } from "@src/helper/instruction";
+import { basicInstruction, InstructionData } from "@src/helper/instruction";
 import { getURLPatterns } from "@src/helper/url";
+import { IAutomation } from "@src/server/db/database";
 import Automation from "@src/server/model/Automation";
 
 import {
@@ -35,6 +37,7 @@ import * as automationsController from "../../../server/controller/automations.c
 import {
   ACTIONS,
   PageContext,
+  PageState,
   useModel,
 } from "../../../store/modules/popup.store";
 
@@ -116,23 +119,22 @@ function onAmFormChange(attrs, dispatch) {
 
 function AutomationEditor() {
   const { state, dispatch } = useContext(PageContext);
-  const { automationForm: form } = state;
+  const form = state.automationForm as PageState["automationForm"];
   const [saving, setSaving] = useState(false);
   const urlPatterns = getURLPatterns(state.tab.hostname, state.tab.pathname);
-  const actionItem = BUILDIN_ACTION_FIELD_CONFIGS.find(
-    (item) => item.value === form.action
-  );
-  const argsTips =
-    actionItem?.args?.map((arg) => `${arg.name}!${arg.type}`).join("^") ||
-    "No Args";
+
   function onAmEditorSaveClick() {
-    const { pattern, action, scope, args } = form;
-    const instructions = basicInstruction.generate({
-      action,
-      args: basicInstruction.argsHandler.parse(args, action),
-      scope,
-      rawArgs: args,
-    });
+    const { pattern, data } = form;
+    const instructions = data
+      .map((item) => {
+        return basicInstruction.generate({
+          action: item.action,
+          args: basicInstruction.argsHandler.parse(item.rawArgs, item.action),
+          scope: item.scope,
+          rawArgs: item.rawArgs,
+        });
+      })
+      .join(";");
 
     if (validateAmForm(instructions, pattern)) {
       setSaving(true);
@@ -156,57 +158,15 @@ function AutomationEditor() {
 
   return (
     <div className="am-editor">
-      <div>
-        <Input.Group compact>
-          <Select
-            style={{ width: 150 }}
-            value={form.action}
-            defaultValue={BUILDIN_ACTIONS.READ_MODE}
-            onChange={(value) => {
-              onAmFormChange(
-                {
-                  action: value,
-                },
-                dispatch
-              );
-            }}
-          >
-            {BUILDIN_ACTION_FIELD_CONFIGS.map((item) => (
-              <Option value={item.value} key={item.value}>
-                {item.label}
-              </Option>
-            ))}
-          </Select>
-          <Input
-            placeholder={"key1!val1^key2!val2..."}
-            value={form.args}
-            className="ipt-ins"
-            style={{ width: 382 }}
-            prefix={<Tooltip title={argsTips}>?</Tooltip>}
-            onChange={(event) => {
-              onAmFormChange(
-                {
-                  args: event.target.value,
-                },
-                dispatch
-              );
-            }}
+      <div className="am-ins-editor-box">
+        {form.data.map((item, index) => (
+          <InstructionEditor
+            form={item}
+            dispatch={dispatch}
+            index={index}
+            key={index}
           />
-          <Input
-            prefix="@"
-            placeholder="scope"
-            onChange={(event) => {
-              onAmFormChange(
-                {
-                  scope: event.target.value,
-                },
-                dispatch
-              );
-            }}
-            value={form.scope}
-            style={{ width: 150 }}
-          />
-        </Input.Group>
+        ))}
       </div>
       <div className="am-editor-fields">
         <AutoComplete
@@ -252,6 +212,106 @@ function AutomationEditor() {
         </Button>
       </div>
     </div>
+  );
+}
+
+function onAmFormInsChange(attrs, index: number, dispatch) {
+  dispatch({
+    type: ACTIONS.AUTOMATION_FORM_UPDATE_INS,
+    payload: {
+      changes: attrs,
+      index,
+    },
+  });
+}
+
+function InstructionEditor(props: {
+  form: Omit<InstructionData, "args">;
+  index: number;
+  dispatch;
+}) {
+  const { form, dispatch } = props;
+  const actionItem = BUILDIN_ACTION_FIELD_CONFIGS.find(
+    (item) => item.value === form.action
+  );
+  const argsTips =
+    actionItem?.args?.map((arg) => `${arg.name}!${arg.type}`).join("^") ||
+    "No Args";
+  function onAddNewInsClick() {
+    dispatch({
+      type: ACTIONS.AUTOMATION_FORM_NEW_INS,
+      payload: { index: props.index },
+    });
+  }
+  function onDelInsClick() {
+    dispatch({
+      type: ACTIONS.AUTOMATION_FORM_DEL_INS,
+      payload: { index: props.index },
+    });
+  }
+
+  return (
+    <Input.Group compact className="am-ins-editor">
+      <Select
+        style={{ width: 150 }}
+        value={form.action}
+        defaultValue={BUILDIN_ACTIONS.READ_MODE}
+        onChange={(value) => {
+          onAmFormInsChange(
+            {
+              action: value,
+            },
+            props.index,
+            dispatch
+          );
+        }}
+      >
+        {BUILDIN_ACTION_FIELD_CONFIGS.map((item) => (
+          <Option value={item.value} key={item.value}>
+            {item.label}
+          </Option>
+        ))}
+      </Select>
+      <Input
+        placeholder={"key1!val1^key2!val2..."}
+        value={form.rawArgs}
+        className="ipt-ins"
+        style={{ width: 370 }}
+        prefix={<Tooltip title={argsTips}>?</Tooltip>}
+        onChange={(event) => {
+          onAmFormInsChange(
+            {
+              rawArgs: event.target.value,
+            },
+            props.index,
+            dispatch
+          );
+        }}
+      />
+      <Input
+        prefix="@"
+        placeholder="scope"
+        onChange={(event) => {
+          onAmFormInsChange(
+            {
+              scope: event.target.value,
+            },
+            props.index,
+            dispatch
+          );
+        }}
+        value={form.scope}
+        style={{ width: 150 }}
+      />
+      <div className="am-ins-editor-btns">
+        <PlusSquareOutlined size={25} onClick={onAddNewInsClick} />
+        <MinusSquareOutlined
+          size={25}
+          onClick={onDelInsClick}
+          style={{ marginLeft: "5px" }}
+        />
+      </div>
+    </Input.Group>
   );
 }
 
@@ -343,15 +403,15 @@ function SwitchBtn(props: any) {
   );
 }
 
-function EditBtn(props: any) {
-  const { state, dispatch } = useModel();
+function EditBtn(props: { record: IAutomation }) {
+  const { dispatch } = useModel();
   const onClick = useCallback(() => {
-    const data = basicInstruction.parse(props.record.instructions);
+    const data = props.record.instructions
+      .split(";")
+      .map((item) => basicInstruction.parse(item));
     const record = {
       ...props.record,
-      action: data.action,
-      args: basicInstruction.argsHandler.stringify(data.args, data.action),
-      scope: data.scope,
+      data,
     };
     dispatch({ type: ACTIONS.AUTOMATION_FORM_UPDATE, payload: record });
   }, []);

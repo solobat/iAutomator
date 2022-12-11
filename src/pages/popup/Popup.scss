@@ -13,7 +13,7 @@ body {
     flex-direction: column;
     height: 400px;
     overflow: auto;
-    width: 700px;
+    width: 750px;
     padding: 10px;
 }
 
@@ -47,4 +47,18 @@ body {
 
 .am-editor-btns {
     margin-top: 8px;
+}
+
+.am-ins-editor-box {
+    border: 1px solid #ccc;
+    padding: 5px;
+}
+
+.am-ins-editor {
+    margin-bottom: 5px;
+}
+
+.am-ins-editor-btns {
+    line-height: 32px;
+    margin-left: 5px;
 }

@@ -37,6 +37,8 @@ export interface ActionHelper<A, T extends ExecOptions = ExecOptions> {
   broadcast: Broadcast;
 }
 
+export type ActionRunMode = "single" | "group";
+
 export interface ExecOptions {
   /**
    * Indicates whether a record needs to be generated when the operation is executed
@@ -57,6 +59,13 @@ export interface ExecOptions {
    * Name of event to be emitted
    */
   emit?: string;
+
+  /**
+   * index in group
+   */
+  index?: number;
+
+  mode?: ActionRunMode;
 
   [prop: string]: any;
 }

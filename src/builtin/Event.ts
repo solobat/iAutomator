@@ -75,6 +75,7 @@ export class OnEvent extends Base {
 
   execute(elem, options: Partial<EventExecOptions>) {
     const { events } = options;
+
     if (events) {
       this.listenEvents(elem, options);
     }
