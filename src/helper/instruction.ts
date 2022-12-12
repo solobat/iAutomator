@@ -35,6 +35,10 @@ export const basicArgsHandler: ArgsHandler = {
       silent: true,
     };
 
+    if (!raw) {
+      return options;
+    }
+
     modifiers.forEach((item) => {
       const [key, ...value] = item.split("!");
       if (value.length) {

@@ -240,7 +240,7 @@ function InstructionEditor(props: {
   function onAddNewInsClick() {
     dispatch({
       type: ACTIONS.AUTOMATION_FORM_NEW_INS,
-      payload: { index: props.index },
+      payload: { index: props.index + 1 },
     });
   }
   function onDelInsClick() {
