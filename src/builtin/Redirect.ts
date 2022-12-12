@@ -1,3 +1,4 @@
+import { mergeQuery, QFormat } from "@src/helper/url";
 import URLPattern from "url-pattern";
 
 import { BUILDIN_ACTIONS } from "../common/const";
@@ -12,17 +13,27 @@ export interface RedirectExecOptions extends ExecOptions {
   /**
    * the path pattern of from page
    */
-  from: string;
+  from?: string;
   /**
    * the path pattern of to page
    */
-  to: string;
+  to?: string;
+
+  /**
+   * new query(pieces) of url
+   */
+  query?: string;
+
+  /**
+   * format of query
+   */
+  qformat?: QFormat;
 }
 
 export class Redirect extends Base {
   name = BUILDIN_ACTIONS.REDIRECT;
 
-  private redirectTo(
+  private redirectToNewURL(
     fromPatternStr: string,
     toPatternStr: string,
     toHost: string
@@ -39,11 +50,32 @@ export class Redirect extends Base {
     }
   }
 
+  private redirectToNewSearch(
+    newQuery: string,
+    originQuery: string,
+    qformat: QFormat
+  ) {
+    const newSearch = mergeQuery(newQuery, originQuery, qformat);
+    const { protocol, pathname, hostname } = window.location;
+    const toURL = `${protocol}//${hostname}${pathname}?${newSearch}`;
+
+    window.location.href = toURL;
+  }
+
   execute(_, options: Partial<RedirectExecOptions>) {
-    const { from, to, host = window.location.hostname } = options;
+    const {
+      from,
+      to,
+      query,
+      qformat = "default",
+      host = window.location.hostname,
+      value,
+    } = options;
 
     if (from && to) {
-      this.redirectTo(from, to, host);
+      this.redirectToNewURL(from, to, host);
+    } else if (query ?? value) {
+      this.redirectToNewSearch(query ?? value, window.location.search, qformat);
     }
 
     return false;

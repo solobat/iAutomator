@@ -47,3 +47,36 @@ export function getURLPatterns(hostname: string, pathname: string) {
 
   return pathPatterns.map((item) => `https?://${hostname}${item}`);
 }
+
+export type QFormat = "arr" | "default";
+
+export function mergeQuery(
+  newQuery: string,
+  originQuery: string,
+  qformat: QFormat = "default"
+) {
+  const originParams = new URLSearchParams(originQuery);
+
+  if (qformat === "default") {
+    const newParams = new URLSearchParams(newQuery);
+
+    Array.from(newParams.entries()).forEach((pair) => {
+      originParams.set(pair[0], pair[1]);
+    });
+  } else {
+    const newParams = newQuery.split(",");
+    const paramsArr = Array.from(originParams.entries());
+
+    newParams.forEach((value, index) => {
+      if (value && paramsArr[index]) {
+        const key = paramsArr[index][0];
+
+        originParams.set(key, value);
+      }
+    });
+  }
+
+  const newSearch = originParams.toString();
+
+  return newSearch;
+}

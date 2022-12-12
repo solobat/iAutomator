@@ -61,10 +61,13 @@ export interface ExecOptions {
   emit?: string;
 
   /**
-   * index in group
+   * @private index in group
    */
   index?: number;
 
+  /**
+   * @private mode of action runtime
+   */
   mode?: ActionRunMode;
 
   [prop: string]: any;

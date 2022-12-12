@@ -467,6 +467,16 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         name: "host",
         type: "string",
       },
+      {
+        tips: "new query(pieces) of url",
+        name: "query",
+        type: "string",
+      },
+      {
+        tips: "format of query: arr | default",
+        name: "qformat",
+        type: "string",
+      },
     ],
   },
   {
