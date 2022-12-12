@@ -88,7 +88,9 @@ export const basicInstruction: Instruction = {
     const fullAction = [
       action,
       basicInstruction.argsHandler.stringify(args, action),
-    ].join("^");
+    ]
+      .filter((str) => str !== "")
+      .join("^");
 
     return [fullAction, "@", scope].join("");
   },
