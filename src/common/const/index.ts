@@ -23,6 +23,7 @@ const local_i18n = {
     event: "event",
     set_value: "Set value",
     active: "active",
+    allow_copying: "Allow Copying",
   },
   zh_CN: {
     read_mode: "阅读模式",
@@ -48,6 +49,7 @@ const local_i18n = {
     event: "事件",
     set_value: "设值",
     active: "选中",
+    allow_copying: "允许复制",
   },
 };
 
@@ -108,6 +110,7 @@ export const BUILDIN_ACTIONS = {
   FULL_SCREEN: "fullScreen",
   TIME_UPDATE: "timeupdate",
   CLICK: "click",
+  ALLOW_COPYING: "allowCopying",
   ACTIVE: "active",
   SET_VALUE: "setValue",
   EVENT: "event",
@@ -465,6 +468,11 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         type: "string",
       },
     ],
+  },
+  {
+    value: BUILDIN_ACTIONS.ALLOW_COPYING,
+    label: t("allow_copying"),
+    args: [],
   },
   {
     value: BUILDIN_ACTIONS.ZEN_MODE,

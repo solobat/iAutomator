@@ -21,6 +21,7 @@ import { ZenMode } from "../../builtin/ZenMode";
 import { OnEvent } from "../../builtin/Event";
 import { SetValue } from "../../builtin/SetValue";
 import { ActivePage } from "../../builtin/Active";
+import { AllowCopying } from "../../builtin/AllowCopying";
 import { APP_ACTIONS, PAGE_ACTIONS, WEB_ACTIONS } from "../../common/const";
 import {
   exceAutomation,
@@ -91,6 +92,7 @@ function init() {
     new OnEvent(helper);
     new SetValue(helper);
     new ActivePage(helper);
+    new AllowCopying(helper);
   });
 
   bindAppEvents();
