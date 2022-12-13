@@ -16,6 +16,7 @@ import { ProtectPage } from "../../builtin/Protect";
 import { ReadMode } from "../../builtin/ReadMode";
 import { Redirect } from "../../builtin/Redirect";
 import { Scroll } from "../../builtin/Scroll";
+import { ScrollbarPosition } from "../../builtin/Scrollbar";
 import { TimeUpdate } from "../../builtin/TimeUpdate";
 import { ZenMode } from "../../builtin/ZenMode";
 import { OnEvent } from "../../builtin/Event";
@@ -93,6 +94,7 @@ function init() {
     new SetValue(helper);
     new ActivePage(helper);
     new AllowCopying(helper);
+    new ScrollbarPosition(helper);
   });
 
   bindAppEvents();

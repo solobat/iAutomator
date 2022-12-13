@@ -24,6 +24,7 @@ const local_i18n = {
     set_value: "Set value",
     active: "active",
     allow_copying: "Allow Copying",
+    scrollbar: "Scrollbar Position",
   },
   zh_CN: {
     read_mode: "阅读模式",
@@ -50,6 +51,7 @@ const local_i18n = {
     set_value: "设值",
     active: "选中",
     allow_copying: "允许复制",
+    scrollbar: " 滚动条位置",
   },
 };
 
@@ -110,6 +112,7 @@ export const BUILDIN_ACTIONS = {
   FULL_SCREEN: "fullScreen",
   TIME_UPDATE: "timeupdate",
   CLICK: "click",
+  SCROLLBAR: "scrollbar",
   ALLOW_COPYING: "allowCopying",
   ACTIVE: "active",
   SET_VALUE: "setValue",
@@ -360,6 +363,17 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
   {
     value: BUILDIN_ACTIONS.CLICK,
     label: t("click"),
+  },
+  {
+    value: BUILDIN_ACTIONS.SCROLLBAR,
+    label: t("scrollbar"),
+    args: [
+      {
+        tips: "Delay to scrolling",
+        name: "delay",
+        type: "number",
+      },
+    ],
   },
   {
     value: BUILDIN_ACTIONS.EVENT,
