@@ -1,7 +1,7 @@
 <h1 align="center">iHelpers</h1>
 <p align="center">Some useful tools for Chrome</p>
 <p align="center">
-   <a href="https://github.com/solobat/iHelpers/releases"><img src="https://img.shields.io/badge/lastest_version-1.6.7-blue.svg"></a>
+   <a href="https://github.com/solobat/iHelpers/releases"><img src="https://img.shields.io/badge/lastest_version-1.7.0-blue.svg"></a>
    <a target="_blank" href="https://chrome.google.com/webstore/detail/ihelpers/hcnekoladldejmeindnhpjkfhjadcick"><img src="https://img.shields.io/badge/download-_chrome_webstore-brightgreen.svg"></a>
 </p>
 
@@ -19,14 +19,14 @@
 ### Development
 Please start with the dev branch
 ````
-# node >= v11.10.1
+# node >= v16.13
 `yarn`
 
 # dev
-yarn dev / yarn turbo dev
+yarn dev
 
 # build
-yarn build / yarn turbo build
+yarn build
 ````
 
 ### License:
