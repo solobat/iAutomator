@@ -12,7 +12,10 @@ export interface ScrollExecOptions extends ExecOptions {
 }
 
 function isAtBottom() {
-  return window.pageYOffset >= document.body.scrollHeight - window.innerHeight;
+  // NOTE: pageYOffset may be a float number
+  return (
+    window.pageYOffset + 1 >= document.body.scrollHeight - window.innerHeight
+  );
 }
 
 export class Scroll extends Base<ScrollExecOptions> {
