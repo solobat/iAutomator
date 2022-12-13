@@ -57,7 +57,7 @@ export class Scroll extends Base<ScrollExecOptions> {
       if (isAtBottom()) {
         setTimeout(() => {
           this.tryNextPage();
-          this.callNext(this.runtimeOptions);
+          this.callNext(this.runtimeOptions, this.runtimeOptions);
         }, 1000);
         return;
       }
