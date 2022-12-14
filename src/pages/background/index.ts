@@ -1,6 +1,9 @@
+import reloadOnUpdate from "virtual:reload-on-update-in-background-script";
+
 import { GlobalEvent } from "@src/builtin/types";
 import hanlder from "@src/helper/cookies";
-import reloadOnUpdate from "virtual:reload-on-update-in-background-script";
+import { generateURL, generateURLByType } from "@src/helper/url";
+import { warn } from "@src/utils/log";
 
 import {
   APP_ACTIONS,
@@ -214,6 +217,8 @@ function msgHandler(req: PageMsg, sender: chrome.runtime.MessageSender, resp) {
   } else if (action === APP_ACTIONS.IMPORT_DATA) {
     init();
     handler("");
+  } else if (action === PAGE_ACTIONS.OPEN_PAGE) {
+    openPage(data, handler);
   } else if (action === WEB_ACTIONS.INSTALL_AUTOMATION) {
     onInstallAutomation(data, handler);
   } else if (action === PAGE_ACTIONS.NOTICE) {
@@ -226,6 +231,30 @@ function msgHandler(req: PageMsg, sender: chrome.runtime.MessageSender, resp) {
     onExecInstructions(data, handler);
   } else if (action === BUILDIN_ACTIONS.HIGHLIGHT_ENGLISH_SYNTAX) {
     onHightlighting(data, handler);
+  }
+}
+
+function openPage(data, hanlder: (results: any, isAsync?: boolean) => void) {
+  const { type, args, url } = data;
+  let toURL;
+
+  if (url && args) {
+    toURL = generateURL(url, args);
+  }
+  if (type && args) {
+    toURL = generateURLByType(type, args);
+  }
+
+  if (toURL) {
+    chrome.tabs
+      .create({
+        url: toURL,
+      })
+      .then((tab) => {
+        hanlder(tab.id, true);
+      });
+  } else {
+    warn("openPage with empty url: ", data, toURL);
   }
 }
 

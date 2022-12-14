@@ -1,3 +1,5 @@
+import UrlPattern from "url-pattern";
+
 function getURL(url = "") {
   if (url.startsWith("/")) {
     return new URL(location.origin + url);
@@ -79,4 +81,49 @@ export function mergeQuery(
   const newSearch = originParams.toString();
 
   return newSearch;
+}
+
+export type PageType = "baike" | "wiki";
+interface TypeConf {
+  host: string;
+  path: string;
+}
+
+export const pageTypeConf: {
+  [name: string]: TypeConf;
+} = {
+  baike: {
+    host: "https://baike.baidu.com",
+    path: "/item/:0",
+  },
+  wiki: {
+    host: "https://zh.wikipedia.org",
+    path: "/wiki/:0",
+  },
+};
+
+export interface OpenPageData {
+  url?: string;
+  type?: PageType;
+  args?: {
+    0?: string;
+    1?: string;
+    2?: string;
+  };
+}
+
+export function generateURL(url: string, args: OpenPageData["args"]) {
+  const match = new URL(url);
+  const toPattern = new UrlPattern(match.pathname);
+  const pathname = toPattern.stringify(args);
+
+  return url.replace(match.pathname, pathname);
+}
+
+export function generateURLByType(type: PageType, args: OpenPageData["args"]) {
+  const conf = pageTypeConf[type];
+  const toPattern = new UrlPattern(conf.path);
+  const path = toPattern.stringify(args);
+
+  return `${conf.host}${path}`;
 }

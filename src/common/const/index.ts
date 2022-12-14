@@ -23,8 +23,9 @@ const local_i18n = {
     event: "event",
     set_value: "Set value",
     active: "active",
-    allow_copying: "Allow Copying",
-    scrollbar: "Scrollbar Position",
+    allow_copying: "Allow copying",
+    scrollbar: "Scrollbar position",
+    open_page: "Open page",
   },
   zh_CN: {
     read_mode: "阅读模式",
@@ -51,7 +52,8 @@ const local_i18n = {
     set_value: "设值",
     active: "选中",
     allow_copying: "允许复制",
-    scrollbar: " 滚动条位置",
+    scrollbar: "滚动条位置",
+    open_page: "打开页面",
   },
 };
 
@@ -71,6 +73,7 @@ export const PAGE_ACTIONS = {
   GLOBAL_EVENT_RECEIVED: "globalEventReceived",
   REFRESH_AUTOMATIONS: "refreshAutomations",
   REFRESH_SHORTCUTS: "refreshShortcuts",
+  OPEN_PAGE: "openPage",
   ACTIVE_PAGE: "activePage",
   NOTICE: "createNotice",
   EXEC_INSTRUCTIONS: "execInstructions",
@@ -112,6 +115,7 @@ export const BUILDIN_ACTIONS = {
   FULL_SCREEN: "fullScreen",
   TIME_UPDATE: "timeupdate",
   CLICK: "click",
+  OPEN_PAGE: "openPage",
   SCROLLBAR: "scrollbar",
   ALLOW_COPYING: "allowCopying",
   ACTIVE: "active",
@@ -372,6 +376,27 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         tips: "Delay to scrolling",
         name: "delay",
         type: "number",
+      },
+    ],
+  },
+  {
+    value: BUILDIN_ACTIONS.OPEN_PAGE,
+    label: t("open_page"),
+    args: [
+      {
+        tips: "url to be opened(optional)",
+        name: "url",
+        type: "string",
+      },
+      {
+        tips: "type of page,such as baike / wiki(optional)",
+        name: "type",
+        type: "string",
+      },
+      {
+        tips: "args of page type(optional)",
+        name: "args",
+        type: "string",
       },
     ],
   },
