@@ -127,3 +127,25 @@ export function generateURLByType(type: PageType, args: OpenPageData["args"]) {
 
   return `${conf.host}${path}`;
 }
+
+export function isParamEqual(url: string, key: string, value = "1") {
+  const match = new URL(url);
+
+  return match.searchParams.get(key) === value;
+}
+
+export function isSE(host: string) {
+  const list = ["baidu.com", "google.com", "bing.com"];
+
+  return list.some((item) => host.indexOf(item) > -1);
+}
+
+export function isFromSE(referrer: string) {
+  if (referrer) {
+    const url = new URL(referrer);
+
+    return isSE(url.host);
+  } else {
+    return false;
+  }
+}

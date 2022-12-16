@@ -1,3 +1,4 @@
+import { isFromSE, isParamEqual } from "@src/helper/url";
 import $ from "jquery";
 
 import { BUILDIN_ACTIONS } from "../common/const";
@@ -33,6 +34,18 @@ export class ZenMode extends Base<ZenModeExecOptions> {
 
   execute(elem, options: Partial<ZenModeExecOptions>) {
     const { word = "Zen", delay, bgcolor, color } = options;
+    const skey = "ex-hp-zen-pass";
+    const passed = Boolean(window.sessionStorage.getItem(skey));
+
+    if (passed) {
+      return true;
+    } else if (
+      isParamEqual(window.location.href, "pass") ||
+      isFromSE(document.referrer)
+    ) {
+      window.sessionStorage.setItem(skey, "1");
+      return true;
+    }
 
     if (!this.layer) {
       this.layer = $(`<div class="sh-zm-layer">${word}</div>`);
