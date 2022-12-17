@@ -26,6 +26,7 @@ const local_i18n = {
     allow_copying: "Allow copying",
     scrollbar: "Scrollbar position",
     open_page: "Open page",
+    attributes: "Modify attributes",
   },
   zh_CN: {
     read_mode: "阅读模式",
@@ -54,6 +55,7 @@ const local_i18n = {
     allow_copying: "允许复制",
     scrollbar: "滚动条位置",
     open_page: "打开页面",
+    attributes: "修改元素属性",
   },
 };
 
@@ -115,6 +117,7 @@ export const BUILDIN_ACTIONS = {
   FULL_SCREEN: "fullScreen",
   TIME_UPDATE: "timeupdate",
   CLICK: "click",
+  ATTRIBUTES: "attributes",
   OPEN_PAGE: "openPage",
   SCROLLBAR: "scrollbar",
   ALLOW_COPYING: "allowCopying",
@@ -367,6 +370,22 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
   {
     value: BUILDIN_ACTIONS.CLICK,
     label: t("click"),
+  },
+  {
+    value: BUILDIN_ACTIONS.ATTRIBUTES,
+    label: t("attributes"),
+    args: [
+      {
+        tips: "name of attribute",
+        name: "name",
+        type: "string",
+      },
+      {
+        tips: "value of attribute",
+        name: "value",
+        type: "string",
+      },
+    ],
   },
   {
     value: BUILDIN_ACTIONS.SCROLLBAR,

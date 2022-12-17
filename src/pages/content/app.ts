@@ -24,6 +24,7 @@ import { SetValue } from "../../builtin/SetValue";
 import { ActivePage } from "../../builtin/Active";
 import { OpenPage } from "../../builtin/OpenPage";
 import { AllowCopying } from "../../builtin/AllowCopying";
+import { ModifyAttributes } from "../../builtin/Attributes";
 import { APP_ACTIONS, PAGE_ACTIONS, WEB_ACTIONS } from "../../common/const";
 import {
   exceAutomation,
@@ -97,6 +98,7 @@ function init() {
     new OpenPage(helper);
     new AllowCopying(helper);
     new ScrollbarPosition(helper);
+    new ModifyAttributes(helper);
   });
 
   bindAppEvents();

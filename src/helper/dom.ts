@@ -112,7 +112,7 @@ export function setupOutline() {
 
 export function getElem(selector: string) {
   if (selector.startsWith("!")) {
-    return document.querySelectorAll(selector.substr(1));
+    return document.querySelectorAll(selector.substring(1));
   } else {
     return document.querySelector(selector);
   }
