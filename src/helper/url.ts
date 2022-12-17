@@ -112,6 +112,10 @@ export interface OpenPageData {
   };
 }
 
+export function isURLhasArgs(url: string) {
+  return url.indexOf(":0") > -1;
+}
+
 export function generateURL(url: string, args: OpenPageData["args"]) {
   const match = new URL(url);
   const toPattern = new UrlPattern(match.pathname);
@@ -148,4 +152,25 @@ export function isFromSE(referrer: string) {
   } else {
     return false;
   }
+}
+
+export function getURLByArgs(
+  type: PageType,
+  url: string,
+  args: OpenPageData["args"]
+) {
+  let toURL;
+
+  if (url && args) {
+    if (isURLhasArgs(url)) {
+      toURL = generateURL(url, args);
+    } else {
+      toURL = url;
+    }
+  }
+  if (type && args) {
+    toURL = generateURLByType(type, args);
+  }
+
+  return toURL;
 }

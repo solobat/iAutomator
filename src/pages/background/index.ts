@@ -2,8 +2,9 @@ import reloadOnUpdate from "virtual:reload-on-update-in-background-script";
 
 import { GlobalEvent } from "@src/builtin/types";
 import hanlder from "@src/helper/cookies";
-import { generateURL, generateURLByType } from "@src/helper/url";
-import { warn } from "@src/utils/log";
+import { isURLExist } from "@src/helper/tab";
+import { getURLByArgs } from "@src/helper/url";
+import { show, warn } from "@src/utils/log";
 
 import {
   APP_ACTIONS,
@@ -80,7 +81,7 @@ function updateBadge(url) {
   }
 }
 
-function onPageData(data, handler) {
+function onPageData(data, handler: MsgHandlerFn) {
   const automations = getAutomationsByURL(data.url);
   const aids = automations.map((item) => item.id);
   const currentShortcuts = shortcuts.filter((item) => aids.includes(item.aid));
@@ -93,23 +94,29 @@ function onPageData(data, handler) {
   }
 }
 
-function onEventEmitted(data: GlobalEvent, hanlder) {
-  chrome.tabs.query({ active: false }, function (tabs) {
+function onEventEmitted(
+  data: GlobalEvent,
+  originTab: chrome.tabs.Tab,
+  hanlder
+) {
+  chrome.tabs.query({}, function (tabs) {
     tabs.forEach((tab) => {
-      runMethod(tab, PAGE_ACTIONS.GLOBAL_EVENT_RECEIVED, data);
+      if (tab.id !== originTab.id) {
+        runMethod(tab, PAGE_ACTIONS.GLOBAL_EVENT_RECEIVED, data);
+      }
     });
   });
   hanlder("");
 }
 
-function onRefreshAutmations(handler) {
+function onRefreshAutmations(handler: MsgHandlerFn) {
   loadAutomations().then(() => {
     updateBadgeByCurrentTab();
   });
   handler("");
 }
 
-function onRefreshShortcuts(handler) {
+function onRefreshShortcuts(handler: MsgHandlerFn) {
   loadShortcuts(automations.map((item) => item.id));
   handler("");
 }
@@ -120,7 +127,7 @@ function noticeCurTab(data?) {
   });
 }
 
-function onInstallAutomation(data, handler) {
+function onInstallAutomation(data, handler: MsgHandlerFn) {
   installAutomation(data.instructions, data.pattern, data.runAt).then(
     (resp) => {
       if (resp.code === 0) {
@@ -147,7 +154,7 @@ function onInstallAutomation(data, handler) {
   handler("");
 }
 
-function onNewNotice(data, handler) {
+function onNewNotice(data, handler: MsgHandlerFn) {
   const { title, message, iconUrl } = data;
 
   createNotice(title, message, iconUrl);
@@ -155,47 +162,50 @@ function onNewNotice(data, handler) {
   handler("");
 }
 
-function onRunMethod(data, sender, handler) {
+function onRunMethod(data, sender, handler: MsgHandlerFn) {
   runMethod(sender.tab, BUILDIN_ACTIONS[data.command]);
   handler("");
 }
 
-function onListActions(handler) {
+function onListActions(handler: MsgHandlerFn) {
   const list = BUILDIN_ACTION_CONFIGS.filter((item) => item.asCommand);
 
   handler(list);
 }
 
-function onExecInstructions(data, handler) {
+function onExecInstructions(data, handler: MsgHandlerFn) {
   const { tabId, instructions } = data;
 
   runMethod({ id: tabId }, PAGE_ACTIONS.EXEC_INSTRUCTIONS, { instructions });
   handler("");
 }
 
-function onHightlighting(data, handler) {
+function onHightlighting(data, handler: MsgHandlerFn) {
   highlightEnglish(data.text).then((result) => {
     handler(result, true);
   });
 }
 
+type MsgHandlerFn<T = any> = (results: T, isAsync?: boolean) => void;
+
 function msgHandler(req: PageMsg, sender: chrome.runtime.MessageSender, resp) {
   const { action, data, callbackId } = req;
-  console.log("msgHandler -> req", req);
+  show("msgHandler::call", req, sender);
 
-  function handler(results, isAsync = false) {
+  const handler: MsgHandlerFn = (results, isAsync = false) => {
     const msg: BackMsg = {
       msg: `${action} response`,
       callbackId,
       data: results,
     };
+    show("msgHandler::handler:backmsg -> ", msg);
 
     if (!isAsync) {
       resp(msg);
     } else {
       runMethod(sender.tab, APP_ACTIONS.MSG_RESP, msg);
     }
-  }
+  };
 
   if (action === PAGE_ACTIONS.RECORD) {
     const { content, url, domain } = data;
@@ -206,7 +216,7 @@ function msgHandler(req: PageMsg, sender: chrome.runtime.MessageSender, resp) {
     initCommands();
     onPageData(data, handler);
   } else if (action === PAGE_ACTIONS.GLOABL_EVENT_EMITTED) {
-    onEventEmitted(data, hanlder);
+    onEventEmitted(data, sender.tab, hanlder);
   } else if (action === PAGE_ACTIONS.REFRESH_AUTOMATIONS) {
     onRefreshAutmations(handler);
   } else if (action === PAGE_ACTIONS.REFRESH_SHORTCUTS) {
@@ -234,27 +244,33 @@ function msgHandler(req: PageMsg, sender: chrome.runtime.MessageSender, resp) {
   }
 }
 
-function openPage(data, hanlder: (results: any, isAsync?: boolean) => void) {
-  const { type, args, url } = data;
-  let toURL;
-
-  if (url && args) {
-    toURL = generateURL(url, args);
-  }
-  if (type && args) {
-    toURL = generateURLByType(type, args);
-  }
-
-  if (toURL) {
+async function openPage(data, hanlder: MsgHandlerFn) {
+  const { type, args, url, pattern } = data;
+  const toURL = getURLByArgs(type, url, args);
+  const toOpen = () => {
     chrome.tabs
       .create({
         url: toURL,
       })
-      .then((tab) => {
-        hanlder(tab.id, true);
+      .then(() => {
+        hanlder(true, true);
       });
+  };
+
+  if (toURL) {
+    if (pattern) {
+      const isExist = await isURLExist(pattern);
+
+      if (isExist) {
+        hanlder(false, true);
+      } else {
+        toOpen();
+      }
+    } else {
+      toOpen();
+    }
   } else {
-    warn("openPage with empty url: ", data, toURL);
+    warn("msgHandler::openPage[empty url]", data, toURL);
   }
 }
 
@@ -283,7 +299,7 @@ function onContextMenuClicked(info: chrome.contextMenus.OnClickData) {
 }
 
 function initCommands() {
-  console.log("init commands...");
+  show("initCommands::call");
 
   chrome.contextMenus.removeAll();
   BUILDIN_ACTION_CONFIGS.filter((item) => item.asCommand).forEach((item) => {

@@ -33,3 +33,9 @@ export function getTabs(fn) {
     }
   });
 }
+
+export function isURLExist(pattern: string) {
+  return chrome.tabs.query({ url: pattern }).then((res) => {
+    return res.length > 0;
+  });
+}

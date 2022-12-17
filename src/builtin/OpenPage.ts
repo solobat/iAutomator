@@ -9,6 +9,11 @@ export interface OpenPageExecOptions extends ExecOptions {
    * url to be opened
    */
   url?: string;
+
+  /**
+   * pattern to check exist
+   */
+  pattern?: string;
   /**
    * type of page
    */
@@ -23,17 +28,26 @@ export interface OpenPageExecOptions extends ExecOptions {
 export class OpenPage extends Base<OpenPageExecOptions> {
   name = BUILDIN_ACTIONS.OPEN_PAGE;
 
+  private NEW_PAGE_DELAY = 2000;
+
   execute(_, options: Partial<OpenPageExecOptions>) {
-    const { value, type, url, args = "" } = options;
+    const { value, type, url, args = "", pattern } = options;
     this.helper.invoke(
       PAGE_ACTIONS.OPEN_PAGE,
       {
         url,
+        pattern,
         type,
         args: args ? { ...args.split(",") } : { 0: value },
       },
-      () => {
+      (isNewPage: boolean) => {
         this.callNext(options, options);
+        setTimeout(
+          () => {
+            this.broadcast(options, options);
+          },
+          isNewPage ? this.NEW_PAGE_DELAY : 0
+        );
       },
       NOTICE_TARGET.BACKGROUND
     );
