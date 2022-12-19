@@ -35,6 +35,10 @@ import {
 import { appBridge } from "../../helper/bridge";
 import { handleWebEvents, noticeWeb } from "../../helper/web";
 import { RunAt } from "../../server/enum/Automation.enum";
+import { Heartheat } from "@src/helper/heartheat";
+import { show } from "@src/utils/log";
+
+Heartheat.start();
 
 function bindAppEvents() {
   chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
@@ -48,6 +52,9 @@ function bindAppEvents() {
       receiveGlobalEvent(data);
     } else if (method === APP_ACTIONS.MSG_RESP) {
       appBridge.receiveMessage(data);
+    } else if (method === PAGE_ACTIONS.RECONNECT) {
+      show("should reconnect heartheat...");
+      Heartheat.start();
     } else {
       startAction(method);
     }

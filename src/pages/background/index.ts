@@ -102,7 +102,7 @@ function onEventEmitted(
   chrome.tabs.query({}, function (tabs) {
     tabs.forEach((tab) => {
       if (tab.id !== originTab.id) {
-        runMethod(tab, PAGE_ACTIONS.GLOBAL_EVENT_RECEIVED, data);
+        runMethod(tab.id, PAGE_ACTIONS.GLOBAL_EVENT_RECEIVED, data);
       }
     });
   });
@@ -123,7 +123,7 @@ function onRefreshShortcuts(handler: MsgHandlerFn) {
 
 function noticeCurTab(data?) {
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    runMethod(tabs[0], WEB_ACTIONS.INSTALL_DONE, data);
+    runMethod(tabs[0].id, WEB_ACTIONS.INSTALL_DONE, data);
   });
 }
 
@@ -163,7 +163,7 @@ function onNewNotice(data, handler: MsgHandlerFn) {
 }
 
 function onRunMethod(data, sender, handler: MsgHandlerFn) {
-  runMethod(sender.tab, BUILDIN_ACTIONS[data.command]);
+  runMethod(sender.tab.id, BUILDIN_ACTIONS[data.command]);
   handler("");
 }
 
@@ -176,7 +176,7 @@ function onListActions(handler: MsgHandlerFn) {
 function onExecInstructions(data, handler: MsgHandlerFn) {
   const { tabId, instructions } = data;
 
-  runMethod({ id: tabId }, PAGE_ACTIONS.EXEC_INSTRUCTIONS, { instructions });
+  runMethod(tabId, PAGE_ACTIONS.EXEC_INSTRUCTIONS, { instructions });
   handler("");
 }
 
@@ -203,7 +203,7 @@ function msgHandler(req: PageMsg, sender: chrome.runtime.MessageSender, resp) {
     if (!isAsync) {
       resp(msg);
     } else {
-      runMethod(sender.tab, APP_ACTIONS.MSG_RESP, msg);
+      runMethod(sender.tab.id, APP_ACTIONS.MSG_RESP, msg);
     }
   };
 
@@ -241,7 +241,15 @@ function msgHandler(req: PageMsg, sender: chrome.runtime.MessageSender, resp) {
     onExecInstructions(data, handler);
   } else if (action === BUILDIN_ACTIONS.HIGHLIGHT_ENGLISH_SYNTAX) {
     onHightlighting(data, handler);
+  } else if (action === PAGE_ACTIONS.CONNECT) {
+    onPingpong(sender.tab, handler);
+  } else if (action === PAGE_ACTIONS.PING) {
+    onPingpong(sender.tab, handler);
   }
+}
+
+function onPingpong(tab: chrome.tabs.Tab, handler: MsgHandlerFn) {
+  handler(tab?.active);
 }
 
 async function openPage(data, hanlder: MsgHandlerFn) {
@@ -286,15 +294,15 @@ function activePage(tab?: chrome.tabs.Tab) {
   chrome.runtime[msgType].addListener(msgHandler);
 });
 
-function runMethod(tab, method, data?) {
-  chrome.tabs.sendMessage(tab.id, { method, data }, function (response) {
+function runMethod(tabId: number, method, data?) {
+  chrome.tabs.sendMessage(tabId, { method, data }, function (response) {
     console.log(response);
   });
 }
 
 function onContextMenuClicked(info: chrome.contextMenus.OnClickData) {
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    runMethod(tabs[0], BUILDIN_ACTIONS[info.menuItemId]);
+    runMethod(tabs[0].id, BUILDIN_ACTIONS[info.menuItemId]);
   });
 }
 
@@ -367,6 +375,9 @@ async function init() {
   });
   chrome.runtime.onInstalled.addListener(() => {
     initCommands();
+  });
+  chrome.tabs.onActivated.addListener((tab) => {
+    runMethod(tab.tabId, PAGE_ACTIONS.RECONNECT);
   });
 }
 

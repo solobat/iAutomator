@@ -68,6 +68,9 @@ function t(key: string): string {
 }
 
 export const PAGE_ACTIONS = {
+  CONNECT: "connect",
+  PING: "ping",
+  RECONNECT: "reconnect",
   RECORD: "recordAction",
   AUTOMATIONS: "getAutomations",
   PAGE_DATA: "getPageData",
