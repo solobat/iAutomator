@@ -73,6 +73,7 @@ export class ZenMode extends Base<ZenModeExecOptions> {
         this.layer.css("opacity", "0");
         setTimeout(() => {
           this.layer.hide();
+          window.sessionStorage.setItem(skey, "1");
         }, 1000);
       }, dtime * 1000);
     }
