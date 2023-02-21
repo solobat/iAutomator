@@ -11,11 +11,7 @@ export function Help() {
         </Button>
       </li>
       <li>
-        <Button
-          href="https://const.app/iHelpers/index.html"
-          target="_blank"
-          type="link"
-        >
+        <Button href="https://docs.ihelpers.xyz/" target="_blank" type="link">
           {t("documents")}
         </Button>
       </li>
