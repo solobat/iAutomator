@@ -27,6 +27,7 @@ const local_i18n = {
     scrollbar: "Scrollbar position",
     open_page: "Open page",
     attributes: "Modify attributes",
+    set_title: "Set title",
   },
   zh_CN: {
     read_mode: "阅读模式",
@@ -56,6 +57,7 @@ const local_i18n = {
     scrollbar: "滚动条位置",
     open_page: "打开页面",
     attributes: "修改元素属性",
+    set_title: "页面标题",
   },
 };
 
@@ -120,6 +122,7 @@ export const BUILDIN_ACTIONS = {
   FULL_SCREEN: "fullScreen",
   TIME_UPDATE: "timeupdate",
   CLICK: "click",
+  TITLE: "title",
   ATTRIBUTES: "attributes",
   OPEN_PAGE: "openPage",
   SCROLLBAR: "scrollbar",
@@ -208,6 +211,12 @@ export const BUILDIN_ACTION_CONFIGS = [
   {
     name: "CLICK",
     title: t("click"),
+    contexts: ["all"],
+    asCommand: false,
+  },
+  {
+    name: "TITLE",
+    title: t("set_title"),
     contexts: ["all"],
     asCommand: false,
   },
@@ -373,6 +382,10 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
   {
     value: BUILDIN_ACTIONS.CLICK,
     label: t("click"),
+  },
+  {
+    value: BUILDIN_ACTIONS.TITLE,
+    label: t("set_title"),
   },
   {
     value: BUILDIN_ACTIONS.ATTRIBUTES,

@@ -37,6 +37,7 @@ import { handleWebEvents, noticeWeb } from "../../helper/web";
 import { RunAt } from "../../server/enum/Automation.enum";
 import { Heartheat } from "@src/helper/heartheat";
 import { show } from "@src/utils/log";
+import { SetTitle } from "@src/builtin/Title";
 
 Heartheat.start();
 
@@ -106,6 +107,7 @@ function init() {
     new AllowCopying(helper);
     new ScrollbarPosition(helper);
     new ModifyAttributes(helper);
+    new SetTitle(helper);
   });
 
   bindAppEvents();
