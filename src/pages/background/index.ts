@@ -221,6 +221,9 @@ function msgHandler(req: PageMsg, sender: chrome.runtime.MessageSender, resp) {
     onRefreshAutmations(handler);
   } else if (action === PAGE_ACTIONS.REFRESH_SHORTCUTS) {
     onRefreshShortcuts(handler);
+  } else if (action === WEB_ACTIONS.MSG_FORWARD) {
+    forwardMsg(data);
+    hanlder("");
   } else if (action === PAGE_ACTIONS.ACTIVE_PAGE) {
     activePage(sender.tab);
     handler("");
@@ -250,6 +253,15 @@ function msgHandler(req: PageMsg, sender: chrome.runtime.MessageSender, resp) {
 
 function onPingpong(tab: chrome.tabs.Tab, handler: MsgHandlerFn) {
   handler(tab?.active);
+}
+
+function forwardMsg(msg) {
+  const { extId, payload } = msg;
+
+  if (extId && payload) {
+    show("forward msg: ", extId, payload);
+    chrome.runtime.sendMessage(extId, payload);
+  }
 }
 
 async function openPage(data, hanlder: MsgHandlerFn) {

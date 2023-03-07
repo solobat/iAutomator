@@ -89,6 +89,7 @@ export const PAGE_ACTIONS = {
 export const WEB_ACTIONS = {
   INSTALL_AUTOMATION: "installAutomation",
   INSTALL_DONE: "installDone",
+  MSG_FORWARD: "msgForward",
 };
 
 export const APP_ACTIONS = {

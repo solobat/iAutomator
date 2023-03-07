@@ -65,7 +65,7 @@ function bindAppEvents() {
 }
 
 function isTrustDomain() {
-  const domains: string[] = ["localhost", "ihelpers.xyz"];
+  const domains: string[] = ["localhost", "ihelpers.xyz", "www.dicts.cn"];
 
   return domains.indexOf(window.location.hostname) !== -1;
 }

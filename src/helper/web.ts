@@ -7,6 +7,7 @@ export function handleWebEvents(event) {
   if (action) {
     switch (action) {
       case WEB_ACTIONS.INSTALL_AUTOMATION:
+      case WEB_ACTIONS.MSG_FORWARD:
         invoke(action, data);
         break;
       default:
