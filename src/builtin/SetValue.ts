@@ -11,7 +11,11 @@ export class SetValue extends Base {
 
   execute(elem, options: Partial<SetValueExecOptions>) {
     if (options.value) {
-      elem.value = options.value;
+      if (elem.tagName === "DIV") {
+        elem.innerText = options.value;
+      } else {
+        elem.value = options.value;
+      }
 
       this.callNext(options, options);
     }
