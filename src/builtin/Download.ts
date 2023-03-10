@@ -74,12 +74,20 @@ export class Download extends Base {
   }
 
   private downloadSource(elem): boolean {
-    const url = elem.getAttribute("src");
+    let url = elem.getAttribute("src");
+    let ext;
+
+    if (elem.tagName === "CANVAS") {
+      url = elem
+        .toDataURL("image/png")
+        .replace("image/png", "image/octet-stream");
+      ext = "png";
+    }
 
     if (url) {
       const tag: string = elem.tagName.toLowerCase();
 
-      this.downloadURL(url, this.getFileNameByURL(elem, url, tag), tag);
+      this.downloadURL(url, this.getFileNameByURL(elem, url, tag, ext), tag);
 
       return true;
     } else {
@@ -98,7 +106,7 @@ export class Download extends Base {
 
     this.autoclose = options.autoclose;
 
-    if (["VIDEO", "IMG", "AUDIO", "SOURCE"].indexOf(tagName) !== -1) {
+    if (["VIDEO", "IMG", "AUDIO", "SOURCE", "CANVAS"].indexOf(tagName) !== -1) {
       const result = this.downloadSource(elem);
       this.downloaded = result;
 
