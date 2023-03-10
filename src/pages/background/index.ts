@@ -370,9 +370,11 @@ function updateBadgeByCurrentTab() {
   });
 }
 
-chrome.tabs.onActivated.addListener(function () {
+chrome.tabs.onUpdated.addListener(function () {
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    updateBadge(tabs[0].url);
+    if (tabs[0] && tabs[0].url) {
+      updateBadge(tabs[0].url);
+    }
   });
 });
 
