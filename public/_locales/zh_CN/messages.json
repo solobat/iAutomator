@@ -35,6 +35,9 @@
     "settings_notion_export": {
         "message": "数据"
     },
+    "settings_notion_note": {
+        "message": "笔记"
+    },
     "get_new_automations": {
         "message": "获取新自动操作"
     },

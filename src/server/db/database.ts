@@ -4,23 +4,26 @@ import Dexie from "dexie";
 
 import { RunAt } from "../enum/Automation.enum";
 import Automation from "../model/Automation";
+import Note from "../model/Note";
 import Record from "../model/Record";
 import Shortcut from "../model/Shortcut";
 
 const DB_NAME = "StewardHelperDatabase";
-export const MIN_VERSION = 9;
+export const MIN_VERSION = 10;
 const schema: Schema = {
   rules: "++id,pattern,createTime,updateTime,deleted",
   records: "++id,rid,domain,url,content,times,createTime,updateTime,deleted",
   automations:
     "++id,rid,instructions,runAt,pattern,active,createTime,updateTime,deleted",
   shortcuts: "++id,name,shortcut,aid,wid,action,createTime,updateTime,deleted",
+  notes: "++id,content,domain,path,nid,createTime,updateTime,deleted",
 };
 
 export class IHelpersDatabase extends Dexie {
   rules: Dexie.Table<IRule, number>;
   records: Dexie.Table<IRecord, number>;
   automations: Dexie.Table<IAutomation, number>;
+  notes: Dexie.Table<INote, number>;
   shortcuts: Dexie.Table<IShortcut, number>;
 
   constructor(v: number) {
@@ -45,6 +48,17 @@ export interface IRecord {
   content: string;
   domain: string;
   times: number;
+  createTime?: number;
+  updateTime?: number;
+  deleted?: boolean;
+}
+
+export interface INote {
+  id?: number;
+  nid?: number;
+  content: string;
+  domain: string;
+  path: string;
   createTime?: number;
   updateTime?: number;
   deleted?: boolean;
@@ -87,6 +101,7 @@ export async function getDb() {
     db.shortcuts.mapToClass(Shortcut);
     db.automations.mapToClass(Automation);
     db.records.mapToClass(Record);
+    db.notes.mapToClass(Note);
 
     return db;
   }

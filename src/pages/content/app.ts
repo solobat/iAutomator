@@ -38,6 +38,7 @@ import { RunAt } from "../../server/enum/Automation.enum";
 import { Heartheat } from "@src/helper/heartheat";
 import { show } from "@src/utils/log";
 import { SetTitle } from "@src/builtin/Title";
+import { CreateNote } from "@src/builtin/Note";
 
 Heartheat.start();
 
@@ -108,6 +109,7 @@ function init() {
     new ScrollbarPosition(helper);
     new ModifyAttributes(helper);
     new SetTitle(helper);
+    new CreateNote(helper);
   });
 
   bindAppEvents();

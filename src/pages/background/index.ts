@@ -19,6 +19,7 @@ import { create as createNotice } from "../../helper/notifications";
 import { highlightEnglish } from "../../helper/others";
 import * as automationController from "../../server/controller/automations.controller";
 import * as recordsController from "../../server/controller/records.controller";
+import * as notesController from "../../server/controller/notes.controller";
 import * as shortcutsController from "../../server/controller/shortcuts.controller";
 import { checkUpdate, IAutomation, IShortcut } from "../../server/db/database";
 
@@ -186,6 +187,13 @@ function onHightlighting(data, handler: MsgHandlerFn) {
   });
 }
 
+function onCreateNote(data, handler: MsgHandlerFn) {
+  const { content, domain, path, nid } = data;
+  notesController.saveNote(content, domain, path, nid).then((result) => {
+    handler(result, true);
+  });
+}
+
 type MsgHandlerFn<T = any> = (results: T, isAsync?: boolean) => void;
 
 function msgHandler(req: PageMsg, sender: chrome.runtime.MessageSender, resp) {
@@ -244,6 +252,8 @@ function msgHandler(req: PageMsg, sender: chrome.runtime.MessageSender, resp) {
     onExecInstructions(data, handler);
   } else if (action === BUILDIN_ACTIONS.HIGHLIGHT_ENGLISH_SYNTAX) {
     onHightlighting(data, handler);
+  } else if (action === PAGE_ACTIONS.CREATE_NOTE) {
+    onCreateNote(data, handler);
   } else if (action === PAGE_ACTIONS.CONNECT) {
     onPingpong(sender.tab, handler);
   } else if (action === PAGE_ACTIONS.PING) {

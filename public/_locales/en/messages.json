@@ -35,6 +35,9 @@
     "settings_notion_export": {
         "message": "Export"
     },
+    "settings_notion_note": {
+        "message": "Notes"
+    },
     "get_new_automations": {
         "message": "Get new automations"
     },

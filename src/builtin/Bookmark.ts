@@ -71,7 +71,7 @@ export class Bookmark extends Base<BookmarkExecOptions> {
   }
 
   private setupManualRefresh(item: string) {
-    this.$elem.on("mouseenter", () => {
+    this.$elem?.on("mouseenter", () => {
       this.createBookmarkByArg(item);
       this.setupManualRefresh(item);
     });

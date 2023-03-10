@@ -11,6 +11,7 @@ const local_i18n = {
     fullscreen_element: "FullScreen element",
     code_copy: "Code copy",
     click: "Click",
+    note: "Create note",
     focus: "Focus",
     goto_element: "Goto element",
     start_pip_mode: "Start PIP mode",
@@ -41,6 +42,7 @@ const local_i18n = {
     fullscreen_element: "全屏元素",
     code_copy: "代码拷贝",
     click: "点击",
+    note: "笔记",
     focus: "聚焦",
     goto_element: "跳转到元素",
     start_pip_mode: "开启画中画模式",
@@ -84,6 +86,7 @@ export const PAGE_ACTIONS = {
   ACTIVE_PAGE: "activePage",
   NOTICE: "createNotice",
   EXEC_INSTRUCTIONS: "execInstructions",
+  CREATE_NOTE: "createNote",
 };
 
 export const WEB_ACTIONS = {
@@ -123,6 +126,7 @@ export const BUILDIN_ACTIONS = {
   FULL_SCREEN: "fullScreen",
   TIME_UPDATE: "timeupdate",
   CLICK: "click",
+  NOTE: "note",
   TITLE: "title",
   ATTRIBUTES: "attributes",
   OPEN_PAGE: "openPage",
@@ -212,6 +216,12 @@ export const BUILDIN_ACTION_CONFIGS = [
   {
     name: "CLICK",
     title: t("click"),
+    contexts: ["all"],
+    asCommand: false,
+  },
+  {
+    name: "NOTE",
+    title: t("note"),
     contexts: ["all"],
     asCommand: false,
   },
@@ -383,6 +393,26 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
   {
     value: BUILDIN_ACTIONS.CLICK,
     label: t("click"),
+  },
+  {
+    value: BUILDIN_ACTIONS.NOTE,
+    label: t("note"),
+    args: [
+      {
+        tips: "content",
+        name: "value",
+        type: "string",
+        value: "",
+        defaultValue: "",
+      },
+      {
+        tips: "as comment",
+        name: "isComment",
+        type: "boolean",
+        value: false,
+        defaultValue: false,
+      },
+    ],
   },
   {
     value: BUILDIN_ACTIONS.TITLE,
