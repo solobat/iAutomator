@@ -54,8 +54,6 @@
     "css-selector-generator": "^2.0.1",
     "dayjs": "^1.9.1",
     "dexie": "^3.2.2",
-    "dexie-export-import": "^1.0.0-rc.2",
-    "downloadjs": "^1.4.7",
     "is-in-viewport": "^3.0.4",
     "jquery": "^3.4.1",
     "keyboardjs": "^2.5.1",
