@@ -1,14 +1,13 @@
 import Button from "antd/es/button";
 import message from "antd/es/message";
 import Upload from "antd/es/upload";
-import * as React from "react";
 import { useCallback } from "react";
 
+import { useExtlibsContext } from "@src/context/ExtlibsContext";
 import { t } from "@src/helper/i18n.helper";
 
 import { APP_ACTIONS } from "../../../common/const";
 import { PageMsg } from "../../../common/types";
-import { exportAndDownload, importDBFile } from "../../../helper/db.helper";
 import { noticeBg } from "../../../helper/event";
 import { convertFile2Blob } from "../../../helper/file.helper";
 
@@ -23,12 +22,13 @@ function reload() {
 }
 
 export default function Export() {
+  const { libs } = useExtlibsContext();
   const onExportClick = useCallback(() => {
-    exportAndDownload();
+    libs.DB.exportAndDownload();
   }, []);
   const onImportFileBeforeUpload = useCallback((file) => {
     convertFile2Blob(file)
-      .then(importDBFile)
+      .then(libs.DB.importDBFile)
       .then((blob) => {
         reload();
         message.success("Import done!");

@@ -1,8 +1,13 @@
-import * as React from "react";
 import * as ReactDOM from "react-dom";
 
 import { Options } from "./Options";
+import { initLibs } from "@src/helper/libs";
 
-chrome.tabs.query({ active: true, currentWindow: true }, (tab) => {
-  ReactDOM.render(<Options />, document.getElementById("options"));
+initLibs().then((libs) => {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tab) => {
+    ReactDOM.render(
+      <Options libs={libs} />,
+      document.getElementById("options")
+    );
+  });
 });

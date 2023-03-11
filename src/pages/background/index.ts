@@ -22,11 +22,23 @@ import * as recordsController from "../../server/controller/records.controller";
 import * as notesController from "../../server/controller/notes.controller";
 import * as shortcutsController from "../../server/controller/shortcuts.controller";
 import { checkUpdate, IAutomation, IShortcut } from "../../server/db/database";
+import { ExtLibs } from "chrome-extension-libs";
+import { initLibs } from "@src/helper/libs";
 
 reloadOnUpdate("pages/background");
 
-let automations: IAutomation[] = [];
-let shortcuts: IShortcut[] = [];
+const state: {
+  libs: ExtLibs | null;
+  automations: IAutomation[];
+  shortcuts: IShortcut[];
+  sync: ReturnType<ExtLibs["Sync"]["getSync"]>;
+} = {
+  libs: null,
+  automations: [],
+  shortcuts: [],
+  sync: null,
+};
+
 interface BadgeItem {
   url: string;
   text: string;
@@ -85,7 +97,9 @@ function updateBadge(url) {
 function onPageData(data, handler: MsgHandlerFn) {
   const automations = getAutomationsByURL(data.url);
   const aids = automations.map((item) => item.id);
-  const currentShortcuts = shortcuts.filter((item) => aids.includes(item.aid));
+  const currentShortcuts = state.shortcuts.filter((item) =>
+    aids.includes(item.aid)
+  );
 
   if (handler) {
     handler({
@@ -118,7 +132,7 @@ function onRefreshAutmations(handler: MsgHandlerFn) {
 }
 
 function onRefreshShortcuts(handler: MsgHandlerFn) {
-  loadShortcuts(automations.map((item) => item.id));
+  loadShortcuts(state.automations.map((item) => item.id));
   handler("");
 }
 
@@ -238,6 +252,12 @@ function msgHandler(req: PageMsg, sender: chrome.runtime.MessageSender, resp) {
   } else if (action === APP_ACTIONS.IMPORT_DATA) {
     init();
     handler("");
+  } else if (action === APP_ACTIONS.START_SYNC) {
+    state.sync?.tryStartSync();
+    handler("");
+  } else if (action === APP_ACTIONS.STOP_SYNC) {
+    state.sync?.stopSync();
+    handler("");
   } else if (action === PAGE_ACTIONS.OPEN_PAGE) {
     openPage(data, handler);
   } else if (action === WEB_ACTIONS.INSTALL_AUTOMATION) {
@@ -344,7 +364,7 @@ function initCommands() {
 }
 
 function getAutomationsByURL(url: string) {
-  const pageAutomations = matchAutomations(automations, url);
+  const pageAutomations = matchAutomations(state.automations, url);
 
   return pageAutomations;
 }
@@ -380,20 +400,22 @@ chrome.tabs.onUpdated.addListener(function () {
 
 function loadAutomations() {
   return automationController.getList().then((resp) => {
-    automations = <IAutomation[]>resp.data;
+    state.automations = <IAutomation[]>resp.data;
 
-    return automations;
+    return state.automations;
   });
 }
 
 function loadShortcuts(aids: number[]) {
   return shortcutsController.queryByAids(aids).then((resp) => {
-    shortcuts = resp.data;
+    state.shortcuts = resp.data;
   });
 }
 
 async function init() {
   await checkUpdate();
+  state.libs = await initLibs();
+  state.sync = state.libs.Sync.getSync();
   loadAutomations().then((automations) => {
     loadShortcuts(automations.map((item) => item.id));
   });

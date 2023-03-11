@@ -7,7 +7,6 @@ import { useEffect, useReducer } from "react";
 import { t } from "@src/helper/i18n.helper";
 
 import { TabMeta } from "../../common/types";
-import { onDbUpdate } from "../../helper/db.helper";
 import { getTabs } from "../../helper/tab";
 import {
   ACTIONS,
@@ -28,13 +27,6 @@ export default function Page(props) {
     getTabs((result) => {
       dispatch({ type: ACTIONS.TAB_META, payload: result });
     });
-    const unbindFns = onDbUpdate(() => {
-      console.log("db updated..");
-    });
-
-    return () => {
-      unbindFns.then((fns) => fns.forEach((fn) => fn()));
-    };
   }, []);
 
   return (
