@@ -29,6 +29,7 @@ const local_i18n = {
     open_page: "Open page",
     attributes: "Modify attributes",
     set_title: "Set title",
+    reload: "Reload",
   },
   zh_CN: {
     read_mode: "阅读模式",
@@ -60,6 +61,7 @@ const local_i18n = {
     open_page: "打开页面",
     attributes: "修改元素属性",
     set_title: "页面标题",
+    reload: "重新加载",
   },
 };
 
@@ -144,6 +146,7 @@ export const BUILDIN_ACTIONS = {
   OUTLINE: "outline",
   BUTTON: "button",
   BOOKMARK: "bookmark",
+  RELOAD: "reload",
 };
 
 export const BUILDIN_ACTION_CONFIGS = [
@@ -279,6 +282,12 @@ export const BUILDIN_ACTION_CONFIGS = [
     contexts: ["all"],
     asCommand: false,
   },
+  {
+    name: "RELOAD",
+    title: t("reload"),
+    contexts: ["all"],
+    asCommand: false,
+  },
 ];
 
 export type ActionArgValue = boolean | string | number;
@@ -299,6 +308,33 @@ export interface BUILDIN_ACTION_FIELD_CONFIG {
 }
 
 export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
+  {
+    value: BUILDIN_ACTIONS.RELOAD,
+    label: t("reload"),
+    args: [
+      {
+        tips: "the interval to reload",
+        name: "interval",
+        type: "number",
+        value: 5,
+        defaultValue: 5,
+      },
+      {
+        tips: "start to reload while the element exists",
+        name: "start",
+        type: "string",
+        value: "",
+        defaultValue: "",
+      },
+      {
+        tips: "stop to reload while the element exists",
+        name: "stop",
+        type: "string",
+        value: "",
+        defaultValue: "",
+      },
+    ],
+  },
   {
     value: BUILDIN_ACTIONS.READ_MODE,
     label: t("read_mode"),

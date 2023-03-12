@@ -39,6 +39,7 @@ import { Heartheat } from "@src/helper/heartheat";
 import { show } from "@src/utils/log";
 import { SetTitle } from "@src/builtin/Title";
 import { CreateNote } from "@src/builtin/Note";
+import { ReloadPage } from "@src/builtin/Reload";
 
 Heartheat.start();
 
@@ -110,6 +111,7 @@ function init() {
     new ModifyAttributes(helper);
     new SetTitle(helper);
     new CreateNote(helper);
+    new ReloadPage(helper);
   });
 
   bindAppEvents();
