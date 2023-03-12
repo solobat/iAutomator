@@ -453,6 +453,13 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
   {
     value: BUILDIN_ACTIONS.TITLE,
     label: t("set_title"),
+    args: [
+      {
+        tips: "text of title",
+        name: "title",
+        type: "string",
+      },
+    ],
   },
   {
     value: BUILDIN_ACTIONS.ATTRIBUTES,

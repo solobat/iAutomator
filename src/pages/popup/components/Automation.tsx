@@ -504,6 +504,7 @@ function Automations(props: any) {
       <Table
         columns={AutomationsColumns}
         dataSource={state.automations}
+        rowKey="id"
         pagination={false}
         size="small"
       ></Table>
