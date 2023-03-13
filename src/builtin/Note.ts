@@ -50,7 +50,9 @@ export class CreateNote extends Base {
 
       this.create(content, true, Number(nid));
     } else {
-      this.create(options.value, false);
+      if (options.value != window.sessionStorage.getItem(NID_KEY_CONTENT)) {
+        this.create(options.value, false);
+      }
     }
     this.recordIfNeeded(options);
     setTimeout(() => {
