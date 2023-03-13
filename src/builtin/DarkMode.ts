@@ -14,6 +14,10 @@ export interface DarkModeOptions extends ExecOptions {
    * Latitude
    */
   long?: string;
+  /**
+   * follow the theme of the system
+   */
+  system?: boolean;
 }
 
 export class DarkMode extends Base<DarkModeOptions> {
@@ -33,10 +37,12 @@ export class DarkMode extends Base<DarkModeOptions> {
     });
   }
 
-  private shouldStart(options = this.defaultOptions) {
-    const { lat, long } = options;
+  private checkThemeDark(options = this.defaultOptions) {
+    const { lat, long, system } = options;
 
-    if (lat && long) {
+    if (system) {
+      return this.getPreferredColorScheme() === "dark";
+    } else if (lat && long) {
       const flag = isDark(parseInt(lat), parseInt(long));
 
       return flag;
@@ -45,8 +51,22 @@ export class DarkMode extends Base<DarkModeOptions> {
     }
   }
 
-  execute(elem, options: Partial<DarkModeOptions>) {
-    if (!this.shouldStart(options)) {
+  private getPreferredColorScheme() {
+    if (window.matchMedia) {
+      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        return "dark";
+      } else {
+        return "light";
+      }
+    }
+    return "light";
+  }
+
+  execute(_, options: Partial<DarkModeOptions>) {
+    const isDark = this.checkThemeDark(options);
+
+    if (!isDark) {
+      $("html").attr("theme", "");
       return;
     }
 

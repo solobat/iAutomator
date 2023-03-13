@@ -371,6 +371,13 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         name: "lat",
         type: "number",
       },
+      {
+        tips: "Follow the theme of the system",
+        name: "system",
+        type: "boolean",
+        defaultValue: false,
+        value: false,
+      },
     ],
   },
   {
