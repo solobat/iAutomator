@@ -28,6 +28,7 @@ import { ModifyAttributes } from "../../builtin/Attributes";
 import { APP_ACTIONS, PAGE_ACTIONS, WEB_ACTIONS } from "../../common/const";
 import {
   exceAutomation,
+  fetchPageDataAndApply,
   install,
   receiveGlobalEvent,
   startAction,
@@ -41,8 +42,6 @@ import { SetTitle } from "@src/builtin/Title";
 import { CreateNote } from "@src/builtin/Note";
 import { ReloadPage } from "@src/builtin/Reload";
 import { SingleTab } from "@src/builtin/SingleTab";
-
-Heartheat.start();
 
 function bindAppEvents() {
   chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
@@ -118,6 +117,8 @@ function init() {
 
   bindAppEvents();
   bindWebsiteEvents();
+  fetchPageDataAndApply();
+  Heartheat.start();
 }
 
 init();

@@ -334,7 +334,7 @@ function findAction(name: string): Base | null {
   return helper.actions.find((item) => item.name === name);
 }
 
-function fetchPageDataAndApply() {
+export function fetchPageDataAndApply() {
   noticeBg(
     {
       action: PAGE_ACTIONS.PAGE_DATA,
@@ -420,8 +420,6 @@ export function exceAutomationById(id: number, options?: ExecOptions) {
     exceAutomation(item.instructions, 0, item.runAt, getOptions(item, options));
   }
 }
-
-fetchPageDataAndApply();
 
 export function exec(fn, withOutline?: boolean) {
   setup(withOutline);
