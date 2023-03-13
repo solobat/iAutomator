@@ -40,6 +40,7 @@ import { show } from "@src/utils/log";
 import { SetTitle } from "@src/builtin/Title";
 import { CreateNote } from "@src/builtin/Note";
 import { ReloadPage } from "@src/builtin/Reload";
+import { SingleTab } from "@src/builtin/SingleTab";
 
 Heartheat.start();
 
@@ -112,6 +113,7 @@ function init() {
     new SetTitle(helper);
     new CreateNote(helper);
     new ReloadPage(helper);
+    new SingleTab(helper);
   });
 
   bindAppEvents();

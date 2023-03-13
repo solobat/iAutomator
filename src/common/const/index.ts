@@ -30,6 +30,7 @@ const local_i18n = {
     attributes: "Modify attributes",
     set_title: "Set title",
     reload: "Reload",
+    single_tab: "Single tab",
   },
   zh_CN: {
     read_mode: "阅读模式",
@@ -62,6 +63,7 @@ const local_i18n = {
     attributes: "修改元素属性",
     set_title: "页面标题",
     reload: "重新加载",
+    single_tab: "标签唯一",
   },
 };
 
@@ -147,6 +149,7 @@ export const BUILDIN_ACTIONS = {
   BUTTON: "button",
   BOOKMARK: "bookmark",
   RELOAD: "reload",
+  SINGLE_TAB: "singleTab",
 };
 
 export const BUILDIN_ACTION_CONFIGS = [
@@ -285,6 +288,12 @@ export const BUILDIN_ACTION_CONFIGS = [
   {
     name: "RELOAD",
     title: t("reload"),
+    contexts: ["all"],
+    asCommand: false,
+  },
+  {
+    name: "SINGLE_TAB",
+    title: t("single_tab"),
     contexts: ["all"],
     asCommand: false,
   },
@@ -715,6 +724,20 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         value: "",
         defaultValue: "",
         placeholder: "[.selector,fn]",
+      },
+    ],
+  },
+
+  {
+    value: BUILDIN_ACTIONS.SINGLE_TAB,
+    label: t("single_tab"),
+    args: [
+      {
+        tips: "Path",
+        name: "path",
+        type: "string",
+        value: "",
+        defaultValue: "",
       },
     ],
   },
