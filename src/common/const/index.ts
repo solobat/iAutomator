@@ -440,6 +440,19 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
     label: t("click"),
   },
   {
+    value: BUILDIN_ACTIONS.FOCUS,
+    label: t("focus"),
+    args: [
+      {
+        tips: "to blur",
+        name: "blur",
+        type: "boolean",
+        defaultValue: false,
+        value: false,
+      },
+    ],
+  },
+  {
     value: BUILDIN_ACTIONS.NOTE,
     label: t("note"),
     args: [
