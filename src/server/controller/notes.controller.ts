@@ -52,3 +52,9 @@ export async function list() {
 
   return Response.ok(result.filter((item) => item.nid == null).reverse());
 }
+
+export async function deleteItem(id: number) {
+  const result = await notesService.deleteNote(id);
+
+  return Response.ok(result);
+}

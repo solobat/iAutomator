@@ -1,63 +1,75 @@
 import { useEffect, useState } from "react";
 import * as notesController from "@src/server/controller/notes.controller";
 import { OK } from "@src/server/common/code";
-import { List, Table, TableColumnsType } from "antd";
+import { DeleteOutlined } from "@ant-design/icons";
+import { List, Table } from "antd";
 import dayjs from "dayjs";
 import { INote } from "@src/server/db/database";
+import Column from "antd/lib/table/Column";
 
-const columns: TableColumnsType<INote> = [
-  {
-    key: "id",
-    dataIndex: "id",
-    title: "ID",
-  },
-  {
-    key: "path",
-    dataIndex: "path",
-    title: "Link",
-    render: (path: string, record) => (
-      <a
-        target="_blank"
-        rel="noreferrer"
-        href={`https://${record.domain}${path}`}
-      >
-        Link
-      </a>
-    ),
-  },
-  {
-    key: "content",
-    dataIndex: "content",
-    title: "Content",
-  },
-  {
-    key: "createTime",
-    dataIndex: "createTime",
-    title: "Date",
-    render: (value: number) => dayjs(value).format("YYYY-MM-DD"),
-  },
-];
 export function Notes() {
   const [list, setList] = useState([]);
+  const onDelete = (id: number) => {
+    notesController.deleteItem(id).then(() => {
+      fetch();
+    });
+  };
 
-  useEffect(() => {
+  function fetch() {
     notesController.list().then((resp) => {
       if (resp.code === OK.code) {
         setList(resp.data);
       }
     });
+  }
+
+  useEffect(() => {
+    fetch();
   }, []);
+
   return (
     <div>
       <Table<INote>
-        columns={columns}
         rowKey="id"
         size="small"
         dataSource={list}
         expandable={{
           expandedRowRender: (record) => <NoteComments nid={record.id} />,
         }}
-      ></Table>
+      >
+        <Column key="id" dataIndex="id" title="ID" width="150px" />
+        <Column<INote>
+          key="path"
+          dataIndex="path"
+          title="Link"
+          width="100px"
+          render={(path: string, record) => (
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href={`https://${record.domain}${path}`}
+            >
+              Link
+            </a>
+          )}
+        />
+        <Column key="content" dataIndex="content" title="Content" />
+        <Column
+          key="createTime"
+          dataIndex="createTime"
+          title="Date"
+          width="100px"
+          render={(value: number) => dayjs(value).format("YYYY-MM-DD")}
+        />
+        <Column<INote>
+          key="options"
+          title="Options"
+          width={100}
+          render={(_, record) => (
+            <DeleteOutlined onClick={() => onDelete(record.id)} />
+          )}
+        />
+      </Table>
     </div>
   );
 }

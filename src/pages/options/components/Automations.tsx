@@ -7,10 +7,18 @@ import { useEffect, useState } from "react";
 import { DeleteOutlined } from "@ant-design/icons";
 import { IAutomation } from "@src/server/db/database";
 import Column from "antd/es/table/Column";
+import Search from "antd/es/input/Search";
 
 const Option = Select.Option;
 export function Automations() {
   const [list, setList] = useState([]);
+  const onSearch = (domain: string) => {
+    fetchList().then((list) =>
+      setList(
+        domain ? list.filter((item) => item.pattern.indexOf(domain) > -1) : list
+      )
+    );
+  };
   const onDeleted = () => {
     fetchList().then(setList);
   };
@@ -20,6 +28,13 @@ export function Automations() {
 
   return (
     <div>
+      <div style={{ display: "flex", justifyContent: "flex-end" }}>
+        <Search
+          onSearch={onSearch}
+          style={{ width: "500px" }}
+          placeholder="twitter.com"
+        />
+      </div>
       <Table<IAutomation> dataSource={list} rowKey="id" size="small">
         <Column title="ID" dataIndex="id" width="50px" />
         <Column
@@ -53,7 +68,7 @@ export function Automations() {
   );
 }
 
-function fetchList() {
+function fetchList(): Promise<IAutomation[]> {
   return automationsController.getList().then((res: Response) => {
     return res.data ?? [];
   });
