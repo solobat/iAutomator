@@ -42,6 +42,8 @@ import { SetTitle } from "@src/builtin/Title";
 import { CreateNote } from "@src/builtin/Note";
 import { ReloadPage } from "@src/builtin/Reload";
 import { SingleTab } from "@src/builtin/SingleTab";
+import { Wait } from "@src/builtin/Wait";
+import { ClosePage } from "@src/builtin/ClosePage";
 
 function bindAppEvents() {
   chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
@@ -113,6 +115,8 @@ function init() {
     new CreateNote(helper);
     new ReloadPage(helper);
     new SingleTab(helper);
+    new Wait(helper);
+    new ClosePage(helper);
   });
 
   bindAppEvents();

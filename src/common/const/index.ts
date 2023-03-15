@@ -31,6 +31,8 @@ const local_i18n = {
     set_title: "Set title",
     reload: "Reload",
     single_tab: "Single tab",
+    wait: "Wait",
+    close_page: "Close page",
   },
   zh_CN: {
     read_mode: "阅读模式",
@@ -64,6 +66,8 @@ const local_i18n = {
     set_title: "页面标题",
     reload: "重新加载",
     single_tab: "标签唯一",
+    wait: "等待",
+    close_page: "关闭页面",
   },
 };
 
@@ -150,6 +154,8 @@ export const BUILDIN_ACTIONS = {
   BOOKMARK: "bookmark",
   RELOAD: "reload",
   SINGLE_TAB: "singleTab",
+  WAIT: "wait",
+  CLOSE_PAGE: "closePage",
 };
 
 export const BUILDIN_ACTION_CONFIGS = [
@@ -294,6 +300,18 @@ export const BUILDIN_ACTION_CONFIGS = [
   {
     name: "SINGLE_TAB",
     title: t("single_tab"),
+    contexts: ["all"],
+    asCommand: false,
+  },
+  {
+    name: "WAIT",
+    title: t("wait"),
+    contexts: ["all"],
+    asCommand: false,
+  },
+  {
+    name: "CLOSE_PAGE",
+    title: t("close_page"),
     contexts: ["all"],
     asCommand: false,
   },
@@ -760,6 +778,25 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         defaultValue: "",
       },
     ],
+  },
+
+  {
+    value: BUILDIN_ACTIONS.WAIT,
+    label: t("wait"),
+    args: [
+      {
+        tips: "The time to wait, measured in seconds",
+        name: "time",
+        type: "number",
+        value: 1,
+        defaultValue: 1,
+      },
+    ],
+  },
+
+  {
+    value: BUILDIN_ACTIONS.CLOSE_PAGE,
+    label: t("close_page"),
   },
 ];
 
