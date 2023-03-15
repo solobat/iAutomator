@@ -570,6 +570,13 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         name: "selector",
         type: "string",
       },
+      {
+        tips: "action type: listen or emit",
+        name: "type",
+        type: "string",
+        defaultValue: "listen",
+        value: "listen",
+      },
     ],
   },
   {

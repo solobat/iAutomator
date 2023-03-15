@@ -9,6 +9,7 @@ import { ExecOptions } from "./types";
 export interface EventExecOptions extends ExecOptions {
   events: string;
   selector?: string;
+  type: "emit" | "listen";
 }
 
 export class OnEvent extends Base {
@@ -73,11 +74,19 @@ export class OnEvent extends Base {
     }
   }
 
+  private emitEvents(options: Partial<EventExecOptions>) {
+    this.helper.broadcast.emit(options.events, options);
+  }
+
   execute(elem, options: Partial<EventExecOptions>) {
-    const { events } = options;
+    const { events, type = "listen" } = options;
 
     if (events) {
-      this.listenEvents(elem, options);
+      if (type === "listen") {
+        this.listenEvents(elem, options);
+      } else {
+        this.emitEvents(options);
+      }
     }
     this.recordIfNeeded(options);
 
