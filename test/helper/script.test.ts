@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { parseScript, tokenize } from "../../src/helper/script";
+import { parseScript } from "../../src/helper/script";
 
 // test("tokenize work", () => {
 //   const tokens = tokenize(

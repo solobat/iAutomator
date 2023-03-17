@@ -143,10 +143,10 @@ function isAutomationEnd(token: Token) {
 }
 
 function parseAutomation(tokens: Token[]): Automation {
-  const { firstLine, rest } = getFirstLineTokens(tokens);
-  const { urlRegStr, stage } = parseAutomationStart(firstLine);
-  const bodyTokens = rest.slice(0, -1);
   const env = new Env(["empty", null]);
+  const { firstLine, rest } = getFirstLineTokens(tokens);
+  const { urlRegStr, stage } = parseAutomationStart(firstLine, env);
+  const bodyTokens = rest.slice(0, -1);
   const instructions = parseAutomationBody(bodyTokens, env);
 
   return {
@@ -172,21 +172,22 @@ function stage2runAt(stage: string) {
 
 export interface Rule {
   type: Token["type"];
-  key?: string | number | boolean;
-  variable?: string;
+  keyword?: string;
+  variableName?: string;
+  isVariable?: boolean;
 }
 
-function parseAutomationStart(tokens: Token[]) {
+function parseAutomationStart(tokens: Token[], env) {
   const rules: Rule[] = [
-    { type: "id", key: "automation" },
-    { type: "id", key: "for" },
-    { type: "string", variable: "urlRegStr" },
-    { type: "id", key: "on" },
-    { type: "string", variable: "stage" },
+    { type: "id", keyword: "automation" },
+    { type: "id", keyword: "for" },
+    { type: "string", variableName: "urlRegStr" },
+    { type: "id", keyword: "on" },
+    { type: "string", variableName: "stage" },
     { type: "linebreak" },
   ];
 
-  return matchTokensWithRules(tokens, rules);
+  return matchTokensWithRules(tokens, rules, env);
 }
 
 function parseAutomationBody(tokens: Token[], env: Env) {
@@ -248,21 +249,21 @@ function parseApplyExp(tokens: Token[], env: Env) {
 
 function parseApplyTailExp(tokens: Token[], env: Env) {
   const rules: Rule[] = [
-    { type: "id", key: "on" },
-    { type: "string", variable: "scope" },
+    { type: "id", keyword: "on" },
+    { type: "string", variableName: "scope" },
   ];
 
-  return matchTokensWithRules(tokens, rules);
+  return matchTokensWithRules(tokens, rules, env);
 }
 
 function parseApplyHeadExp(tokens: Token[], env: Env) {
   const rules: Rule[] = [
-    { type: "id", key: "apply" },
-    { type: "string", variable: "action" },
-    { type: "id", variable: "with" },
+    { type: "id", keyword: "apply" },
+    { type: "string", variableName: "action" },
+    { type: "id", variableName: "with" },
   ];
 
-  return matchTokensWithRules(tokens, rules);
+  return matchTokensWithRules(tokens, rules, env);
 }
 
 function getApplyExpParts(tokens: Token[]) {
@@ -308,7 +309,7 @@ function parseEmitStatement(tokens: Token[], env: Env) {
 
 function parseEmitExp(tokens: Token[], env: Env): Instruction {
   const { head, tail } = getEmitExpParts(tokens);
-  const headParams = parseEmitHeadExp(head);
+  const headParams = parseEmitHeadExp(head, env);
   const tailParams = parseArgsPairsExp(tail, env);
 
   return {
@@ -322,26 +323,30 @@ function parseEmitExp(tokens: Token[], env: Env): Instruction {
   };
 }
 
-function parseEmitHeadExp(tokens: Token[]) {
+function parseEmitHeadExp(tokens: Token[], env: Env) {
   const rules: Rule[] = [
-    { type: "id", key: "emit" },
-    { type: "string", variable: "events" },
-    { type: "id", key: "with" },
+    { type: "id", keyword: "emit" },
+    { type: "string", variableName: "events" },
+    { type: "id", keyword: "with" },
   ];
 
-  return matchTokensWithRules(tokens, rules);
+  return matchTokensWithRules(tokens, rules, env);
 }
 
 function parseArgsPairsExp(tokens: Token[], env: Env) {
   const start = tokens.shift();
-  matchRule(start, { type: "char", key: "(" });
+  matchRule(start, { type: "char", keyword: "(" }, env);
   const end = tokens.pop();
-  matchRule(end, { type: "char", key: ")" });
+  matchRule(end, { type: "char", keyword: ")" }, env);
 
   return parseArgsExp(tokens, {}, env);
 }
 
-function parseArgsExp(tokens: Token[], pairs: Record<string, any>, env: Env) {
+function parseArgsExp(
+  tokens: Token[],
+  pairs: Record<string, EnvValueType>,
+  env: Env
+) {
   if (tokens.length) {
     const { first, rest } = getFirstPairTokens(tokens);
     const pair = parseArgExp(first, env);
@@ -356,7 +361,7 @@ function parseArgsExp(tokens: Token[], pairs: Record<string, any>, env: Env) {
 
 function parseArgExp(tokens: Token[], env: Env) {
   const { head, tail } = getArgExpPart(tokens);
-  const key = parseArgExpHead(head);
+  const key = parseArgExpHead(head, env);
   const value = parseArgExpTail(tail, env);
 
   return {
@@ -379,17 +384,17 @@ function parseArgExpTail(tokens: Token[], env: Env) {
   }
 }
 
-function parseArgExpHead(tokens: Token[]) {
+function parseArgExpHead(tokens: Token[], env: Env) {
   const rules: Rule[] = [
     {
       type: "id",
     },
     {
       type: "char",
-      key: "=",
+      keyword: "=",
     },
   ];
-  matchTokensWithRules(tokens, rules);
+  matchTokensWithRules(tokens, rules, env);
 
   return parseVariableExp(tokens[0]);
 }
@@ -418,15 +423,19 @@ function getFirstPairTokens(tokens: Token[]) {
   }
 }
 
-function matchRule(token: Token, rule: Rule) {
+function matchRule(token: Token, rule: Rule, env: Env) {
   if (rule && token.type === rule.type) {
-    if (rule.key) {
-      if (rule.key !== token.value) {
+    if (rule.keyword) {
+      if (rule.keyword === token.value) {
+        if (rule.isVariable) {
+          return env.search(token.value);
+        }
+      } else {
         throwError(`parse error: `, token, rule);
       }
-    } else if (rule.variable) {
+    } else if (rule.variableName) {
       return {
-        [rule.variable]: token.value,
+        [rule.variableName]: token.value,
       };
     }
   } else {
@@ -449,11 +458,11 @@ function parseCloseStatement(tokens: Token[], env: Env) {
 }
 
 function parseCloseExp(tokens: Token[], env: Env): Instruction {
-  const rules: Rule[] = [{ type: "id", key: "close" }];
+  const rules: Rule[] = [{ type: "id", keyword: "close" }];
 
   return {
     action: BUILDIN_ACTIONS.CLOSE_PAGE,
-    options: matchTokensWithRules(tokens, rules),
+    options: matchTokensWithRules(tokens, rules, env),
     env,
   };
 }
@@ -464,16 +473,16 @@ function parseWaitStatement(tokens: Token[], env: Env) {
 
 function parseWaitExp(tokens: Token[], env: Env): Instruction {
   const rules: Rule[] = [
-    { type: "id", key: "wait" },
+    { type: "id", keyword: "wait" },
     {
       type: "number",
-      variable: "time",
+      variableName: "time",
     },
   ];
 
   return {
     action: BUILDIN_ACTIONS.WAIT,
-    options: matchTokensWithRules(tokens, rules),
+    options: matchTokensWithRules(tokens, rules, env),
     env,
   };
 }
@@ -483,11 +492,11 @@ function parseActiveStatement(tokens: Token[], env: Env) {
 }
 
 function parseActiveExp(tokens: Token[], env: Env): Instruction {
-  const rules: Rule[] = [{ type: "id", key: "active" }];
+  const rules: Rule[] = [{ type: "id", keyword: "active" }];
 
   return {
     action: BUILDIN_ACTIONS.ACTIVE,
-    options: matchTokensWithRules(tokens, rules),
+    options: matchTokensWithRules(tokens, rules, env),
     env,
   };
 }
@@ -498,15 +507,15 @@ function parseOpenStatement(tokens: Token[], env: Env) {
 
 function parseOpenExp(tokens: Token[], env: Env): Instruction {
   const rules: Rule[] = [
-    { type: "id", key: "open" },
-    { type: "string", variable: "urlStr" },
-    { type: "id", key: "as" },
-    { type: "string", variable: "urlRegStr" },
+    { type: "id", keyword: "open" },
+    { type: "string", variableName: "urlStr" },
+    { type: "id", keyword: "as" },
+    { type: "string", variableName: "urlRegStr" },
   ];
 
   return {
     action: BUILDIN_ACTIONS.OPEN_PAGE,
-    options: matchTokensWithRules(tokens, rules),
+    options: matchTokensWithRules(tokens, rules, env),
     env,
   };
 }
@@ -533,7 +542,7 @@ function parseAssignStatement(
   const equalIndex = tokens.findIndex((token) => token.text === "=");
   const assignExpTokens = tokens.slice(0, equalIndex);
   const valuableExpTokens = tokens.slice(equalIndex + 1, -1);
-  const variable = parseAssignExp(assignExpTokens);
+  const variable = parseAssignExp(assignExpTokens, env);
   const { value, instruction } = parseValuableExp(
     valuableExpTokens,
     variable,
@@ -545,9 +554,9 @@ function parseAssignStatement(
   return [newEnv, instruction];
 }
 
-function parseAssignExp(tokens: Token[]) {
-  const rules: Rule[] = [{ type: "id", key: "set" }, { type: "id" }];
-  matchTokensWithRules(tokens, rules);
+function parseAssignExp(tokens: Token[], env) {
+  const rules: Rule[] = [{ type: "id", keyword: "set" }, { type: "id" }];
+  matchTokensWithRules(tokens, rules, env);
 
   return tokens[1].value;
 }
@@ -579,15 +588,15 @@ function parseValuableExp(
 
 function parseListenExp(tokens: Token[], env: Env): Instruction {
   const rules: Rule[] = [
-    { type: "id", key: "listen" },
-    { type: "string", variable: "events" },
-    { type: "id", key: "on" },
-    { type: "string", variable: "scope" },
+    { type: "id", keyword: "listen" },
+    { type: "string", variableName: "events" },
+    { type: "id", keyword: "on" },
+    { type: "string", variableName: "scope" },
   ];
 
   return {
     action: BUILDIN_ACTIONS.EVENT,
-    options: matchTokensWithRules(tokens, rules),
+    options: matchTokensWithRules(tokens, rules, env),
     env,
   };
 }
@@ -640,17 +649,17 @@ function throwError(msg: string, token?: Token, rule?: Rule) {
   );
 }
 
-function matchTokensWithRules(tokens: Token[], rules: Rule[]) {
+function matchTokensWithRules(tokens: Token[], rules: Rule[], env: Env) {
   return tokens.reduce((memo, token, index) => {
     const rule = rules[index];
 
-    const part = matchRule(token, rule);
+    const part = matchRule(token, rule, env);
 
     return {
       ...memo,
       ...part,
     };
-  }, {} as Record<string, any>);
+  }, {} as Record<string, EnvValueType>);
 }
 
 function getFirstLineTokens(tokens: Token[]) {
@@ -673,7 +682,7 @@ function getFirstLineTokens(tokens: Token[]) {
 function createLexer() {
   const lexer = new Tokenizr();
 
-  lexer.rule(/[a-zA-Z_][a-zA-Z0-9_]*/, (ctx, match) => {
+  lexer.rule(/[a-zA-Z_][a-zA-Z0-9_]*/, (ctx) => {
     ctx.accept("id");
   });
   lexer.rule(/[+-]?[0-9]+/, (ctx, match) => {
@@ -682,16 +691,16 @@ function createLexer() {
   lexer.rule(/"([^\r\n"]*)"/, (ctx, match) => {
     ctx.accept("string", match[1].replace(/\\"/g, '"'));
   });
-  lexer.rule(/\/\/[^\r\n]*\r?\n/, (ctx, match) => {
+  lexer.rule(/\/\/[^\r\n]*\r?\n/, (ctx) => {
     ctx.ignore();
   });
-  lexer.rule(/[ \t]+/, (ctx, match) => {
+  lexer.rule(/[ \t]+/, (ctx) => {
     ctx.ignore();
   });
-  lexer.rule(/[\r\n]+/, (ctx, match) => {
+  lexer.rule(/[\r\n]+/, (ctx) => {
     ctx.accept("linebreak");
   });
-  lexer.rule(/./, (ctx, match) => {
+  lexer.rule(/./, (ctx) => {
     ctx.accept("char");
   });
 
