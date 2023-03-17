@@ -9,12 +9,12 @@ import Record from "../model/Record";
 import Shortcut from "../model/Shortcut";
 
 const DB_NAME = "StewardHelperDatabase";
-export const MIN_VERSION = 10;
+export const MIN_VERSION = 11;
 const schema: Schema = {
   rules: "++id,pattern,createTime,updateTime,deleted",
   records: "++id,rid,domain,url,content,times,createTime,updateTime,deleted",
   automations:
-    "++id,rid,instructions,runAt,pattern,active,createTime,updateTime,deleted",
+    "++id,rid,instructions,scripts,runAt,pattern,active,createTime,updateTime,deleted",
   shortcuts: "++id,name,shortcut,aid,wid,action,createTime,updateTime,deleted",
   notes: "++id,content,domain,path,nid,createTime,updateTime,deleted",
 };
@@ -69,6 +69,7 @@ export interface IAutomation {
   rid?: number;
   pattern: string;
   instructions: string;
+  scripts: string;
   runAt?: RunAt;
   active?: boolean;
   createTime?: number;

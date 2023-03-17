@@ -44,6 +44,12 @@
     "add_new_automation": {
         "message": "Add new automation"
     },
+    "add_new_script": {
+        "message": "Add new script"
+    },
+    "scripts" : {
+        "message": "Scripts"
+    },
     "automations": {
         "message": "Automations"
     },
@@ -67,6 +73,9 @@
     },
     "save": {
         "message": "Save"
+    },
+    "test": {
+        "message": "Test"
     },
     "run_at_immediately": {
         "message": "Immediately"

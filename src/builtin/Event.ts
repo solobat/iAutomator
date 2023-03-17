@@ -5,6 +5,7 @@ import { GlobalEvents } from "@src/helper/event";
 import { BUILDIN_ACTIONS } from "../common/const";
 import { Base } from "./Base";
 import { ExecOptions } from "./types";
+import { Env } from "@src/helper/script";
 
 export interface EventExecOptions extends ExecOptions {
   events: string;
@@ -48,8 +49,12 @@ export class OnEvent extends Base {
     return ["paste"].includes(eventName);
   }
 
-  private listenEvents(elem: HTMLElement, options: Partial<EventExecOptions>) {
-    const { events: eventName, selector } = options;
+  private listenEvents(
+    elem: HTMLElement,
+    options: Partial<EventExecOptions>,
+    effect?: (options: Partial<EventExecOptions>) => void
+  ) {
+    const { events: eventName, selector, scope } = options;
     const isGlobal = GlobalEvents().isGlobal(eventName);
     const handler = async (event) => {
       const nextOptions: ExecOptions = isGlobal
@@ -58,6 +63,9 @@ export class OnEvent extends Base {
             value: await this.getEventValue(eventName, event),
           };
 
+      if (effect) {
+        effect(nextOptions);
+      }
       this.callNext(options, nextOptions);
       this.broadcast(options, nextOptions);
     };
@@ -66,10 +74,15 @@ export class OnEvent extends Base {
     } else if (this.isBom(eventName)) {
       window.addEventListener(eventName, handler);
     } else {
+      // FIXME: for backward compatibility
       if (selector) {
         $(selector).on(eventName, handler);
       } else {
-        elem.addEventListener(eventName, handler);
+        if (scope) {
+          $(scope).on(eventName, handler);
+        } else {
+          elem.addEventListener(eventName, handler);
+        }
       }
     }
   }
@@ -78,12 +91,16 @@ export class OnEvent extends Base {
     this.helper.broadcast.emit(options.events, options);
   }
 
-  execute(elem, options: Partial<EventExecOptions>) {
+  execute(
+    elem,
+    options: Partial<EventExecOptions>,
+    effect?: (options: Partial<EventExecOptions>) => void
+  ) {
     const { events, type = "listen" } = options;
 
     if (events) {
       if (type === "listen") {
-        this.listenEvents(elem, options);
+        this.listenEvents(elem, options, effect);
       } else {
         this.emitEvents(options);
       }

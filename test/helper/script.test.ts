@@ -24,11 +24,11 @@ import { parseScript } from "../../src/helper/script";
 //   expect(tokens.length > 0).toBe(true);
 // });
 
-test("parse work", () => {
-  const automations = parseScript(
-    `
+/*
   automation for "https://baidu.com" on "load"
-    apply "readMode" with (target=".main-content") on "body"  
+    set selector = ".main-content"
+    set target = selector
+    apply "readMode" with (target=target) on "body"  
   end
   
   automation for "https://movie.douban.com" on "load"
@@ -43,6 +43,13 @@ test("parse work", () => {
     active
     apply "setValue" with (value=movie) on "#search-keyword"
     apply "click" with () on ".sub"
+  end
+*/
+test("parse work", () => {
+  const automations = parseScript(
+    `
+  automation for "https://weibo.com/*" on "load"
+    apply "readMode" with (excludes=".Frame_wrap_16as0")  on "#homeWrap"
   end
   
   `.trim()

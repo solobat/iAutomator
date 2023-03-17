@@ -70,6 +70,11 @@ export interface ExecOptions {
    */
   mode?: ActionRunMode;
 
+  /**
+   * @private backup of scope
+   */
+  scope?: string;
+
   [prop: string]: any;
 }
 

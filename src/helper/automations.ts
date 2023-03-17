@@ -30,6 +30,6 @@ export async function installAutomation(
   if (hasOne) {
     return Response.error(EXISTS);
   } else {
-    return saveAutomation(instructions, pattern, runAt);
+    return saveAutomation(instructions, "", pattern, runAt);
   }
 }

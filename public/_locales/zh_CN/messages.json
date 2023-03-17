@@ -44,6 +44,12 @@
     "add_new_automation": {
         "message": "添加新自动操作"
     },
+    "add_new_script": {
+        "message": " 添加新脚本"
+    },
+    "scripts" : {
+        "message": "脚本"
+    }, 
     "automations": {
         "message": "自动操作"
     },
@@ -68,6 +74,9 @@
     "save": {
         "message": "保存"
     },
+    "test": {
+        "message": "测试"
+    }, 
     "run_at_immediately": {
         "message": "立即"
     },

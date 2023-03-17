@@ -1,4 +1,5 @@
 import { exceAutomationById } from "@src/helper/action";
+import { Env } from "@src/helper/script";
 import { ActionHelper, ActionOptions, ExecOptions } from "./types";
 export abstract class Base<T extends ExecOptions = ExecOptions> {
   /**
@@ -100,13 +101,17 @@ export abstract class Base<T extends ExecOptions = ExecOptions> {
    * called by UI or automation or shortcuts
    * execute and check result if needed
    */
-  makeExecution(elem, options: Partial<T>) {
+  makeExecution(
+    elem,
+    options: Partial<T>,
+    effect?: (options: Partial<T>) => void
+  ) {
     // NOTE: Avoid repeated execution
     if (this.active) {
       return;
     }
     this.runtimeOptions = options;
-    const result = this.execute(elem, options);
+    const result = this.execute(elem, options, effect);
     if (this.options.esc2exit) {
       this.active = true;
     }
@@ -122,7 +127,11 @@ export abstract class Base<T extends ExecOptions = ExecOptions> {
    * the main logic of the action
    * NOTE: options will be partial of T when called by `this.startByEvent`
    */
-  abstract execute(elem, options?: Partial<T>): boolean;
+  abstract execute(
+    elem,
+    options?: Partial<T>,
+    effect?: (options: Partial<T>) => void
+  ): boolean;
 
   /**
    * Check if the action was executed successfully

@@ -20,6 +20,12 @@ export const ACTIONS = {
   SHORTCUTS: "SHORTCUTS",
 };
 
+export enum AmFormEditing {
+  False = 0,
+  Instruction,
+  Script,
+}
+
 export function pageReducer(state: PageState, action) {
   const { type, payload } = action;
   const newState: Partial<PageState> = {};
@@ -32,7 +38,7 @@ export function pageReducer(state: PageState, action) {
       newState.tabKey = payload;
       break;
     case ACTIONS.AUTOMATION_FORM_UPDATE:
-      newState.amFormEditing = true;
+      newState.amFormEditing = action.editingMode ?? AmFormEditing.Instruction;
       newState.automationForm = {
         ...(state.automationForm || {}),
         ...payload,
@@ -65,7 +71,7 @@ export function pageReducer(state: PageState, action) {
 
       break;
     case ACTIONS.AUTOMATION_FORM_CLOSE:
-      newState.amFormEditing = false;
+      newState.amFormEditing = AmFormEditing.False;
       newState.automationForm = getDefaultAutomationForm() as AutomationForm;
       break;
     case ACTIONS.AUTOMATIONS:
@@ -100,6 +106,7 @@ export interface AutomationForm {
   instructions: string;
   data: Omit<InstructionData, "args">[];
   pattern: string;
+  scripts: string;
   runAt: RunAt.END;
   id?: number;
 }
@@ -112,11 +119,12 @@ function getDefaultNewIns() {
   };
 }
 
-function getDefaultAutomationForm() {
+function getDefaultAutomationForm(): AutomationForm {
   return {
     instructions: "",
     data: [getDefaultNewIns()] as Omit<InstructionData, "args">[],
     pattern: "",
+    scripts: "",
     runAt: RunAt.END,
   };
 }
@@ -138,7 +146,13 @@ export function getInitialState() {
     tab: null,
     tabKey: "automation",
     automationForm: getDefaultAutomationForm() as AutomationForm,
-    amFormEditing: false,
+    amFormEditing: AmFormEditing.False,
+    scriptsEditing: false,
+    scripts: `
+automation for {url} on "load"
+    {statements}
+end
+    `,
     automations: [],
     shortcutForm: getDefaultShortcutForm(),
     scFormEditing: false,

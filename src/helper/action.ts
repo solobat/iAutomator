@@ -26,6 +26,8 @@ import {
   startOutline,
 } from "./dom";
 import { GlobalEvents, noticeBg } from "./event";
+import { InstructionData } from "./instruction";
+import { parseScript, ScriptAutomation, ScriptInstruction } from "./script";
 
 let isSetup;
 const emitter = new SimpleEvent();
@@ -126,30 +128,40 @@ function recordAction(actionName, elem?: HTMLElement, options?: ExecOptions) {
   );
 }
 
-export function exceAutomation(
-  content: string,
+function resolveInstructionArgs(instruction: ScriptInstruction) {
+  const { args, env } = instruction;
+
+  for (const key in args) {
+    const element = args[key];
+    if (typeof element === "function") {
+      args[key] = element(env);
+    }
+  }
+}
+
+export function exceScriptAutomation(
+  instructions: ScriptInstruction[],
   times = 0,
   runAt: RunAt,
   runtimeOptions: ExecOptions = { index: 0, mode: "single" }
 ) {
-  const instructions = content.split(";");
   const instruction = instructions[runtimeOptions.index];
 
   if (!instruction) {
     show("current is the latest instruction, group is done", runtimeOptions);
     return;
   }
+  const scope = instruction.scope ?? "body";
+  const elem = getElem(scope);
 
-  const [actionStr, selector] = instruction.split("@");
-  const [action, ...modifiers] = actionStr.split("^");
-  const elem = getElem(selector);
+  instruction.args.scope = scope;
 
   function tryAgain() {
     if (times < 5) {
       const delay = runAt === RunAt.START ? 16 : 1000;
 
       setTimeout(() => {
-        exceAutomation(content, times + 1, runAt, runtimeOptions);
+        exceScriptAutomation(instructions, times + 1, runAt, runtimeOptions);
       }, delay);
     }
   }
@@ -158,7 +170,71 @@ export function exceAutomation(
       times = 0;
       tryAgain();
     };
-    const staticOptions: ExecOptions = getExecOptions(modifiers);
+    resolveInstructionArgs(instruction);
+
+    const staticOptions: ExecOptions = instruction.args;
+    const options = Object.assign(staticOptions, runtimeOptions, {
+      next:
+        runtimeOptions.mode === "group"
+          ? runtimeOptions.next
+          : staticOptions.next,
+    });
+
+    if (instance.options.shouldRedo) {
+      instance.reExecute = (type: string) => {
+        const delay = getDelayByRouteChangeType(type);
+
+        setTimeout(() => {
+          instance.makeExecution(elem, options, instruction.effect);
+        }, delay);
+      };
+    }
+    instance.makeExecution(elem, options, instruction.effect);
+  }
+
+  if (elem) {
+    const instance = findAction(instruction.action);
+
+    if (instance) {
+      exec(instance);
+    }
+  } else {
+    tryAgain();
+  }
+}
+
+export function exceAutomation(
+  instructions: InstructionData[],
+  times = 0,
+  runAt: RunAt,
+  runtimeOptions: ExecOptions = { index: 0, mode: "single" }
+) {
+  const instruction = instructions[runtimeOptions.index];
+
+  if (!instruction) {
+    show("current is the latest instruction, group is done", runtimeOptions);
+    return;
+  }
+
+  const elem = getElem(instruction.scope);
+
+  instruction.args.scope = instruction.scope;
+
+  function tryAgain() {
+    if (times < 5) {
+      const delay = runAt === RunAt.START ? 16 : 1000;
+
+      setTimeout(() => {
+        exceAutomation(instructions, times + 1, runAt, runtimeOptions);
+      }, delay);
+    }
+  }
+  function exec(instance: Base) {
+    instance.autoMationFn = () => {
+      times = 0;
+      tryAgain();
+    };
+    const staticOptions: ExecOptions = instruction.args;
     const options = Object.assign(staticOptions, runtimeOptions, {
       next:
         runtimeOptions.mode === "group"
@@ -179,7 +255,7 @@ export function exceAutomation(
   }
 
   if (elem) {
-    const instance = findAction(action);
+    const instance = findAction(instruction.action);
 
     if (instance) {
       exec(instance);
@@ -188,19 +264,6 @@ export function exceAutomation(
     tryAgain();
   }
 }
-
-declare global {
-  interface Window {
-    exceAutomation: (
-      content: string,
-      times: number,
-      runAt: RunAt,
-      options?: ExecOptions
-    ) => void;
-  }
-}
-
-window.exceAutomation = exceAutomation;
 
 export const helper: ActionHelper<Base> = {
   actionCache: {
@@ -407,17 +470,80 @@ function getOptions(
   return { ...options, mode, next, index: options.index ?? 0 };
 }
 
+function getScriptAutomationOptions(
+  item: ScriptAutomation,
+  options: ExecOptions = { mode: "single", index: 0 }
+) {
+  const mode: ActionRunMode = item.instructions.length ? "group" : "single";
+  const next = mode === "single" ? options.next : item.id;
+
+  return { ...options, mode, next, index: options.index ?? 0 };
+}
+
+function parseInstructions(content: string): InstructionData[] {
+  const instructions = content.split(";");
+
+  return instructions.map((instruction) => {
+    const [actionStr, selector] = instruction.split("@");
+    const [action, ...modifiers] = actionStr.split("^");
+
+    return {
+      action,
+      args: getExecOptions(modifiers),
+      rawArgs: modifiers.join("^"),
+      scope: selector,
+    };
+  });
+}
+
+function execAutomationScripts(
+  scripts: string,
+  id: number,
+  options?: ExecOptions
+) {
+  try {
+    const [automation] = parseScript(scripts);
+
+    automation.id = id;
+    exceScriptAutomation(
+      automation.instructions,
+      0,
+      automation.runAt,
+      getScriptAutomationOptions(automation, options)
+    );
+  } catch (error) {
+    console.log("parse error", error);
+  }
+}
+
 function execAutomations(automations: IAutomation[], runAt: RunAt) {
   automations.forEach((item) => {
-    exceAutomation(item.instructions, 0, runAt, getOptions(item));
+    execAutomationItem(item, runAt);
   });
+}
+
+function execAutomationItem(
+  item: IAutomation,
+  runAt: RunAt,
+  options?: ExecOptions
+) {
+  if (item.instructions) {
+    exceAutomation(
+      parseInstructions(item.instructions),
+      0,
+      runAt,
+      getOptions(item, options)
+    );
+  } else if (item.scripts) {
+    execAutomationScripts(item.scripts, item.id, options);
+  }
 }
 
 export function exceAutomationById(id: number, options?: ExecOptions) {
   const item = automations.find((a) => a.id === id);
 
   if (item) {
-    exceAutomation(item.instructions, 0, item.runAt, getOptions(item, options));
+    execAutomationItem(item, item.runAt, options);
   }
 }
 

@@ -5,6 +5,7 @@ export default class Automation implements IAutomation {
   id: number;
   rid?: number;
   instructions: string;
+  scripts: string;
   runAt?: RunAt;
   pattern: string;
   active?: boolean;
@@ -14,12 +15,14 @@ export default class Automation implements IAutomation {
 
   constructor(
     instructions: string,
+    scripts: string,
     runAt: RunAt = RunAt.END,
     pattern: string,
     rid?: number,
     createTime?: number
   ) {
     this.instructions = instructions;
+    this.scripts = scripts;
     this.runAt = runAt;
     this.pattern = pattern;
     this.rid = rid;

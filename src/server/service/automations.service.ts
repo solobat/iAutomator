@@ -4,10 +4,16 @@ import Automation from "../model/Automation";
 
 export async function save(
   instructions: string,
+  scripts: string,
   runAt: RunAt,
   pattern?: string
 ) {
-  const automation: Automation = new Automation(instructions, runAt, pattern);
+  const automation: Automation = new Automation(
+    instructions,
+    scripts,
+    runAt,
+    pattern
+  );
   const db = await getDb();
 
   return db.automations.put(automation);

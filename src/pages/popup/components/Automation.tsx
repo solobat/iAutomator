@@ -1,4 +1,4 @@
-import { AutoComplete, Tooltip } from "antd";
+import { Alert, AutoComplete, Tooltip } from "antd";
 import Button from "antd/es/button";
 import ButtonGroup from "antd/es/button/button-group";
 import Input from "antd/es/input";
@@ -36,55 +36,82 @@ import Response from "../../../server/common/response";
 import * as automationsController from "../../../server/controller/automations.controller";
 import {
   ACTIONS,
+  AmFormEditing,
   PageContext,
   PageState,
   useModel,
 } from "../../../store/modules/popup.store";
+import { parseScript } from "@src/helper/script";
 
 const { Option } = Select;
 
 export function AutomationsPanel() {
-  const { state, dispatch } = useContext(PageContext);
+  const { state } = useContext(PageContext);
   const { amFormEditing } = state;
+
   return (
     <div>
-      {amFormEditing ? (
-        <AutomationEditor />
-      ) : (
-        <ButtonGroup style={{ marginBottom: "10px" }}>
-          <MenuBtn
-            onClick={() =>
-              chrome.tabs.create({ url: "https://ihelpers.xyz/automations" })
-            }
-            icon={
-              <SearchOutlined
-                style={{ fontSize: "20px", cursor: "pointer" }}
-                translate="no"
-              />
-            }
-            label={t("get_new_automations")}
-          />
-
-          <MenuBtn
-            onClick={() =>
-              dispatch({
-                type: ACTIONS.AUTOMATION_FORM_UPDATE,
-                payload: { instructions: "", pattern: "" },
-              })
-            }
-            icon={
-              <PlusSquareOutlined
-                style={{ fontSize: "20px", cursor: "pointer" }}
-                translate="no"
-              />
-            }
-            styles={{ marginLeft: "10px" }}
-            label={t("add_new_automation")}
-          />
-        </ButtonGroup>
-      )}
+      {amFormEditing === AmFormEditing.Instruction && <AutomationEditor />}
+      {amFormEditing === AmFormEditing.Script && <ScriptsEditor />}
+      {amFormEditing === AmFormEditing.False && <Buttons />}
       <Automations />
     </div>
+  );
+}
+
+function Buttons() {
+  const { dispatch } = useContext(PageContext);
+
+  return (
+    <ButtonGroup style={{ marginBottom: "10px" }}>
+      <MenuBtn
+        onClick={() =>
+          chrome.tabs.create({ url: "https://ihelpers.xyz/automations" })
+        }
+        icon={
+          <SearchOutlined
+            style={{ fontSize: "20px", cursor: "pointer" }}
+            translate="no"
+          />
+        }
+        label={t("get_new_automations")}
+      />
+
+      <MenuBtn
+        onClick={() =>
+          dispatch({
+            type: ACTIONS.AUTOMATION_FORM_UPDATE,
+            payload: { instructions: "", pattern: "" },
+          })
+        }
+        icon={
+          <PlusSquareOutlined
+            style={{ fontSize: "20px", cursor: "pointer" }}
+            translate="no"
+          />
+        }
+        styles={{ marginLeft: "10px" }}
+        label={t("add_new_automation")}
+      />
+
+      <MenuBtn
+        onClick={() =>
+          dispatch({
+            type: ACTIONS.AUTOMATION_FORM_UPDATE,
+            payload: {},
+            editingMode: AmFormEditing.Script,
+          })
+        }
+        icon={
+          <PlusSquareOutlined
+            style={{ fontSize: "20px", cursor: "pointer" }}
+            translate="no"
+          />
+        }
+        styles={{ marginLeft: "10px" }}
+        label={t("add_new_script")}
+      />
+    </ButtonGroup>
   );
 }
 
@@ -102,6 +129,86 @@ function MenuBtn(props: {
     >
       {props.label}
     </Button>
+  );
+}
+
+function ScriptsEditor() {
+  const { dispatch, state } = useContext(PageContext);
+  const form = state.automationForm as PageState["automationForm"];
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [scripts, setScripts] = useState(form.scripts.trim());
+  const [saving, setSaving] = useState(false);
+  const onChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setScripts(event.target.value);
+  };
+  const onCancel = () => {
+    dispatch({ type: ACTIONS.AUTOMATION_FORM_CLOSE, payload: null });
+  };
+  const onTest = () => {
+    try {
+      const result = parseScript(scripts);
+      console.log("parse scripts result: ", result);
+      setError("");
+      setSuccess("parse successfully");
+
+      return result;
+    } catch (error) {
+      console.log(error);
+      setSuccess("");
+      setError(error.message);
+      return false;
+    }
+  };
+  const onSave = () => {
+    setSaving(true);
+    const result = onTest();
+    if (result) {
+      automationsController
+        .saveAutomation(
+          "",
+          scripts,
+          result[0].pattern,
+          result[0].runAt,
+          form.id
+        )
+        .then((resp) => {
+          if (resp.code === 0) {
+            setSaving(false);
+            dispatch({ type: ACTIONS.AUTOMATION_FORM_CLOSE, payload: null });
+            noticeBg({
+              action: PAGE_ACTIONS.REFRESH_AUTOMATIONS,
+            });
+          }
+        });
+    } else {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div>
+      {error && <Alert message={error} type="error" closable />}
+      {success && <Alert message={success} type="success" closable />}
+      <Input.TextArea
+        style={{ marginTop: "5px" }}
+        value={scripts}
+        onChange={onChange}
+        rows={5}
+        autoSize
+      />
+      <div className="am-editor-btns">
+        <Button onClick={() => onCancel()} style={{ marginRight: "10px" }}>
+          {t("cancel")}
+        </Button>
+        <Button onClick={() => onTest()} style={{ marginRight: "10px" }}>
+          {t("test")}
+        </Button>
+        <Button disabled={saving} onClick={() => onSave()}>
+          {t("save")}
+        </Button>
+      </div>
+    </div>
   );
 }
 
@@ -139,7 +246,7 @@ function AutomationEditor() {
     if (validateAmForm(instructions, pattern)) {
       setSaving(true);
       automationsController
-        .saveAutomation(instructions, pattern, form.runAt, form.id)
+        .saveAutomation(instructions, "", pattern, form.runAt, form.id)
         .then((resp) => {
           if (resp.code === 0) {
             setSaving(false);
@@ -324,7 +431,14 @@ const AutomationsColumns = [
   {
     title: t("instructions"),
     dataIndex: "instructions",
-    width: "180px",
+    width: "150px",
+    textWrap: "word-break",
+    ellipsis: true,
+  },
+  {
+    title: t("scripts"),
+    dataIndex: "scripts",
+    width: "150px",
     textWrap: "word-break",
     ellipsis: true,
   },
@@ -413,7 +527,13 @@ function EditBtn(props: { record: IAutomation }) {
       ...props.record,
       data,
     };
-    dispatch({ type: ACTIONS.AUTOMATION_FORM_UPDATE, payload: record });
+    dispatch({
+      type: ACTIONS.AUTOMATION_FORM_UPDATE,
+      payload: record,
+      editingMode: props.record.scripts
+        ? AmFormEditing.Script
+        : AmFormEditing.Instruction,
+    });
   }, []);
 
   return (

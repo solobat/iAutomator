@@ -5,14 +5,16 @@ import * as automationService from "../service/automations.service";
 
 export async function saveAutomation(
   instructions: string,
+  scripts: string,
   pattern: string,
   runAt: RunAt = RunAt.END,
   id?: number
 ): Promise<Response> {
-  if (instructions) {
+  if (instructions || scripts) {
     if (id) {
       const result = await automationService.update(id, {
         instructions,
+        scripts,
         pattern,
         runAt,
       });
@@ -21,6 +23,7 @@ export async function saveAutomation(
     } else {
       const result: number = await automationService.save(
         instructions,
+        scripts,
         runAt,
         pattern
       );

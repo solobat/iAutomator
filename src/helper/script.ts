@@ -9,7 +9,6 @@ export function parseScript(script: string) {
 
   if (tokens.length) {
     const automations = parseAutomations(trimStartLinebreaks(tokens), []);
-    console.log("parse script: ", automations);
 
     return automations;
   } else {
@@ -20,7 +19,7 @@ export function parseScript(script: string) {
 type ValueType = string | number | boolean;
 type EnvValueType = ValueType | ((env: Env) => valueType) | null;
 type EnvContent = [string, EnvValueType];
-class Env {
+export class Env {
   private prev: Env;
   private pair: EnvContent;
 
@@ -51,18 +50,19 @@ class Env {
   }
 }
 
-interface Instruction {
+export interface ScriptInstruction {
   action: string;
-  options: ExecOptions;
+  args: ExecOptions;
   scope?: string;
-  effect?: (options: ExecOptions, env: Env) => void;
+  effect?: (options: ExecOptions) => void;
   env: Env;
 }
 
-interface Automation {
-  path: string;
-  run_at: RunAt;
-  instructions: Instruction[];
+export interface ScriptAutomation {
+  id?: number;
+  pattern: string;
+  runAt: RunAt;
+  instructions: ScriptInstruction[];
   env: Env;
 }
 
@@ -84,8 +84,8 @@ const Keywords = [
 
 function parseAutomations(
   tokens: Token[],
-  automations: Automation[]
-): Automation[] {
+  automations: ScriptAutomation[]
+): ScriptAutomation[] {
   const { automationTokens, restTokens } = getAutomationTokens(tokens);
   const automation = parseAutomation(automationTokens);
 
@@ -135,14 +135,14 @@ function isLinebreak(token: Token) {
 }
 
 function isAutomationStart(token: Token) {
-  return token.type === "id" && token.text === "automation";
+  return token.type === "id" && token.value === "automation";
 }
 
 function isAutomationEnd(token: Token) {
-  return token.type === "id" && token.text === "end";
+  return token.type === "id" && token.value === "end";
 }
 
-function parseAutomation(tokens: Token[]): Automation {
+function parseAutomation(tokens: Token[]): ScriptAutomation {
   const env = new Env(["empty", null]);
   const { firstLine, rest } = getFirstLineTokens(tokens);
   const { urlRegStr, stage } = parseAutomationStart(firstLine, env);
@@ -150,8 +150,8 @@ function parseAutomation(tokens: Token[]): Automation {
   const instructions = parseAutomationBody(bodyTokens, env);
 
   return {
-    path: urlRegStr,
-    run_at: stage2runAt(stage),
+    pattern: urlRegStr,
+    runAt: stage2runAt(stage),
     instructions,
     env,
   };
@@ -196,7 +196,7 @@ function parseAutomationBody(tokens: Token[], env: Env) {
 
 function parseStatements(
   tokens: Token[],
-  instructions: Instruction[],
+  instructions: ScriptInstruction[],
   env: Env
 ) {
   const { firstLine, rest } = getFirstLineTokens(tokens);
@@ -213,7 +213,10 @@ function parseStatements(
   }
 }
 
-function parseStatement(tokens: Token[], env: Env): [Env, Instruction | void] {
+function parseStatement(
+  tokens: Token[],
+  env: Env
+): [Env, ScriptInstruction | void] {
   const firstToken = tokens[0];
 
   if (isAssignStatementStart(firstToken)) {
@@ -227,23 +230,23 @@ function parseStatement(tokens: Token[], env: Env): [Env, Instruction | void] {
   }
 }
 
-function parseApplyStatement(tokens: Token[], env: Env): Instruction {
+function parseApplyStatement(tokens: Token[], env: Env): ScriptInstruction {
   return parseApplyExp(tokens.slice(0, -1), env);
 }
 
-function parseApplyExp(tokens: Token[], env: Env) {
+function parseApplyExp(tokens: Token[], env: Env): ScriptInstruction {
   const { head, middle, tail } = getApplyExpParts(tokens);
   const headParams = parseApplyHeadExp(head, env);
   const middleParams = parseArgsPairsExp(middle, env);
-  const tailParams = parseApplyTailExp(tail, env);
+  const { scope } = parseApplyTailExp(tail, env);
 
   return {
     action: headParams.action,
-    options: {
+    args: {
       ...middleParams,
-      ...tailParams,
     },
     env,
+    scope,
   };
 }
 
@@ -279,7 +282,7 @@ function getApplyExpParts(tokens: Token[]) {
 }
 
 function parseNativeStatement(tokens: Token[], env: Env) {
-  const keyword = tokens[0].text;
+  const keyword = tokens[0].value;
 
   switch (keyword) {
     case "open":
@@ -307,14 +310,14 @@ function parseEmitStatement(tokens: Token[], env: Env) {
   return parseEmitExp(tokens.slice(0, -1), env);
 }
 
-function parseEmitExp(tokens: Token[], env: Env): Instruction {
+function parseEmitExp(tokens: Token[], env: Env): ScriptInstruction {
   const { head, tail } = getEmitExpParts(tokens);
   const headParams = parseEmitHeadExp(head, env);
   const tailParams = parseArgsPairsExp(tail, env);
 
   return {
     action: BUILDIN_ACTIONS.EVENT,
-    options: {
+    args: {
       ...headParams,
       ...tailParams,
       type: "emit",
@@ -457,12 +460,12 @@ function parseCloseStatement(tokens: Token[], env: Env) {
   return parseCloseExp(tokens.slice(0, -1), env);
 }
 
-function parseCloseExp(tokens: Token[], env: Env): Instruction {
+function parseCloseExp(tokens: Token[], env: Env): ScriptInstruction {
   const rules: Rule[] = [{ type: "id", keyword: "close" }];
 
   return {
     action: BUILDIN_ACTIONS.CLOSE_PAGE,
-    options: matchTokensWithRules(tokens, rules, env),
+    args: matchTokensWithRules(tokens, rules, env),
     env,
   };
 }
@@ -471,7 +474,7 @@ function parseWaitStatement(tokens: Token[], env: Env) {
   return parseWaitExp(tokens.slice(0, -1), env);
 }
 
-function parseWaitExp(tokens: Token[], env: Env): Instruction {
+function parseWaitExp(tokens: Token[], env: Env): ScriptInstruction {
   const rules: Rule[] = [
     { type: "id", keyword: "wait" },
     {
@@ -482,7 +485,7 @@ function parseWaitExp(tokens: Token[], env: Env): Instruction {
 
   return {
     action: BUILDIN_ACTIONS.WAIT,
-    options: matchTokensWithRules(tokens, rules, env),
+    args: matchTokensWithRules(tokens, rules, env),
     env,
   };
 }
@@ -491,12 +494,12 @@ function parseActiveStatement(tokens: Token[], env: Env) {
   return parseActiveExp(tokens.slice(0, -1), env);
 }
 
-function parseActiveExp(tokens: Token[], env: Env): Instruction {
+function parseActiveExp(tokens: Token[], env: Env): ScriptInstruction {
   const rules: Rule[] = [{ type: "id", keyword: "active" }];
 
   return {
     action: BUILDIN_ACTIONS.ACTIVE,
-    options: matchTokensWithRules(tokens, rules, env),
+    args: matchTokensWithRules(tokens, rules, env),
     env,
   };
 }
@@ -505,41 +508,41 @@ function parseOpenStatement(tokens: Token[], env: Env) {
   return parseOpenExp(tokens.slice(0, -1), env);
 }
 
-function parseOpenExp(tokens: Token[], env: Env): Instruction {
+function parseOpenExp(tokens: Token[], env: Env): ScriptInstruction {
   const rules: Rule[] = [
     { type: "id", keyword: "open" },
-    { type: "string", variableName: "urlStr" },
+    { type: "string", variableName: "url" },
     { type: "id", keyword: "as" },
-    { type: "string", variableName: "urlRegStr" },
+    { type: "string", variableName: "pattern" },
   ];
 
   return {
     action: BUILDIN_ACTIONS.OPEN_PAGE,
-    options: matchTokensWithRules(tokens, rules, env),
+    args: matchTokensWithRules(tokens, rules, env),
     env,
   };
 }
 
 function isAssignStatementStart(token: Token) {
-  return token.type === "id" && token.text === "set";
+  return token.type === "id" && token.value === "set";
 }
 
 function isNativeStatementStart(token: Token) {
   return (
     token.type === "id" &&
-    ["open", "active", "wait", "close", "emit", "listen"].includes(token.text)
+    ["open", "active", "wait", "close", "emit", "listen"].includes(token.value)
   );
 }
 
 function isApplyStatementStart(token: Token) {
-  return token.type === "id" && token.text === "apply";
+  return token.type === "id" && token.value === "apply";
 }
 
 function parseAssignStatement(
   tokens: Token[],
   env: Env
-): [Env, Instruction | void] {
-  const equalIndex = tokens.findIndex((token) => token.text === "=");
+): [Env, ScriptInstruction | void] {
+  const equalIndex = tokens.findIndex((token) => token.value === "=");
   const assignExpTokens = tokens.slice(0, equalIndex);
   const valuableExpTokens = tokens.slice(equalIndex + 1, -1);
   const variable = parseAssignExp(assignExpTokens, env);
@@ -565,7 +568,10 @@ function parseValuableExp(
   tokens: Token[],
   key: string,
   env: Env
-): { value: ValueType | ((env: Env) => ValueType); instruction?: Instruction } {
+): {
+  value: ValueType | ((env: Env) => ValueType);
+  instruction?: ScriptInstruction;
+} {
   const [first, ...rest] = tokens;
 
   if (isValue(first) && expectExpEnd(rest)) {
@@ -577,7 +583,8 @@ function parseValuableExp(
   } else if (isListenExpStart(first)) {
     const instruction = parseListenExp(tokens, env);
 
-    instruction.effect = (options: ExecOptions, env: Env) =>
+    // NOTE: a little hack, since the listen action is async
+    instruction.effect = (options: ExecOptions) =>
       env.update(key, options.value);
     return {
       value: null,
@@ -586,23 +593,25 @@ function parseValuableExp(
   }
 }
 
-function parseListenExp(tokens: Token[], env: Env): Instruction {
+function parseListenExp(tokens: Token[], env: Env): ScriptInstruction {
   const rules: Rule[] = [
     { type: "id", keyword: "listen" },
     { type: "string", variableName: "events" },
     { type: "id", keyword: "on" },
     { type: "string", variableName: "scope" },
   ];
+  const { scope, ...args } = matchTokensWithRules(tokens, rules, env);
 
   return {
     action: BUILDIN_ACTIONS.EVENT,
-    options: matchTokensWithRules(tokens, rules, env),
+    args,
     env,
+    scope,
   };
 }
 
 function isListenExpStart(token: Token) {
-  return token.type === "id" && token.text === "listen";
+  return token.type === "id" && token.value === "listen";
 }
 
 function expectExpEnd(tokens: Token[]) {
@@ -614,14 +623,14 @@ function expectExpEnd(tokens: Token[]) {
 }
 
 function parseValueExp(token: Token) {
-  const { type, text } = token;
+  const { type, value } = token;
 
   if (type === "number") {
-    return Number(text);
+    return value;
   } else if (type === "boolean") {
-    return text === "true";
+    return value;
   } else if (type === "string") {
-    return text;
+    return value;
   } else {
     throwError("parse value exp error: ", token);
   }
@@ -638,7 +647,7 @@ function isValue(token: Token) {
 }
 
 function isVariable(token: Token) {
-  return token.type === "id" && !Keywords.includes(token.text);
+  return token.type === "id" && !Keywords.includes(token.value);
 }
 
 function throwError(msg: string, token?: Token, rule?: Rule) {
@@ -713,8 +722,6 @@ export function tokenize(script: string) {
   lexer.input(script);
 
   const tokens = lexer.tokens();
-
-  console.log(tokens);
 
   return tokens;
 }
