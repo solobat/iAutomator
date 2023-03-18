@@ -7,15 +7,13 @@
 
 ---
 
-## Install
+## Installation
 
 - [Chrome Web Store](https://chrome.google.com/webstore/detail/ihelpers/hcnekoladldejmeindnhpjkfhjadcick)
 
 ## Docs
 - [IScript Documents](https://docs.ihelpers.xyz/)
 - [Types Documents](https://types.ihelpers.xyz/)
-
-### Videos
 
 ## Development
 

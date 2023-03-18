@@ -30,6 +30,7 @@ Statements are written inside an `automation` block and can be divided into the 
 - Execution statements
   - The format is: `apply "{actionName}" with (var1=1, var2=othervar, var=false, ...) on "CssSelector"`
   - The `apply` statement can execute all built-in `action`s, and essentially, shortcut statements can be rewritten by `apply` statements.
+  - `action` can be viewed in the [Action documentation](https://types.ihelpers.xyz/modules.html). 
 
 ## Example
 - Weibo Read-Mode

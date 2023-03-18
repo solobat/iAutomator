@@ -29,6 +29,7 @@ end
 - 执行语句
   - 格式为: `apply "{actionName}" with (var1=1, var2=othervar, var=false, ...) on "CssSelector"`
   - `apply` 语句可以执行所有内置的 `action`；本质上讲，快捷语句也都可以由 `apply` 语句改写。
+  - `action` 可以查看 [Action 文档](https://types.ihelpers.xyz/modules.html)
 
 
 ## 例子
