@@ -145,6 +145,7 @@ function MenuBtn(props: {
 }
 
 const defaultScript = `
+# example
 automation for "https://weibo.com/*" on "load"
   set excludes = ".Frame_wrap_16as0"
   apply "readMode" with (excludes=excludes)  on "#homeWrap"

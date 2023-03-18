@@ -71,8 +71,8 @@ const local_i18n = {
   },
 };
 
-// const lang = chrome.i18n.getUILanguage().replace("-", "_");
-const lang = "zh_CN";
+const lang = chrome.i18n.getUILanguage().replace("-", "_");
+// const lang = "zh_CN";
 
 function t(key: string): string {
   const texts = local_i18n[lang] ?? local_i18n.en;

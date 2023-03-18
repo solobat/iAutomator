@@ -2,5 +2,5 @@
   "entryPoints": [
     "src/builtin/*.ts",
   ],
-  "out": "docs"
+  "out": "typesdoc"
 }
