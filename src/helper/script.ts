@@ -1,28 +1,21 @@
 import { ExecOptions } from "@src/builtin/types";
 import { BUILDIN_ACTIONS } from "@src/common/const";
 import { RunAt } from "@src/server/enum/Automation.enum";
-import { CacheUtil } from "@src/utils/cache";
+import { withCache } from "@src/utils/cache";
 import { valueType } from "antd/lib/statistic/utils";
 import Tokenizr, { Token } from "tokenizr";
 
-const cacheUtil = CacheUtil<ScriptAutomation[]>();
-
-export function parseScript(script: string) {
-  const cache = cacheUtil.get(script);
-  if (cache.value) {
-    return cache.value;
-  }
+export const parseScript = withCache((script: string) => {
   const tokens = tokenize(script);
 
   if (tokens.length) {
     const automations = parseAutomations(trimStartLinebreaks(tokens), []);
 
-    cacheUtil.put(script, automations);
     return automations;
   } else {
     return [];
   }
-}
+});
 
 type ValueType = string | number | boolean;
 type EnvValueType = ValueType | ((env: Env) => valueType) | null;

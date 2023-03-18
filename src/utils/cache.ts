@@ -27,3 +27,29 @@ export function CacheUtil<T>() {
     put,
   };
 }
+
+function shouldCache<T>(res: T) {
+  return res != null || (Array.isArray(res) && res.length > 0);
+}
+
+export function withCache<T>(
+  fn: (key: string) => T,
+  options = { shouldCache }
+) {
+  const cacheUtil = CacheUtil<T>();
+
+  return function (key: string) {
+    const cache = cacheUtil.get(key);
+    if (cache.value) {
+      return cache.value;
+    }
+
+    const res = fn(key);
+
+    if (options.shouldCache(res)) {
+      cacheUtil.put(key, res);
+    }
+
+    return res;
+  };
+}
