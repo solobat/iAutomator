@@ -1,64 +1,91 @@
-@import 'antd/dist/antd.css';
+@import "antd/dist/antd.css";
 
 $primary-color: darkblue;
-$background-color: #BADA55;
+$background-color: #bada55;
 
 // Chrome applies an 8px margin by default (gross).
 body {
-    margin: 0px;
+  margin: 0px;
 }
 
 .popupContainer {
-    display: flex;
-    flex-direction: column;
-    height: 400px;
-    overflow: auto;
-    width: 800px;
-    padding: 10px;
+  display: flex;
+  flex-direction: column;
+  height: 400px;
+  overflow: auto;
+  width: 800px;
+  padding: 10px;
 }
 
 .tab-info {
-    flex: 1;
+  flex: 1;
 }
 
 .record-op-btns,
 .op-btns {
-    display: flex;
-    justify-content: space-evenly;
+  display: flex;
+  justify-content: space-evenly;
 
-    .anticon {
-        cursor: pointer;
-    }
+  .anticon {
+    cursor: pointer;
+  }
 }
 
 .am-editor {
-    margin: 10px 0;
+  margin: 10px 0;
 }
 
 .am-editor-fields {
-    margin-top: 5px;
-    display: flex;
+  margin-top: 5px;
+  display: flex;
 
-    .ant-select-auto-complete {
-        width: 400px;
-        margin-right: 10px;
-    }
+  .ant-select-auto-complete {
+    width: 400px;
+    margin-right: 10px;
+  }
 }
 
 .am-editor-btns {
-    margin-top: 8px;
+  margin-top: 8px;
 }
 
 .am-ins-editor-box {
-    border: 1px solid #ccc;
-    padding: 5px;
+  border: 1px solid #ccc;
+  padding: 5px;
 }
 
 .am-ins-editor {
-    margin-bottom: 5px;
+  margin-bottom: 5px;
 }
 
 .am-ins-editor-btns {
-    line-height: 32px;
-    margin-left: 5px;
+  line-height: 32px;
+  margin-left: 5px;
+}
+
+.editor {
+  counter-reset: line;
+  border: 1px solid #ced4da;
+}
+
+.editor textarea {
+  outline: none;
+  padding-left: 30px !important;
+}
+
+.editor pre {
+  padding-left: 30px !important;
+}
+
+.editor .editorLineNumber {
+  position: absolute;
+  left: 0px;
+  color: #cccccc;
+  text-align: right;
+  width: 20px;
+  font-weight: 600;
+}
+
+::selection {
+  background-color: rgb(24, 144, 255, 0.2);
 }

@@ -25,6 +25,7 @@ import { parseScript } from "../../src/helper/script";
 // });
 
 /*
+  # this is a comment
   automation for "https://baidu.com" on "load"
     set selector = ".main-content"
     set target = selector

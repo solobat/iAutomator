@@ -24,6 +24,7 @@ import { basicInstruction, InstructionData } from "@src/helper/instruction";
 import { getURLPatterns } from "@src/helper/url";
 import { IAutomation } from "@src/server/db/database";
 import Automation from "@src/server/model/Automation";
+import "prismjs/themes/prism.css";
 
 import {
   BUILDIN_ACTION_FIELD_CONFIGS,
@@ -41,9 +42,20 @@ import {
   PageState,
   useModel,
 } from "../../../store/modules/popup.store";
-import { parseScript } from "@src/helper/script";
+import { parseScript, iscript } from "@src/helper/script";
+import Editor from "react-simple-code-editor";
+import { Grammar, highlight } from "prismjs";
 
 const { Option } = Select;
+const hightlightWithLineNumbers = (
+  input: string,
+  grammar: Grammar,
+  language: string
+) =>
+  highlight(input, grammar, language)
+    .split("\n")
+    .map((line, i) => `<span class='editorLineNumber'>${i + 1}</span>${line}`)
+    .join("\n");
 
 export function AutomationsPanel() {
   const { state } = useContext(PageContext);
@@ -132,15 +144,28 @@ function MenuBtn(props: {
   );
 }
 
+const defaultScript = `
+automation for "https://weibo.com/*" on "load"
+  set excludes = ".Frame_wrap_16as0"
+  apply "readMode" with (excludes=excludes)  on "#homeWrap"
+end
+`;
+
 function ScriptsEditor() {
   const { dispatch, state } = useContext(PageContext);
   const form = state.automationForm as PageState["automationForm"];
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [scripts, setScripts] = useState(form.scripts.trim());
+  const [scripts, setScripts] = useState(
+    (form.scripts || defaultScript).trim()
+  );
   const [saving, setSaving] = useState(false);
-  const onChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setScripts(event.target.value);
+  const onCloseAlert = () => {
+    setError("");
+    setSuccess("");
+  };
+  const onChange = (value: string) => {
+    setScripts(value);
   };
   const onCancel = () => {
     dispatch({ type: ACTIONS.AUTOMATION_FORM_CLOSE, payload: null });
@@ -188,14 +213,31 @@ function ScriptsEditor() {
 
   return (
     <div>
-      {error && <Alert message={error} type="error" closable />}
-      {success && <Alert message={success} type="success" closable />}
-      <Input.TextArea
-        style={{ marginTop: "5px" }}
+      {error && (
+        <Alert message={error} type="error" closable onClose={onCloseAlert} />
+      )}
+      {success && (
+        <Alert
+          message={success}
+          type="success"
+          closable
+          onClose={onCloseAlert}
+        />
+      )}
+      <Editor
         value={scripts}
-        onChange={onChange}
-        rows={5}
-        autoSize
+        onValueChange={onChange}
+        highlight={(code) =>
+          hightlightWithLineNumbers(code, iscript, "iscript")
+        }
+        padding={10}
+        className="editor"
+        style={{
+          marginTop: "5px",
+          fontFamily: '"Fira code", "Fira Mono", monospace',
+          fontSize: 14,
+          outline: 0,
+        }}
       />
       <div className="am-editor-btns">
         <Button onClick={() => onCancel()} style={{ marginRight: "10px" }}>

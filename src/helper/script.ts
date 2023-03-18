@@ -1,15 +1,23 @@
 import { ExecOptions } from "@src/builtin/types";
 import { BUILDIN_ACTIONS } from "@src/common/const";
 import { RunAt } from "@src/server/enum/Automation.enum";
+import { CacheUtil } from "@src/utils/cache";
 import { valueType } from "antd/lib/statistic/utils";
 import Tokenizr, { Token } from "tokenizr";
 
+const cacheUtil = CacheUtil<ScriptAutomation[]>();
+
 export function parseScript(script: string) {
+  const cache = cacheUtil.get(script);
+  if (cache.value) {
+    return cache.value;
+  }
   const tokens = tokenize(script);
 
   if (tokens.length) {
     const automations = parseAutomations(trimStartLinebreaks(tokens), []);
 
+    cacheUtil.put(script, automations);
     return automations;
   } else {
     return [];
@@ -652,7 +660,7 @@ function isVariable(token: Token) {
 
 function throwError(msg: string, token?: Token, rule?: Rule) {
   throw new Error(
-    `${msg} ${token ? ["at", token.toString()].join("") : ""} ${
+    `${msg} ${token ? ["at", token.toString()].join(" ") : ""} ${
       rule ? ["with", JSON.stringify(rule)].join("") : ""
     }`
   );
@@ -691,6 +699,9 @@ function getFirstLineTokens(tokens: Token[]) {
 function createLexer() {
   const lexer = new Tokenizr();
 
+  lexer.rule(/(^|\s*)#.*/, (ctx) => {
+    ctx.ignore();
+  });
   lexer.rule(/[a-zA-Z_][a-zA-Z0-9_]*/, (ctx) => {
     ctx.accept("id");
   });
@@ -725,3 +736,49 @@ export function tokenize(script: string) {
 
   return tokens;
 }
+
+export const iscript = {
+  string: {
+    pattern: /"(?:[^"\\]|\\.)*"/,
+    greedy: true,
+  },
+  number: /(?:\b\d+(?:\.\d+)?|\B\.\d+)(?:[eE][+-]?\d+)?\b/,
+  comment: {
+    pattern: /(^|\s)#.*/,
+    greedy: true,
+  },
+  keyword: [
+    {
+      pattern: /automation\b/,
+      alias: "operator",
+    },
+    {
+      pattern: /end\b/,
+      alias: "operator",
+    },
+    {
+      pattern: /true|false\b/,
+      alias: "boolean",
+    },
+    {
+      pattern: /open\b|close\b|wait\b|active\b|listen\b|emit\b|apply\b/,
+      alias: "function",
+    },
+    {
+      pattern: /for\b|on\b|as\b|with\b/,
+      alias: "operator",
+    },
+    {
+      pattern: /set\b/,
+      alias: "variable",
+    },
+    {
+      pattern: /get\b/,
+      alias: "property",
+    },
+  ],
+  identifier: {
+    pattern: /[a-zA-Z_][a-zA-Z0-9_]*/,
+    alias: "variable",
+  },
+};
