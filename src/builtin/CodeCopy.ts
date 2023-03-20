@@ -1,6 +1,6 @@
 import $ from "jquery";
 
-import { BUILDIN_ACTIONS } from "../common/const";
+import { BUILTIN_ACTIONS } from "../common/const";
 import { copyToClipboard } from "../helper/others";
 import { Base } from "./Base";
 import { ActionHelper, ExecOptions } from "./types";
@@ -34,7 +34,7 @@ export interface CodeCopyExecOptions extends ExecOptions {
 }
 
 export class CodeCopy extends Base<CodeCopyExecOptions> {
-  name = BUILDIN_ACTIONS.CODE_COPY;
+  name = BUILTIN_ACTIONS.CODE_COPY;
   cls = "ext-hp-code-copy";
 
   private inited = false;

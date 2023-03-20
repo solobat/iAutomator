@@ -1,7 +1,7 @@
 import { mergeQuery, QFormat } from "@src/helper/url";
 import URLPattern from "url-pattern";
 
-import { BUILDIN_ACTIONS } from "../common/const";
+import { BUILTIN_ACTIONS } from "../common/const";
 import { Base } from "./Base";
 import { ExecOptions } from "./types";
 
@@ -31,7 +31,7 @@ export interface RedirectExecOptions extends ExecOptions {
 }
 
 export class Redirect extends Base {
-  name = BUILDIN_ACTIONS.REDIRECT;
+  name = BUILTIN_ACTIONS.REDIRECT;
 
   private redirectToNewURL(
     fromPatternStr: string,

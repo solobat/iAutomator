@@ -1,5 +1,5 @@
 import { GlobalEvents } from "@src/helper/event";
-import { BUILDIN_ACTIONS } from "../common/const";
+import { BUILTIN_ACTIONS } from "../common/const";
 import { Base } from "./Base";
 import { ExecOptions } from "./types";
 
@@ -8,7 +8,7 @@ export interface SingleTabExecOptions extends ExecOptions {
 }
 
 export class SingleTab extends Base {
-  name = BUILDIN_ACTIONS.SINGLE_TAB;
+  name = BUILTIN_ACTIONS.SINGLE_TAB;
 
   listenEvents() {
     this.helper.emitter.on(

@@ -1,10 +1,10 @@
-import { BUILDIN_ACTIONS } from "../common/const";
+import { BUILTIN_ACTIONS } from "../common/const";
 import { getHost } from "../helper/url";
 import { Base } from "./Base";
 import { ActionHelper, ExecOptions } from "./types";
 
 export class Download extends Base {
-  name = BUILDIN_ACTIONS.DOWNLOAD;
+  name = BUILTIN_ACTIONS.DOWNLOAD;
 
   private downloaded = true;
   private autoclose = false;

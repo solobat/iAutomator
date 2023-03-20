@@ -1,6 +1,6 @@
 import $ from "jquery";
 
-import { BUILDIN_ACTIONS } from "../common/const";
+import { BUILTIN_ACTIONS } from "../common/const";
 import { Base } from "./Base";
 import { ExecOptions } from "./types";
 
@@ -22,7 +22,7 @@ export interface BookmarkExecOptions extends ExecOptions {
 }
 
 export class Bookmark extends Base<BookmarkExecOptions> {
-  name = BUILDIN_ACTIONS.BOOKMARK;
+  name = BUILTIN_ACTIONS.BOOKMARK;
   cls = "ext-hp-bookmark";
 
   private $elem: JQuery<HTMLElement>;

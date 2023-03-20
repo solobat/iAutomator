@@ -1,11 +1,11 @@
 import $ from "jquery";
 
-import { BUILDIN_ACTIONS } from "../common/const";
+import { BUILTIN_ACTIONS } from "../common/const";
 import { Base } from "./Base";
 import { ExecOptions } from "./types";
 
 export class HashElement extends Base {
-  name = BUILDIN_ACTIONS.HASH_ELEMENT;
+  name = BUILTIN_ACTIONS.HASH_ELEMENT;
   cls = "ext-hp-hashed";
   style = `
   `;

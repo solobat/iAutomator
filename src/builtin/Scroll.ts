@@ -1,6 +1,6 @@
 import $ from "jquery";
 
-import { BUILDIN_ACTIONS, ROUTE_CHANGE_TYPE } from "../common/const";
+import { BUILTIN_ACTIONS, ROUTE_CHANGE_TYPE } from "../common/const";
 import { Base } from "./Base";
 import { ActionHelper, ExecOptions } from "./types";
 
@@ -19,7 +19,7 @@ function isAtBottom() {
 }
 
 export class Scroll extends Base<ScrollExecOptions> {
-  name = BUILDIN_ACTIONS.SCROLL;
+  name = BUILTIN_ACTIONS.SCROLL;
 
   constructor(helper: ActionHelper<Base>) {
     super(helper, {

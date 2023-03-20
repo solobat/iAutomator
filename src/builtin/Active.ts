@@ -1,10 +1,10 @@
 import { noticeBg } from "@src/helper/event";
-import { BUILDIN_ACTIONS, PAGE_ACTIONS } from "../common/const";
+import { BUILTIN_ACTIONS, PAGE_ACTIONS } from "../common/const";
 import { Base } from "./Base";
 import { ExecOptions } from "./types";
 
 export class ActivePage extends Base {
-  name = BUILDIN_ACTIONS.ACTIVE;
+  name = BUILTIN_ACTIONS.ACTIVE;
 
   execute(elem, options: Partial<ExecOptions>) {
     this.recordIfNeeded(options);

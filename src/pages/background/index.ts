@@ -8,8 +8,8 @@ import { show, warn } from "@src/utils/log";
 
 import {
   APP_ACTIONS,
-  BUILDIN_ACTION_CONFIGS,
-  BUILDIN_ACTIONS,
+  BUILTIN_ACTION_CONFIGS,
+  BUILTIN_ACTIONS,
   PAGE_ACTIONS,
   WEB_ACTIONS,
 } from "../../common/const";
@@ -178,12 +178,12 @@ function onNewNotice(data, handler: MsgHandlerFn) {
 }
 
 function onRunMethod(data, sender, handler: MsgHandlerFn) {
-  runMethod(sender.tab.id, BUILDIN_ACTIONS[data.command]);
+  runMethod(sender.tab.id, BUILTIN_ACTIONS[data.command]);
   handler("");
 }
 
 function onListActions(handler: MsgHandlerFn) {
-  const list = BUILDIN_ACTION_CONFIGS.filter((item) => item.asCommand);
+  const list = BUILTIN_ACTION_CONFIGS.filter((item) => item.asCommand);
 
   handler(list);
 }
@@ -270,7 +270,7 @@ function msgHandler(req: PageMsg, sender: chrome.runtime.MessageSender, resp) {
     onListActions(handler);
   } else if (action === PAGE_ACTIONS.EXEC_INSTRUCTIONS) {
     onExecInstructions(data, handler);
-  } else if (action === BUILDIN_ACTIONS.HIGHLIGHT_ENGLISH_SYNTAX) {
+  } else if (action === BUILTIN_ACTIONS.HIGHLIGHT_ENGLISH_SYNTAX) {
     onHightlighting(data, handler);
   } else if (action === PAGE_ACTIONS.CREATE_NOTE) {
     onCreateNote(data, handler);
@@ -344,7 +344,7 @@ function runMethod(tabId: number, method, data?) {
 
 function onContextMenuClicked(info: chrome.contextMenus.OnClickData) {
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    runMethod(tabs[0].id, BUILDIN_ACTIONS[info.menuItemId]);
+    runMethod(tabs[0].id, BUILTIN_ACTIONS[info.menuItemId]);
   });
 }
 
@@ -352,7 +352,7 @@ function initCommands() {
   show("initCommands::call");
 
   chrome.contextMenus.removeAll();
-  BUILDIN_ACTION_CONFIGS.filter((item) => item.asCommand).forEach((item) => {
+  BUILTIN_ACTION_CONFIGS.filter((item) => item.asCommand).forEach((item) => {
     chrome.contextMenus.create({
       id: item.name,
       title: item.title,

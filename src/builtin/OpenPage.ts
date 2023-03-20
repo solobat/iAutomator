@@ -1,6 +1,6 @@
 import { NOTICE_TARGET } from "@src/common/enum";
 import { PageType } from "@src/helper/url";
-import { BUILDIN_ACTIONS, PAGE_ACTIONS } from "../common/const";
+import { BUILTIN_ACTIONS, PAGE_ACTIONS } from "../common/const";
 import { Base } from "./Base";
 import { ExecOptions } from "./types";
 
@@ -26,7 +26,7 @@ export interface OpenPageExecOptions extends ExecOptions {
 }
 
 export class OpenPage extends Base<OpenPageExecOptions> {
-  name = BUILDIN_ACTIONS.OPEN_PAGE;
+  name = BUILTIN_ACTIONS.OPEN_PAGE;
 
   private NEW_PAGE_DELAY = 2000;
 

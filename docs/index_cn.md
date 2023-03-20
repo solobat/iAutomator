@@ -15,42 +15,266 @@
 ## 功能类型
 ### iHelpers 内置操作列表
 
-| 操作名称 | 操作文档 |
-| :--- | :--- |
-| 选中当前页面 | [`active`](https://types.ihelpers.xyz/modules/Active.html) |
-| 高亮英文语法 | [`highlightEnglishSyntax`](https://types.ihelpers.xyz/modules/HighlightEnglishSyntax.html) |
-| 移除元素 | [`killElement`](https://types.ihelpers.xyz/modules/KillElement.html) |
-| 阅读模式 | [`readMode`](https://types.ihelpers.xyz/modules/ReadMode.html) |
-| 全屏模式 | [`fullScreen`](https://types.ihelpers.xyz/modules/FullScreen.html) |
-| 代码块复制 | [`codeCopy`](https://types.ihelpers.xyz/modules/CodeCopy.html) |
-| 元素跳转 | [`gotoElement`](https://types.ihelpers.xyz/modules/GotoElement.html) |
-| 下载元素 | [`download`](https://types.ihelpers.xyz/modules/Download.html) |
-| 自动滚动 | [`scroll`](https://types.ihelpers.xyz/modules/Scroll.html) |
-| 等待 | [`wait`](https://types.ihelpers.xyz/modules/Wait.html) |
-| 页面跳转 | [`openPage`](https://types.ihelpers.xyz/modules/OpenPage.html) |
-| 允许复制 | [`allowCopying`](https://types.ihelpers.xyz/modules/AllowCopying.html) |
-| 设置值 | [`setValue`](https://types.ihelpers.xyz/modules/SetValue.html) |
-| 发送事件 | [`event`](https://types.ihelpers.xyz/modules/Event.html) |
-| 页面重定向 | [`redirect`](https://types.ihelpers.xyz/modules/Redirect.html) |
-| 滚动条记忆 | [`scrollbar`](https://types.ihelpers.xyz/modules/Scrollbar.html) |
-| 元素锚点化 | [`hashElement`](https://types.ihelpers.xyz/modules/HashElement.html) |
-| 单击元素 | [`click`](https://types.ihelpers.xyz/modules/Click.html) |
-| 笔记 | [`note`](https://types.ihelpers.xyz/modules/Note.html) |
-| 更改标题 | [`title`](https://types.ihelpers.xyz/modules/Title.html) |
-| 更改属性 | [`attributes`](https://types.ihelpers.xyz/modules/Attributes.html) |
-| 焦点 | [`focus`](https://types.ihelpers.xyz/modules/Focus.html) |
-| 保护页面 | [`protect`](https://types.ihelpers.xyz/modules/Protect.html) |
-| 画中画模式 | [`pictureInPicture`](https://types.ihelpers.xyz/modules/PictureInPicture.html) |
-| 暗黑模式 | [`darkMode`](https://types.ihelpers.xyz/modules/DarkMode.html) |
-| 大纲 | [`outline`](https://types.ihelpers.xyz/modules/Outline.html) |
-| 按钮 | [`button`](https://types.ihelpers.xyz/modules/Button.html) |
-| 书签 | [`bookmark`](https://types.ihelpers.xyz/modules/Bookmark.html) |
-| 刷新 | [`reload`](https://types.ihelpers.xyz/modules/Reload.html) |
-| 关闭当前页面 | [`closePage`](https://types.ihelpers.xyz/modules/ClosePage.html) |
-| 单标签 | [`singleTab`](https://types.ihelpers.xyz/modules/)
+#### Reload
+
+在指定的间隔时间内重新加载当前页面，并在指定的启动条件和停止条件下执行。
+
+| 参数 | 描述 | 类型 | 默认值 | 示例 |
+| --- | --- | --- | --- | --- |
+| interval | 重新加载的时间间隔。 | number | 5 | 10 |
+| start | 当存在指定元素时开始重新加载。 | string | "" | ".my-class" |
+| stop | 当存在指定元素时停止重新加载。 | string | "" | "#my-id" |
+
+---
+
+#### Read Mode
+
+在当前页面启用阅读模式。
+
+| 参数 | 描述 | 类型 | 默认值 | 示例 |
+| --- | --- | --- | --- | --- |
+| metaKey | 是否使用 meta 键（例如 Windows 上的 Ctrl 键或 Mac 上的 Command 键）启用阅读模式。 | boolean | false | true |
+
+---
+
+#### Dark Mode
+
+将当前页面切换为暗模式。
+
+| 参数 | 描述 | 类型 | 默认值 | 示例 |
+| --- | --- | --- | --- | --- |
+| long | 经度。 | number | | 121.4737 |
+| lat | 纬度。 | number | | 31.2304 |
+| system | 是否跟随系统主题应用暗模式。 | boolean | false | true |
+
+---
+
+#### Bookmark
+
+在当前页面上标记目标项目。
+
+| 参数 | 描述 | 类型 | 默认值 | 示例 |
+| --- | --- | --- | --- | --- |
+| item | 目标项目的 CSS 选择器。 | string | | ".my-class" |
+| refresh | 刷新类型：auto（自动）| manual（手动）| string | "manual" | "manual" |
+| notify | 是否在标题上通知。 | boolean | true | true |
+
+---
+
+#### Code Copy
+
+从当前页面复制代码。
+
+| 参数 | 描述 | 类型 | 默认值 | 示例 |
+| --- | --- | --- | --- | --- |
+| inpre | 复制 `<pre>` 标签的子元素。 | boolean | false | true |
+| pre | 复制 `<pre>` 标签。 | boolean | false | true |
+| rm | 要删除的元素。 | string | "" | ".my-class" |
+| pos | 复制按钮的位置。 | string | "tl" | "tr" |
+
+#### Click
+
+触发一个元素的点击事件。
+
+---
+
+#### Focus
+
+将焦点设置到指定的元素上。
+
+| 参数 | 描述 | 类型 | 默认值 | 示例 |
+| --- | --- | --- | --- | --- |
+| blur | 是否在设置焦点后将焦点移开。 | boolean | false | true |
+
+---
+
+#### Note
+
+创建一条注释或评论。
+
+| 参数 | 描述 | 类型 | 默认值 | 示例 |
+| --- | --- | --- | --- | --- |
+| value | 注释内容。 | string | "" | "这是一条注释。" |
+| isComment | 是否将注释保存为评论。 | boolean | false | true |
+
+---
+
+#### Set title
+
+设置页面的标题。
+
+| 参数 | 描述 | 类型 | 示例 |
+| --- | --- | --- | --- |
+| title | 标题文本。 | string | "新标题" |
+
+---
+
+#### Attributes
+
+修改元素的属性。
+
+| 参数 | 描述 | 类型 | 示例 |
+| --- | --- | --- | --- |
+| name | 属性名称。 | string | "class" |
+| value | 属性的值。 | string | "my-class" |
+
+---
+
+#### Scrollbar position
+
+设置滚动条的位置。
+
+| 参数 | 描述 | 类型 | 示例 |
+| --- | --- | --- | --- |
+| delay | 滚动开始前的延迟时间（秒）。| number | 1 |
+
+#### Event
+
+监听或触发一个事件。
+
+| 参数 | 描述 | 类型 | 默认值 | 示例 |
+| --- | --- | --- | --- | --- |
+| events | 事件的名称。 | string | | "click" |
+| selector | 目标元素的 CSS 选择器。 | string | | ".my-class" |
+| type | 动作的类型：监听或触发。 | string | "listen" | "emit" |
+
+#### 设置值
+
+设置输入元素的值。
+
+| 参数 | 描述 | 类型 | 默认值 | 示例 |
+| --- | --- | --- | --- | --- |
+| value | 要设置的值。 | string | "" | "Hello World." |
+
+---
+
+#### 激活
+
+激活当前页面。
+
+---
+
+#### 滚动
+
+滚动页面。
+
+| 参数 | 描述 | 类型 | 默认值 | 示例 |
+| --- | --- | --- | --- | --- |
+| speed | 滚动速度，以 px/s 为单位。 | number | 20 | 30 |
+
+---
+
+#### 按钮
+
+创建一个可自定义的按钮。
+
+| 参数 | 描述 | 类型 | 默认值 | 示例 |
+| --- | --- | --- | --- | --- |
+| type | 按钮类型。可用类型有：{top|toggle|shortcut|translate}。 | string | "" | "toggle" |
+| item | 项目的 CSS 选择器。 | string | "" | ".my-class" |
+| pos | 按钮的位置。 | string | "" | "tr" |
+| mh | 按钮的最小高度。 | string | 35 | 50 |
+
+#### 大纲
+
+勾画出当前页面的主要标题。
+
+|  名称  |         描述          | 类型 |  默认值  |
+|:------:|:---------------------------:|:----:|:---------:|
+|   -    |             -               |  -   |     -     |
+
+#### Redirect
+
+重定向当前页面到另一个页面。
+
+| 名称 | 描述 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| from | 要重定向的页面路径模式 | string | - |
+| to | 重定向后的页面路径模式 | string | - |
+| host | 要重定向到的页面的主机名 | string | - |
+| query | 新 URL 的查询参数字符串 | string | - |
+| qformat | 查询参数格式，可以是 'arr' 或 'default' | string | - |
+
+#### Allow Copying
+
+启用复制文本和其他内容。
+
+| 名称 | 描述 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| - | - | - | - |
+
+#### Zen Mode
+
+隐藏页面上的所有元素，只留下一个定义的文本和背景。
+
+| 名称 | 描述 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| word | 要显示的文本 | string | Zen |
+| delay | 显示页面前的延迟时间（秒）| string | 0（立即显示）|
+| bgcolor | 背景颜色 | string | #35363a |
+| color | 字体颜色 | string | #ffffff |
+
+#### Start PIP Mode
+
+启动画中画模式，允许您在其他窗口上方浮动地观看视频。
+
+| 名称 | 描述 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| - | - | - | - |
+
+#### Hash Element
+
+为页面上的一个或多个元素添加锚点。
+
+| 名称 | 描述 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| - | - | - | - |
+
+#### Time Update
+
+为 HTML5 视频添加时间标签。
+
+| 名称 | 描述 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| - | - | - | - |
+
+#### Goto Element
+
+自动导航到页面上的目标元素。
+
+| 名称 | 描述 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| auto | 是否自动导航到目标元素 | boolean | false |
+| to | 目标元素的 CSS 选择器 | string | - |
+| order | 导航目标元素的顺序，可以是升序（'asc'）或降序（'desc'）| string | 升序 |
+| handle | 目标元素的处理函数 | string | - |
+
+#### Single Tab
+
+为指定的 URL 打开一个标签页。
+
+| 名称 | 描述 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| path | 路径 | string | - |
+
+#### Wait
+
+等待指定时间
+
+|  名称  |         描述          |    类型   | 默认值 |
+|:-------:|:---------------------------:|:---------:|:-------:|
+|  time   | 等待的时间，以秒为单位 |  number  |    1    |
+
+#### Close Page
+
+关闭当前页面
+
+|  名称  |         描述          | 类型 |  默认值  |
+|:------:|:---------------------------:|:----:|:---------:|
+|   -    |             -               |  -   |     -     |
 
 ## 文档
-- [IScript 脚本文档](https://docs.ihelpers.xyz/)
+- [IScript 脚本文档](./IScript.md)
 - [类型文档](https://types.ihelpers.xyz/)
 - [Youtube 视频](https://www.youtube.com/watch?v=L7DpcRtkq2U)
 

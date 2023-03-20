@@ -1,9 +1,9 @@
-import { BUILDIN_ACTIONS } from "../common/const";
+import { BUILTIN_ACTIONS } from "../common/const";
 import { Base } from "./Base";
 import { ExecOptions } from "./types";
 
 export class ClickElement extends Base {
-  name = BUILDIN_ACTIONS.CLICK;
+  name = BUILTIN_ACTIONS.CLICK;
 
   execute(elem, options: Partial<ExecOptions>) {
     elem.click();

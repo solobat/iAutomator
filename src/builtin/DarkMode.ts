@@ -1,6 +1,6 @@
 import $ from "jquery";
 
-import { BUILDIN_ACTIONS } from "../common/const";
+import { BUILTIN_ACTIONS } from "../common/const";
 import { isDark } from "../helper/sun";
 import { Base } from "./Base";
 import { ActionHelper, ExecOptions } from "./types";
@@ -21,7 +21,7 @@ export interface DarkModeOptions extends ExecOptions {
 }
 
 export class DarkMode extends Base<DarkModeOptions> {
-  name = BUILDIN_ACTIONS.DARK_MODE;
+  name = BUILTIN_ACTIONS.DARK_MODE;
 
   private theme = "sh-dm-dark-mode";
 

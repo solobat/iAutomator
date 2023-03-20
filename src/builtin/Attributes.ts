@@ -1,5 +1,5 @@
 import $ from "jquery";
-import { BUILDIN_ACTIONS } from "../common/const";
+import { BUILTIN_ACTIONS } from "../common/const";
 import { Base } from "./Base";
 
 export interface ModifyAttributesExecOptions {
@@ -7,7 +7,7 @@ export interface ModifyAttributesExecOptions {
 }
 
 export class ModifyAttributes extends Base<ModifyAttributesExecOptions> {
-  name = BUILDIN_ACTIONS.ATTRIBUTES;
+  name = BUILTIN_ACTIONS.ATTRIBUTES;
 
   private modify(
     elem: HTMLElement,

@@ -1,12 +1,12 @@
 import $ from "jquery";
 import keyboardJS from "keyboardjs";
 
-import { BUILDIN_ACTIONS } from "../common/const";
+import { BUILTIN_ACTIONS } from "../common/const";
 import { Base } from "./Base";
 import { ActionHelper, ExecOptions } from "./types";
 
 export class ReadMode extends Base {
-  name = BUILDIN_ACTIONS.READ_MODE;
+  name = BUILTIN_ACTIONS.READ_MODE;
   cls = "s-a-rm-hn";
   private excludeSelectors = [
     "#steward-main",

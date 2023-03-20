@@ -1,11 +1,11 @@
 import throttle from "lodash/throttle";
 
-import { BUILDIN_ACTIONS } from "../common/const";
+import { BUILTIN_ACTIONS } from "../common/const";
 import { Base } from "./Base";
 import { ActionHelper, ExecOptions } from "./types";
 
 export class TimeUpdate extends Base {
-  name = BUILDIN_ACTIONS.TIME_UPDATE;
+  name = BUILTIN_ACTIONS.TIME_UPDATE;
 
   constructor(helper: ActionHelper<Base>) {
     super(helper, {

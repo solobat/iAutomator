@@ -1,6 +1,6 @@
 import { createContext, useContext } from "react";
 
-import { BUILDIN_ACTIONS } from "@src/common/const";
+import { BUILTIN_ACTIONS } from "@src/common/const";
 import { InstructionData } from "@src/helper/instruction";
 import { IShortcut } from "@src/server/db/database";
 
@@ -113,7 +113,7 @@ export interface AutomationForm {
 
 function getDefaultNewIns() {
   return {
-    action: BUILDIN_ACTIONS.READ_MODE,
+    action: BUILTIN_ACTIONS.READ_MODE,
     rawArgs: "",
     scope: "body",
   };

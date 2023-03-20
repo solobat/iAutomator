@@ -1,4 +1,4 @@
-import { BUILDIN_ACTIONS } from "../common/const";
+import { BUILTIN_ACTIONS } from "../common/const";
 import { Base } from "./Base";
 import { ExecOptions } from "./types";
 
@@ -7,7 +7,7 @@ interface SetTitleExecOptions extends ExecOptions {
 }
 
 export class SetTitle extends Base {
-  name = BUILDIN_ACTIONS.TITLE;
+  name = BUILTIN_ACTIONS.TITLE;
 
   execute(elem, options: Partial<SetTitleExecOptions>) {
     let title = "";

@@ -1,7 +1,7 @@
 import { isFromSE, isParamEqual } from "@src/helper/url";
 import $ from "jquery";
 
-import { BUILDIN_ACTIONS } from "../common/const";
+import { BUILTIN_ACTIONS } from "../common/const";
 import { Base } from "./Base";
 import { ExecOptions } from "./types";
 
@@ -25,7 +25,7 @@ export interface ZenModeExecOptions extends ExecOptions {
 }
 
 export class ZenMode extends Base<ZenModeExecOptions> {
-  name = BUILDIN_ACTIONS.ZEN_MODE;
+  name = BUILTIN_ACTIONS.ZEN_MODE;
   cls = "sh-zm-layer";
   style = ``;
 

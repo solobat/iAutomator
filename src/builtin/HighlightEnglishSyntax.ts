@@ -1,12 +1,12 @@
 import $ from "jquery";
 
-import { BUILDIN_ACTIONS } from "../common/const";
+import { BUILTIN_ACTIONS } from "../common/const";
 import { NOTICE_TARGET } from "../common/enum";
 import { Base } from "./Base";
 import { ActionHelper } from "./types";
 
 export class HighlightEnglishSyntax extends Base {
-  name = BUILDIN_ACTIONS.HIGHLIGHT_ENGLISH_SYNTAX;
+  name = BUILTIN_ACTIONS.HIGHLIGHT_ENGLISH_SYNTAX;
 
   constructor(helper: ActionHelper<Base>) {
     super(helper, {
@@ -21,7 +21,7 @@ export class HighlightEnglishSyntax extends Base {
       const text = $elem[0].innerText;
       if (text) {
         this.helper.invoke(
-          BUILDIN_ACTIONS.HIGHLIGHT_ENGLISH_SYNTAX,
+          BUILTIN_ACTIONS.HIGHLIGHT_ENGLISH_SYNTAX,
           {
             text,
           },

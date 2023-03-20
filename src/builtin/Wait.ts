@@ -1,4 +1,4 @@
-import { BUILDIN_ACTIONS } from "../common/const";
+import { BUILTIN_ACTIONS } from "../common/const";
 import { Base } from "./Base";
 import { ExecOptions } from "./types";
 
@@ -7,7 +7,7 @@ export interface WaitExecOptions extends ExecOptions {
 }
 
 export class Wait extends Base {
-  name = BUILDIN_ACTIONS.WAIT;
+  name = BUILTIN_ACTIONS.WAIT;
 
   execute(_, options: Partial<WaitExecOptions>) {
     const { time = 0 } = options;

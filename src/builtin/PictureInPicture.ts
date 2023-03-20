@@ -1,10 +1,10 @@
-import { BUILDIN_ACTIONS, PAGE_ACTIONS } from "../common/const";
+import { BUILTIN_ACTIONS, PAGE_ACTIONS } from "../common/const";
 import { noticeBg } from "../helper/event";
 import { Base } from "./Base";
 import { ActionHelper, ExecOptions } from "./types";
 
 export class PictureInPicture extends Base {
-  name = BUILDIN_ACTIONS.PICTURE_IN_PICTURE;
+  name = BUILTIN_ACTIONS.PICTURE_IN_PICTURE;
 
   private started = false;
 

@@ -2,7 +2,7 @@ import "is-in-viewport";
 
 import $ from "jquery";
 
-import { BUILDIN_ACTIONS } from "../common/const";
+import { BUILTIN_ACTIONS } from "../common/const";
 import { Base } from "./Base";
 import { ExecOptions } from "./types";
 
@@ -15,7 +15,7 @@ interface OutlineNode {
 }
 
 export class Outline extends Base {
-  name = BUILDIN_ACTIONS.OUTLINE;
+  name = BUILTIN_ACTIONS.OUTLINE;
   cls = "ext-hp-outline";
   style = ``;
 

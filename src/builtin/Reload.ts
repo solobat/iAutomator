@@ -1,4 +1,4 @@
-import { BUILDIN_ACTIONS } from "../common/const";
+import { BUILTIN_ACTIONS } from "../common/const";
 import { Base } from "./Base";
 import { ExecOptions } from "./types";
 import "is-in-viewport";
@@ -11,7 +11,7 @@ export interface ReloadPageExecOptions extends ExecOptions {
 }
 
 export class ReloadPage extends Base {
-  name = BUILDIN_ACTIONS.RELOAD;
+  name = BUILTIN_ACTIONS.RELOAD;
 
   private elemExist(selector: string) {
     return $(selector).length > 0 && $(selector).is(":in-viewport");

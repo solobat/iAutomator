@@ -1,5 +1,5 @@
 import { ExecOptions } from "@src/builtin/types";
-import { BUILDIN_ACTIONS } from "@src/common/const";
+import { BUILTIN_ACTIONS } from "@src/common/const";
 import { RunAt } from "@src/server/enum/Automation.enum";
 import { withCache } from "@src/utils/cache";
 import { valueType } from "antd/lib/statistic/utils";
@@ -317,7 +317,7 @@ function parseEmitExp(tokens: Token[], env: Env): ScriptInstruction {
   const tailParams = parseArgsPairsExp(tail, env);
 
   return {
-    action: BUILDIN_ACTIONS.EVENT,
+    action: BUILTIN_ACTIONS.EVENT,
     args: {
       ...headParams,
       ...tailParams,
@@ -465,7 +465,7 @@ function parseCloseExp(tokens: Token[], env: Env): ScriptInstruction {
   const rules: Rule[] = [{ type: "id", keyword: "close" }];
 
   return {
-    action: BUILDIN_ACTIONS.CLOSE_PAGE,
+    action: BUILTIN_ACTIONS.CLOSE_PAGE,
     args: matchTokensWithRules(tokens, rules, env),
     env,
   };
@@ -485,7 +485,7 @@ function parseWaitExp(tokens: Token[], env: Env): ScriptInstruction {
   ];
 
   return {
-    action: BUILDIN_ACTIONS.WAIT,
+    action: BUILTIN_ACTIONS.WAIT,
     args: matchTokensWithRules(tokens, rules, env),
     env,
   };
@@ -499,7 +499,7 @@ function parseActiveExp(tokens: Token[], env: Env): ScriptInstruction {
   const rules: Rule[] = [{ type: "id", keyword: "active" }];
 
   return {
-    action: BUILDIN_ACTIONS.ACTIVE,
+    action: BUILTIN_ACTIONS.ACTIVE,
     args: matchTokensWithRules(tokens, rules, env),
     env,
   };
@@ -518,7 +518,7 @@ function parseOpenExp(tokens: Token[], env: Env): ScriptInstruction {
   ];
 
   return {
-    action: BUILDIN_ACTIONS.OPEN_PAGE,
+    action: BUILTIN_ACTIONS.OPEN_PAGE,
     args: matchTokensWithRules(tokens, rules, env),
     env,
   };
@@ -604,7 +604,7 @@ function parseListenExp(tokens: Token[], env: Env): ScriptInstruction {
   const { scope, ...args } = matchTokensWithRules(tokens, rules, env);
 
   return {
-    action: BUILDIN_ACTIONS.EVENT,
+    action: BUILTIN_ACTIONS.EVENT,
     args,
     env,
     scope,

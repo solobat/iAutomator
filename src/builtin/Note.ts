@@ -1,5 +1,5 @@
 import { NOTICE_TARGET } from "@src/common/enum";
-import { BUILDIN_ACTIONS, PAGE_ACTIONS } from "../common/const";
+import { BUILTIN_ACTIONS, PAGE_ACTIONS } from "../common/const";
 import { Base } from "./Base";
 import { ExecOptions } from "./types";
 
@@ -11,7 +11,7 @@ const NID_KEY = "ihelpers_nid";
 const NID_KEY_CONTENT = "ihelpers_nid_content";
 
 export class CreateNote extends Base {
-  name = BUILDIN_ACTIONS.NOTE;
+  name = BUILTIN_ACTIONS.NOTE;
 
   private create(content: string, isComment: boolean, nid?: number) {
     const data = {

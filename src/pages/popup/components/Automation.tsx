@@ -28,7 +28,7 @@ import "prismjs/themes/prism.css";
 
 import {
   BUILDIN_ACTION_FIELD_CONFIGS,
-  BUILDIN_ACTIONS,
+  BUILTIN_ACTIONS,
   PAGE_ACTIONS,
 } from "../../../common/const";
 import { matchAutomations } from "../../../helper/automations";
@@ -145,7 +145,7 @@ function MenuBtn(props: {
 }
 
 const defaultScript = `
-# example
+# example, see: https://docs.ihelpers.xyz/IScript_en.html
 automation for "https://weibo.com/*" on "load"
   set excludes = ".Frame_wrap_16as0"
   apply "readMode" with (excludes=excludes)  on "#homeWrap"
@@ -405,7 +405,7 @@ function InstructionEditor(props: {
       <Select
         style={{ width: 150 }}
         value={form.action}
-        defaultValue={BUILDIN_ACTIONS.READ_MODE}
+        defaultValue={BUILTIN_ACTIONS.READ_MODE}
         onChange={(value) => {
           onAmFormInsChange(
             {

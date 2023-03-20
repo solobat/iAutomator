@@ -2,7 +2,7 @@ import $ from "jquery";
 
 import { GlobalEvents } from "@src/helper/event";
 
-import { BUILDIN_ACTIONS } from "../common/const";
+import { BUILTIN_ACTIONS } from "../common/const";
 import { Base } from "./Base";
 import { ExecOptions } from "./types";
 import { Env } from "@src/helper/script";
@@ -14,7 +14,7 @@ export interface EventExecOptions extends ExecOptions {
 }
 
 export class OnEvent extends Base {
-  name = BUILDIN_ACTIONS.EVENT;
+  name = BUILTIN_ACTIONS.EVENT;
 
   private normalizeEvent<T = ClipboardEvent | Event>(event): T {
     return event.originalEvent ? event.originalEvent : event;

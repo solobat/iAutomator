@@ -1,6 +1,6 @@
 import $ from "jquery";
 
-import { BUILDIN_ACTIONS } from "../common/const";
+import { BUILTIN_ACTIONS } from "../common/const";
 import { Base } from "./Base";
 import { ExecOptions } from "./types";
 
@@ -39,7 +39,7 @@ function translate(text: string, target: string) {
 }
 
 export class Button extends Base {
-  name = BUILDIN_ACTIONS.BUTTON;
+  name = BUILTIN_ACTIONS.BUTTON;
   cls = "ext-hp-btn";
 
   private targetLang = chrome.i18n.getUILanguage();

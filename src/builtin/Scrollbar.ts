@@ -1,4 +1,4 @@
-import { BUILDIN_ACTIONS } from "../common/const";
+import { BUILTIN_ACTIONS } from "../common/const";
 import { Base } from "./Base";
 import { ExecOptions } from "./types";
 
@@ -12,7 +12,7 @@ const SCROLLY_KEY = "ex-hp-scrolly";
 const SCROLL_PAGE_URL_KEY = "ex-hp-scroll-pageurl";
 
 export class ScrollbarPosition extends Base<ScrollbarExecOptions> {
-  name = BUILDIN_ACTIONS.SCROLLBAR;
+  name = BUILTIN_ACTIONS.SCROLLBAR;
 
   private makeScrolling(options: Partial<ScrollbarExecOptions>) {
     const { delay = 0 } = options;

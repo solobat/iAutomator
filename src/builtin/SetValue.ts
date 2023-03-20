@@ -1,4 +1,4 @@
-import { BUILDIN_ACTIONS } from "../common/const";
+import { BUILTIN_ACTIONS } from "../common/const";
 import { Base } from "./Base";
 import { ExecOptions } from "./types";
 
@@ -7,7 +7,7 @@ export interface SetValueExecOptions extends ExecOptions {
 }
 
 export class SetValue extends Base {
-  name = BUILDIN_ACTIONS.SET_VALUE;
+  name = BUILTIN_ACTIONS.SET_VALUE;
 
   execute(elem, options: Partial<SetValueExecOptions>) {
     if (options.value) {

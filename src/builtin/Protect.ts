@@ -1,9 +1,9 @@
-import { BUILDIN_ACTIONS } from "../common/const";
+import { BUILTIN_ACTIONS } from "../common/const";
 import { Base } from "./Base";
 import { ActionHelper, ExecOptions } from "./types";
 
 export class ProtectPage extends Base {
-  name = BUILDIN_ACTIONS.PROTECT;
+  name = BUILTIN_ACTIONS.PROTECT;
   private rawTitle: string;
 
   constructor(helper: ActionHelper<Base>) {

@@ -123,7 +123,9 @@ export const ROUTE_CHANGE_TYPE = {
   PUSH_STATE: "pushstate",
 };
 
-export const BUILDIN_ACTIONS = {
+export type BuiltInActionName = keyof typeof BUILTIN_ACTIONS;
+
+export const BUILTIN_ACTIONS = {
   HIGHLIGHT_ENGLISH_SYNTAX: "highlightEnglishSyntax",
   KILL_ELEMENT: "killElement",
   READ_MODE: "readMode",
@@ -159,11 +161,19 @@ export const BUILDIN_ACTIONS = {
   CLOSE_PAGE: "closePage",
 };
 
-export const BUILDIN_ACTION_CONFIGS = [
+type CommandContext = "all";
+export interface BuildInActionConfig {
+  name: BuiltInActionName;
+  title: string;
+  contexts: CommandContext[]; // 定义具体类型
+  asCommand: boolean;
+}
+
+export const BUILTIN_ACTION_CONFIGS: BuildInActionConfig[] = [
   {
     name: "READ_MODE",
     title: t("read_mode"),
-    contexts: ["all"] as any[],
+    contexts: ["all"],
     asCommand: true,
   },
   {
@@ -337,25 +347,25 @@ export interface BUILDIN_ACTION_FIELD_CONFIG {
 
 export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
   {
-    value: BUILDIN_ACTIONS.RELOAD,
+    value: BUILTIN_ACTIONS.RELOAD,
     label: t("reload"),
     args: [
       {
-        tips: "the interval to reload",
+        tips: "The interval at which to reload.",
         name: "interval",
         type: "number",
         value: 5,
         defaultValue: 5,
       },
       {
-        tips: "start to reload while the element exists",
+        tips: "Start reloading when the element exists.",
         name: "start",
         type: "string",
         value: "",
         defaultValue: "",
       },
       {
-        tips: "stop to reload while the element exists",
+        tips: "Stop reloading when the element exists.",
         name: "stop",
         type: "string",
         value: "",
@@ -364,11 +374,11 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
     ],
   },
   {
-    value: BUILDIN_ACTIONS.READ_MODE,
+    value: BUILTIN_ACTIONS.READ_MODE,
     label: t("read_mode"),
     args: [
       {
-        tips: "metaKey",
+        tips: "Whether to enable read mode using meta key (e.g. Ctrl key on Windows or Command key on Mac).",
         name: "metaKey",
         type: "boolean",
         value: false,
@@ -377,7 +387,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
     ],
   },
   {
-    value: BUILDIN_ACTIONS.DARK_MODE,
+    value: BUILTIN_ACTIONS.DARK_MODE,
     label: t("dark_mode"),
     args: [
       {
@@ -391,7 +401,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         type: "number",
       },
       {
-        tips: "Follow the theme of the system",
+        tips: "Follow the system theme for applying the dark mode",
         name: "system",
         type: "boolean",
         defaultValue: false,
@@ -400,7 +410,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
     ],
   },
   {
-    value: BUILDIN_ACTIONS.BOOKMARK,
+    value: BUILTIN_ACTIONS.BOOKMARK,
     label: t("bookmark"),
     args: [
       {
@@ -426,25 +436,25 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
   },
 
   {
-    value: BUILDIN_ACTIONS.CODE_COPY,
+    value: BUILTIN_ACTIONS.CODE_COPY,
     label: t("code_copy"),
     args: [
       {
-        tips: "child of <pre> tag",
+        tips: "The child of the <pre> tag to copy",
         name: "inpre",
         type: "boolean",
         value: false,
         defaultValue: false,
       },
       {
-        tips: "<pre> tag",
+        tips: "The <pre> tag to copy",
         name: "pre",
         type: "boolean",
         value: false,
         defaultValue: false,
       },
       {
-        tips: "Remove some elements",
+        tips: "Elements to remove",
         name: "rm",
         type: "string",
         value: "",
@@ -452,7 +462,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         placeholder: "css selector",
       },
       {
-        tips: "Position of btn",
+        tips: "Position of the copy button",
         name: "pos",
         type: "string",
         value: "tl",
@@ -462,11 +472,11 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
     ],
   },
   {
-    value: BUILDIN_ACTIONS.CLICK,
+    value: BUILTIN_ACTIONS.CLICK,
     label: t("click"),
   },
   {
-    value: BUILDIN_ACTIONS.FOCUS,
+    value: BUILTIN_ACTIONS.FOCUS,
     label: t("focus"),
     args: [
       {
@@ -479,18 +489,18 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
     ],
   },
   {
-    value: BUILDIN_ACTIONS.NOTE,
+    value: BUILTIN_ACTIONS.NOTE,
     label: t("note"),
     args: [
       {
-        tips: "content",
+        tips: "Content of the note",
         name: "value",
         type: "string",
         value: "",
         defaultValue: "",
       },
       {
-        tips: "as comment",
+        tips: "Save note as comment",
         name: "isComment",
         type: "boolean",
         value: false,
@@ -499,80 +509,80 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
     ],
   },
   {
-    value: BUILDIN_ACTIONS.TITLE,
+    value: BUILTIN_ACTIONS.TITLE,
     label: t("set_title"),
     args: [
       {
-        tips: "text of title",
+        tips: "Text of the title",
         name: "title",
         type: "string",
       },
     ],
   },
   {
-    value: BUILDIN_ACTIONS.ATTRIBUTES,
+    value: BUILTIN_ACTIONS.ATTRIBUTES,
     label: t("attributes"),
     args: [
       {
-        tips: "name of attribute",
+        tips: "Name of the attribute",
         name: "name",
         type: "string",
       },
       {
-        tips: "value of attribute",
+        tips: "Value of the attribute",
         name: "value",
         type: "string",
       },
     ],
   },
   {
-    value: BUILDIN_ACTIONS.SCROLLBAR,
+    value: BUILTIN_ACTIONS.SCROLLBAR,
     label: t("scrollbar"),
     args: [
       {
-        tips: "Delay to scrolling",
+        tips: "Delay before scrolling starts (in seconds)",
         name: "delay",
         type: "number",
       },
     ],
   },
   {
-    value: BUILDIN_ACTIONS.OPEN_PAGE,
+    value: BUILTIN_ACTIONS.OPEN_PAGE,
     label: t("open_page"),
     args: [
       {
-        tips: "url to be opened(optional)",
+        tips: "URL to be opened (optional)",
         name: "url",
         type: "string",
       },
       {
-        tips: "type of page,such as baike / wiki(optional)",
+        tips: "Type of page, such as baike or wiki (optional)",
         name: "type",
         type: "string",
       },
       {
-        tips: "args of page type(optional)",
+        tips: "Arguments for page type (optional)",
         name: "args",
         type: "string",
       },
     ],
   },
   {
-    value: BUILDIN_ACTIONS.EVENT,
+    value: BUILTIN_ACTIONS.EVENT,
     label: t("event"),
     args: [
       {
-        tips: "Name of event",
+        tips: "Name of the event",
         name: "events",
         type: "string",
       },
       {
-        tips: "css selector of target",
+        tips: "CSS selector of the target",
         name: "selector",
         type: "string",
       },
       {
-        tips: "action type: listen or emit",
+        tips: "Type of action: listen or emit",
         name: "type",
         type: "string",
         defaultValue: "listen",
@@ -581,7 +591,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
     ],
   },
   {
-    value: BUILDIN_ACTIONS.SET_VALUE,
+    value: BUILTIN_ACTIONS.SET_VALUE,
     label: t("set_value"),
     args: [
       {
@@ -594,11 +604,11 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
     ],
   },
   {
-    value: BUILDIN_ACTIONS.ACTIVE,
+    value: BUILTIN_ACTIONS.ACTIVE,
     label: t("active"),
   },
   {
-    value: BUILDIN_ACTIONS.SCROLL,
+    value: BUILTIN_ACTIONS.SCROLL,
     label: t("scroll"),
     args: [
       {
@@ -612,11 +622,11 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
   },
 
   {
-    value: BUILDIN_ACTIONS.BUTTON,
+    value: BUILTIN_ACTIONS.BUTTON,
     label: t("button"),
     args: [
       {
-        tips: "Button Type, available types are: {top|toggle|shortcut|translate}",
+        tips: "Button type. Available types are: {top|toggle|shortcut|translate}",
         name: "type",
         type: "string",
         value: "",
@@ -631,7 +641,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         placeholder: "css selector",
       },
       {
-        tips: "Position of btn",
+        tips: "Position of the button",
         name: "pos",
         type: "string",
         value: "",
@@ -639,7 +649,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         placeholder: "tl|tr|bl|br",
       },
       {
-        tips: "Min-height of btn",
+        tips: "Min-height of the button",
         name: "mh",
         type: "string",
         value: 35,
@@ -648,47 +658,47 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
     ],
   },
   {
-    value: BUILDIN_ACTIONS.OUTLINE,
+    value: BUILTIN_ACTIONS.OUTLINE,
     label: t("outline"),
   },
   {
-    value: BUILDIN_ACTIONS.REDIRECT,
+    value: BUILTIN_ACTIONS.REDIRECT,
     label: t("redirect"),
     args: [
       {
-        tips: "path pattern of from page",
+        tips: "Path pattern of the from page",
         name: "from",
         type: "string",
       },
       {
-        tips: "path pattern of to page",
+        tips: "path pattern of the to page",
         name: "to",
         type: "string",
       },
       {
-        tips: "hostname of to page",
+        tips: "Hostname of the to page",
         name: "host",
         type: "string",
       },
       {
-        tips: "new query(pieces) of url",
+        tips: "New query parameters of the URL as a string",
         name: "query",
         type: "string",
       },
       {
-        tips: "format of query: arr | default",
+        tips: "Format of the query parameters: 'arr' or 'default'",
         name: "qformat",
         type: "string",
       },
     ],
   },
   {
-    value: BUILDIN_ACTIONS.ALLOW_COPYING,
+    value: BUILTIN_ACTIONS.ALLOW_COPYING,
     label: t("allow_copying"),
     args: [],
   },
   {
-    value: BUILDIN_ACTIONS.ZEN_MODE,
+    value: BUILTIN_ACTIONS.ZEN_MODE,
     label: t("zen_mode"),
     args: [
       {
@@ -699,7 +709,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         defaultValue: "Zen",
       },
       {
-        tips: "How long to delay displaying the page",
+        tips: "Delay in seconds before displaying the page",
         name: "delay",
         type: "string",
         value: 0,
@@ -707,14 +717,14 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         placeholder: "0 means never display",
       },
       {
-        tips: "Background Color",
+        tips: "Background color",
         name: "bgcolor",
         type: "string",
         value: "#35363a",
         defaultValue: "#35363a",
       },
       {
-        tips: "Font Color",
+        tips: "Font color",
         name: "color",
         type: "string",
         value: "#ffffff",
@@ -723,32 +733,32 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
     ],
   },
   {
-    value: BUILDIN_ACTIONS.PICTURE_IN_PICTURE,
+    value: BUILTIN_ACTIONS.PICTURE_IN_PICTURE,
     label: t("start_pip_mode"),
     args: [],
   },
   {
-    value: BUILDIN_ACTIONS.HASH_ELEMENT,
+    value: BUILTIN_ACTIONS.HASH_ELEMENT,
     label: t("add_anchor_for_elements"),
   },
   {
-    value: BUILDIN_ACTIONS.TIME_UPDATE,
+    value: BUILTIN_ACTIONS.TIME_UPDATE,
     label: t("add_time_tag_for_video"),
   },
 
   {
-    value: BUILDIN_ACTIONS.GOTO_ELEMENT,
+    value: BUILTIN_ACTIONS.GOTO_ELEMENT,
     label: t("goto_element"),
     args: [
       {
-        tips: "Auto Goto",
+        tips: "Automatically navigate to target element",
         name: "auto",
         type: "boolean",
         value: false,
         defaultValue: false,
       },
       {
-        tips: "Target",
+        tips: "Target element's CSS selector",
         name: "to",
         type: "string",
         value: "",
@@ -756,7 +766,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         placeholder: "css selector",
       },
       {
-        tips: "Order",
+        tips: "Order to navigate through the elements",
         name: "order",
         type: "string",
         value: "asc",
@@ -764,7 +774,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         placeholder: "desc/asc",
       },
       {
-        tips: "Handle, The available functions are: {text|trim|number|siblingText}",
+        tips: "Handle function for the target element. Available functions: {text|trim|number|siblingText}",
         name: "handle",
         type: "string",
         value: "",
@@ -775,7 +785,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
   },
 
   {
-    value: BUILDIN_ACTIONS.SINGLE_TAB,
+    value: BUILTIN_ACTIONS.SINGLE_TAB,
     label: t("single_tab"),
     args: [
       {
@@ -789,11 +799,11 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
   },
 
   {
-    value: BUILDIN_ACTIONS.WAIT,
+    value: BUILTIN_ACTIONS.WAIT,
     label: t("wait"),
     args: [
       {
-        tips: "The time to wait, measured in seconds",
+        tips: "The amount of time to wait, measured in seconds",
         name: "time",
         type: "number",
         value: 1,
@@ -803,7 +813,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
   },
 
   {
-    value: BUILDIN_ACTIONS.CLOSE_PAGE,
+    value: BUILTIN_ACTIONS.CLOSE_PAGE,
     label: t("close_page"),
   },
 ];

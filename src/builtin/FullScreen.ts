@@ -1,11 +1,11 @@
 import $ from "jquery";
 
-import { BUILDIN_ACTIONS } from "../common/const";
+import { BUILTIN_ACTIONS } from "../common/const";
 import { Base } from "./Base";
 import { ActionHelper } from "./types";
 
 export class FullScreen extends Base {
-  name = BUILDIN_ACTIONS.FULL_SCREEN;
+  name = BUILTIN_ACTIONS.FULL_SCREEN;
   cls = "ext-hp-fullscreen";
 
   constructor(helper: ActionHelper<Base>) {
