@@ -4,7 +4,7 @@ import { GlobalEvent } from "@src/builtin/types";
 import hanlder from "@src/helper/cookies";
 import { isURLExist } from "@src/helper/tab";
 import { getURLByArgs } from "@src/helper/url";
-import { show, warn } from "@src/utils/log";
+import { warn } from "@src/utils/log";
 
 import {
   APP_ACTIONS,
@@ -221,7 +221,6 @@ function msgHandler(req: PageMsg, sender: chrome.runtime.MessageSender, resp) {
     return;
   }
   const { action, data, callbackId } = req;
-  show("msgHandler::call", req, sender);
 
   const handler: MsgHandlerFn = (results, isAsync = false) => {
     const msg: BackMsg = {
@@ -229,7 +228,6 @@ function msgHandler(req: PageMsg, sender: chrome.runtime.MessageSender, resp) {
       callbackId,
       data: results,
     };
-    show("msgHandler::handler:backmsg -> ", msg);
 
     if (!isAsync) {
       resp(msg);
@@ -298,7 +296,6 @@ function forwardMsg(msg) {
   const { extId, payload } = msg;
 
   if (extId && payload) {
-    show("forward msg: ", extId, payload);
     chrome.runtime.sendMessage(extId, payload);
   }
 }
@@ -350,7 +347,6 @@ function runMethod(tabId: number, method, data?) {
     if (chrome.runtime.lastError) {
       return;
     }
-    console.log(response);
   });
 }
 
@@ -367,8 +363,6 @@ function onContextMenuClicked(info: chrome.contextMenus.OnClickData) {
 }
 
 function initCommands() {
-  show("initCommands::call");
-
   chrome.contextMenus.removeAll();
   BUILTIN_ACTION_CONFIGS.filter((item) => item.asCommand).forEach((item) => {
     chrome.contextMenus.create({

@@ -80,7 +80,6 @@ function NoteComments(props: { nid: number }) {
   useEffect(() => {
     notesController.query({ nid: props.nid }).then((resp) => {
       if (resp.code === OK.code) {
-        console.log("comments: ", resp.data);
         setComments(resp.data);
       }
     });

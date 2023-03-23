@@ -30,7 +30,6 @@ const manifest: chrome.runtime.ManifestV3 = {
   ],
   permissions: ["storage", "tabs", "contextMenus", "notifications"],
   optional_permissions: ["background", "clipboardWrite"],
-  host_permissions: ["http://*/*", "https://*/*"],
   web_accessible_resources: [
     {
       resources: [
