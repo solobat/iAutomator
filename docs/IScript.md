@@ -39,3 +39,82 @@ end
     apply "readMode" with (excludes=".Frame_wrap_16as0")  on "#homeWrap"
   end
   ```
+
+ ## 文法
+ ```
+ Script ::= *empty*
+       ::= Automations
+
+Automations ::= Automation
+            ::= Automations
+Automation::= automation AutomationHead AutomationBody end
+
+AutomationHead ::= for URLRegString on Stage
+Stage ::= '"immediate"'
+      ::= '"load"'
+      ::= '"delay"'
+      
+URLRegString ::= string
+      
+AutomationBody ::= Statements
+Statements ::= Statement
+           ::= Statements
+           
+Statement ::= AssignStatement
+          ::= NativeStatement
+          ::= ApplyStatement
+          
+AssignStatement ::= AssignExp = ValuableExp
+                
+ValuableExp ::= ValueExp
+            ::= Identiﬁer
+            ::= ListenExp
+            ::= GetValueExp
+            
+ValueExp ::= number
+         ::= string
+         ::= bool
+            
+ListenExp ::= listen EventNameExp on EventScopeExp
+EventNameExp ::= string
+EventScopeExp ::= '"global"'
+              ::= CssSelectorExp
+              
+NativeStatement ::= OpenStatement
+                ::= ActiveStatement
+                ::= WaitStatement
+                ::= CloseStatement
+                ::= EmitStatement
+                ::= ListenStatement
+                
+OpenStatement ::= OpenExp
+OpenExp ::= open URLString as URLRegString
+URLString ::= string
+
+ActiveStatement ::= ActiveExp
+ActiveExp ::= active
+
+WaitStatement ::= WaitExp
+WaitExp ::= wait number
+                 
+CloseStatement ::= close
+
+EmitStatement ::= emit EventNameExp with ArgPairs
+
+ListenStatement ::= ListenExp
+
+ApplyStatement ::= apply ActionNameExp with ArgPairs on CssSelectorExp 
+ActionNameExp ::= string
+
+ArgPairs ::= (ArgsExp)
+         
+ArgsExp ::= empty
+        ::= ArgExp
+        ::= ArgExp, ArgsExp
+        
+ArgExp ::= Identiﬁer
+       ::= Identiﬁer = ValueExp
+       ::= Identiﬁer = Identiﬁer
+
+CssSelectorExp ::= string
+``` 
