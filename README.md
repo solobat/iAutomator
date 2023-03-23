@@ -62,9 +62,9 @@ Change the current page to dark mode.
 Bookmark target items on the current page.
 
 | Argument | Description                       | Type    | Default Value | Example     |
-| -------- | --------------------------------- | ------- | ------------- | ----------- | -------- |
+| -------- | --------------------------------- | ------- | ------------- | ----------- |
 | item     | CSS-Selector of the target items. | string  |               | ".my-class" |
-| refresh  | Refresh type: auto                | manual  | string        | "manual"    | "manual" |
+| refresh  | Refresh type: auto / manual  | string       | "manual"      | "manual" |
 | notify   | Should notify on the title?       | boolean | true          | true        |
 
 ---
@@ -179,8 +179,8 @@ Scroll the page.
 Create a customizable button.
 
 | Argument | Description                            | Type   | Default Value | Example     |
-| -------- | -------------------------------------- | ------ | ------------- | ----------- | ------ | --- | -------- |
-| type     | Button type. Available types are: {top | toggle | shortcut      | translate}. | string | ""  | "toggle" |
+| -------- | -------------------------------------- | ------ | ------------- | ----------- |
+| type     | Button type. Available types are: {top / toggle / shortcut      / translate}. | string | ""  | "toggle" |
 | item     | CSS selector of the items.             | string | ""            | ".my-class" |
 | pos      | Position of the button.                | string | ""            | "tr"        |
 | mh       | Min-height of the button.              | string | 35            | 50          |

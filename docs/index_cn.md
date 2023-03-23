@@ -170,7 +170,7 @@
 
 | 参数 | 描述 | 类型 | 默认值 | 示例 |
 | --- | --- | --- | --- | --- |
-| type | 按钮类型。可用类型有：{top|toggle|shortcut|translate}。 | string | "" | "toggle" |
+| type | 按钮类型。可用类型有：{top/toggle/shortcut/translate}。 | string | "" | "toggle" |
 | item | 项目的 CSS 选择器。 | string | "" | ".my-class" |
 | pos | 按钮的位置。 | string | "" | "tr" |
 | mh | 按钮的最小高度。 | string | 35 | 50 |
