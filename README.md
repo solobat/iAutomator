@@ -15,7 +15,7 @@
 
 ## Docs
 
-- [IScript Documents](./IScript_en.md) / [中文](./IScript.md)
+- [IScript Documents](./docs/IScript_en.md) / [中文](./docs/IScript.md)
 - [Types Documents](https://types.ihelpers.xyz/)
 - [Youtube Video](https://www.youtube.com/watch?v=L7DpcRtkq2U)
 
