@@ -1,4 +1,4 @@
-import { Alert, AutoComplete, Tooltip } from "antd";
+import { Alert, AutoComplete, Popover } from "antd";
 import Button from "antd/es/button";
 import ButtonGroup from "antd/es/button/button-group";
 import Input from "antd/es/input";
@@ -20,13 +20,18 @@ import {
 import { PlayCircleOutlined } from "@ant-design/icons";
 import { list2options } from "@src/helper/antd";
 import { t } from "@src/helper/i18n.helper";
-import { basicInstruction, InstructionData } from "@src/helper/instruction";
+import {
+  basicArgsHandler,
+  basicInstruction,
+  InstructionData,
+} from "@src/helper/instruction";
 import { getURLPatterns } from "@src/helper/url";
 import { IAutomation } from "@src/server/db/database";
 import Automation from "@src/server/model/Automation";
 import "prismjs/themes/prism.css";
 
 import {
+  ActionArg,
   BUILDIN_ACTION_FIELD_CONFIGS,
   BUILTIN_ACTIONS,
   PAGE_ACTIONS,
@@ -45,6 +50,8 @@ import {
 import { parseScript, iscript } from "@src/helper/script";
 import Editor from "react-simple-code-editor";
 import { Grammar, highlight } from "prismjs";
+import Form from "antd/es/form";
+import { ExecOptions } from "@src/builtin/types";
 
 const { Option } = Select;
 const hightlightWithLineNumbers = (
@@ -375,6 +382,78 @@ function onAmFormInsChange(attrs, index: number, dispatch) {
   });
 }
 
+function ActionArgsForm(props: {
+  config?: ActionArg[];
+  defaultValues: ExecOptions;
+  onChange: (changedValues: any, values: any) => void;
+}) {
+  const { config: args = [], onChange, defaultValues } = props;
+  const [form] = Form.useForm();
+
+  return (
+    <Form
+      layout="horizontal"
+      form={form}
+      onValuesChange={onChange}
+      initialValues={defaultValues}
+      style={{ width: "326px" }}
+    >
+      {args.map((arg) => (
+        <ActionArgField arg={arg} key={arg.name} />
+      ))}
+    </Form>
+  );
+}
+
+function ActionArgField(props: { arg: ActionArg }) {
+  const { arg } = props;
+
+  return (
+    <>
+      {arg.type === "boolean" && (
+        <Form.Item
+          label={arg.name}
+          name={arg.name}
+          valuePropName="checked"
+          required={arg.required}
+        >
+          <Switch title={arg.tips} defaultChecked={arg.defaultValue === true} />
+        </Form.Item>
+      )}
+      {arg.type === "string" &&
+        (arg.optionalValues ? (
+          <Form.Item label={arg.name} name={arg.name} required={arg.required}>
+            <Select>
+              {arg.optionalValues.map((item, index) => (
+                <Option value={item} key={index}>
+                  {item}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+        ) : (
+          <Form.Item label={arg.name} name={arg.name} required={arg.required}>
+            <Input
+              placeholder={arg.tips}
+              defaultValue={arg.defaultValue as string}
+              suffix={arg.suffix}
+            />
+          </Form.Item>
+        ))}
+      {arg.type === "number" && (
+        <Form.Item label={arg.name} name={arg.name} required={arg.required}>
+          <Input
+            type="number"
+            placeholder={arg.tips}
+            defaultValue={arg.defaultValue as number}
+            suffix={arg.suffix}
+          />
+        </Form.Item>
+      )}
+    </>
+  );
+}
+
 function InstructionEditor(props: {
   form: Omit<InstructionData, "args">;
   index: number;
@@ -384,9 +463,6 @@ function InstructionEditor(props: {
   const actionItem = BUILDIN_ACTION_FIELD_CONFIGS.find(
     (item) => item.value === form.action
   );
-  const argsTips =
-    actionItem?.args?.map((arg) => `${arg.name}!${arg.type}`).join("^") ||
-    "No Args";
   function onAddNewInsClick() {
     dispatch({
       type: ACTIONS.AUTOMATION_FORM_NEW_INS,
@@ -399,6 +475,16 @@ function InstructionEditor(props: {
       payload: { index: props.index },
     });
   }
+  const onArgsChange = (action: string, values: any) => {
+    const args = basicArgsHandler.stringify(values, action);
+    onAmFormInsChange(
+      {
+        rawArgs: args,
+      },
+      props.index,
+      dispatch
+    );
+  };
 
   return (
     <Input.Group compact className="am-ins-editor">
@@ -426,8 +512,29 @@ function InstructionEditor(props: {
         placeholder={"key1!val1^key2!val2..."}
         value={form.rawArgs}
         className="ipt-ins"
+        readOnly
         style={{ width: 370 }}
-        prefix={<Tooltip title={argsTips}>?</Tooltip>}
+        suffix={
+          <Popover
+            placement={"bottomRight"}
+            title="Arguments"
+            trigger="click"
+            content={
+              <ActionArgsForm
+                config={actionItem?.args}
+                defaultValues={basicArgsHandler.parse(
+                  form.rawArgs,
+                  actionItem?.value
+                )}
+                onChange={(_, values) =>
+                  onArgsChange(actionItem?.value, values)
+                }
+              />
+            }
+          >
+            <EditOutlined />
+          </Popover>
+        }
         onChange={(event) => {
           onAmFormInsChange(
             {

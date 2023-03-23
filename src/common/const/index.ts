@@ -337,6 +337,9 @@ export interface ActionArg {
   value?: ActionArgValue;
   defaultValue?: ActionArgValue;
   placeholder?: string;
+  required?: boolean;
+  optionalValues?: ActionArgValue[];
+  suffix?: string;
 }
 
 export interface BUILDIN_ACTION_FIELD_CONFIG {
@@ -356,6 +359,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         type: "number",
         value: 5,
         defaultValue: 5,
+        required: true,
       },
       {
         tips: "Start reloading when the element exists.",
@@ -417,6 +421,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         tips: "CSS-Selector of the target items",
         name: "item",
         type: "string",
+        required: true,
       },
       {
         tips: "Refersh type: auto | manual",
@@ -468,6 +473,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         value: "tl",
         defaultValue: "tl",
         placeholder: "tl|tr",
+        optionalValues: ["tl", "tr"],
       },
     ],
   },
@@ -516,6 +522,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         tips: "Text of the title",
         name: "title",
         type: "string",
+        required: true,
       },
     ],
   },
@@ -527,11 +534,13 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         tips: "Name of the attribute",
         name: "name",
         type: "string",
+        required: true,
       },
       {
         tips: "Value of the attribute",
         name: "value",
         type: "string",
+        required: true,
       },
     ],
   },
@@ -543,6 +552,8 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         tips: "Delay before scrolling starts (in seconds)",
         name: "delay",
         type: "number",
+        defaultValue: 0,
+        value: 0,
       },
     ],
   },
@@ -551,18 +562,25 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
     label: t("open_page"),
     args: [
       {
-        tips: "URL to be opened (optional)",
+        tips: "URL to be opened",
         name: "url",
         type: "string",
+        required: true,
       },
       {
-        tips: "Type of page, such as baike or wiki (optional)",
+        tips: "Type of page, such as baike or wiki",
         name: "type",
+        type: "string",
+        optionalValues: ["baike", "wiki"],
+      },
+      {
+        tips: "Arguments for page type",
+        name: "args",
         type: "string",
       },
       {
-        tips: "Arguments for page type (optional)",
-        name: "args",
+        tips: "To check if it already exists.",
+        name: "pattern",
         type: "string",
       },
     ],
@@ -575,6 +593,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         tips: "Name of the event",
         name: "events",
         type: "string",
+        required: true,
       },
       {
         tips: "CSS selector of the target",
@@ -587,6 +606,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         type: "string",
         defaultValue: "listen",
         value: "listen",
+        optionalValues: ["listen", "emit"],
       },
     ],
   },
@@ -600,6 +620,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         type: "string",
         value: "",
         defaultValue: "",
+        required: true,
       },
     ],
   },
@@ -617,6 +638,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         type: "number",
         value: 20,
         defaultValue: 20,
+        suffix: "px/s",
       },
     ],
   },
@@ -631,6 +653,8 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         type: "string",
         value: "",
         defaultValue: "",
+        required: true,
+        optionalValues: ["top", "toggle", "shortcut", "translate"],
       },
       {
         tips: "CSS selector of the items",
@@ -647,6 +671,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         value: "",
         defaultValue: "",
         placeholder: "tl|tr|bl|br",
+        optionalValues: ["tl", "tr", "bl", "br"],
       },
       {
         tips: "Min-height of the button",
@@ -654,6 +679,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         type: "string",
         value: 35,
         defaultValue: 35,
+        suffix: "px",
       },
     ],
   },
@@ -669,16 +695,19 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         tips: "Path pattern of the from page",
         name: "from",
         type: "string",
+        required: true,
       },
       {
         tips: "path pattern of the to page",
         name: "to",
         type: "string",
+        required: true,
       },
       {
         tips: "Hostname of the to page",
         name: "host",
         type: "string",
+        required: true,
       },
       {
         tips: "New query parameters of the URL as a string",
@@ -707,6 +736,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         type: "string",
         value: "Zen",
         defaultValue: "Zen",
+        required: true,
       },
       {
         tips: "Delay in seconds before displaying the page",
@@ -764,6 +794,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         value: "",
         defaultValue: "",
         placeholder: "css selector",
+        required: true,
       },
       {
         tips: "Order to navigate through the elements",
@@ -772,6 +803,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         value: "asc",
         defaultValue: "asc",
         placeholder: "desc/asc",
+        optionalValues: ["desc", "asc"],
       },
       {
         tips: "Handle function for the target element. Available functions: {text|trim|number|siblingText}",
@@ -780,6 +812,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         value: "",
         defaultValue: "",
         placeholder: "[.selector,fn]",
+        optionalValues: ["text", "trim", "number", "siblingText"],
       },
     ],
   },
@@ -808,6 +841,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         type: "number",
         value: 1,
         defaultValue: 1,
+        suffix: "s",
       },
     ],
   },
