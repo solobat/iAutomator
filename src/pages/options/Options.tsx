@@ -7,7 +7,6 @@ import { t } from "@src/helper/i18n.helper";
 import { Notes } from "./components/Notes";
 import { ExtLibs } from "chrome-extension-libs";
 import { ExtlibsContextProvider } from "@src/context/ExtlibsContext";
-import WebDav from "./components/WebDav";
 import { Automations } from "./components/Automations";
 
 const { TabPane } = Tabs;
@@ -27,9 +26,6 @@ export function Options(props: { libs: ExtLibs }) {
           <TabPane tab={t("settings_notion_export")} key="2">
             <Automations />
             <Export />
-          </TabPane>
-          <TabPane tab="WebDav" key="3">
-            <WebDav />
           </TabPane>
           <TabPane tab={t("settings_notion_basic")} key="4">
             Settings
