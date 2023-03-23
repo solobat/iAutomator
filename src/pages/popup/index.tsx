@@ -8,7 +8,5 @@ import Popup from "./Popup";
 refreshOnUpdate("pages/popup");
 
 checkUpdate().then(() => {
-  chrome.tabs.query({ active: true, currentWindow: true }, () => {
-    ReactDOM.render(<Popup />, document.getElementById("popup"));
-  });
+  ReactDOM.render(<Popup />, document.getElementById("popup"));
 });

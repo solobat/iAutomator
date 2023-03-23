@@ -115,6 +115,9 @@ function onEventEmitted(
   hanlder
 ) {
   chrome.tabs.query({}, function (tabs) {
+    if (chrome.runtime.lastError) {
+      return;
+    }
     tabs.forEach((tab) => {
       if (tab.id !== originTab.id) {
         runMethod(tab.id, PAGE_ACTIONS.GLOBAL_EVENT_RECEIVED, data);
@@ -138,6 +141,9 @@ function onRefreshShortcuts(handler: MsgHandlerFn) {
 
 function noticeCurTab(data?) {
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    if (chrome.runtime.lastError) {
+      return;
+    }
     runMethod(tabs[0].id, WEB_ACTIONS.INSTALL_DONE, data);
   });
 }
@@ -211,6 +217,9 @@ function onCreateNote(data, handler: MsgHandlerFn) {
 type MsgHandlerFn<T = any> = (results: T, isAsync?: boolean) => void;
 
 function msgHandler(req: PageMsg, sender: chrome.runtime.MessageSender, resp) {
+  if (chrome.runtime.lastError) {
+    return;
+  }
   const { action, data, callbackId } = req;
   show("msgHandler::call", req, sender);
 
@@ -338,12 +347,21 @@ function activePage(tab?: chrome.tabs.Tab) {
 
 function runMethod(tabId: number, method, data?) {
   chrome.tabs.sendMessage(tabId, { method, data }, function (response) {
+    if (chrome.runtime.lastError) {
+      return;
+    }
     console.log(response);
   });
 }
 
 function onContextMenuClicked(info: chrome.contextMenus.OnClickData) {
+  if (chrome.runtime.lastError) {
+    return;
+  }
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    if (chrome.runtime.lastError) {
+      return;
+    }
     runMethod(tabs[0].id, BUILTIN_ACTIONS[info.menuItemId]);
   });
 }
@@ -382,6 +400,9 @@ function updateBadgeByURL(url: string) {
 
 function updateBadgeByCurrentTab() {
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    if (chrome.runtime.lastError) {
+      return;
+    }
     const url = tabs[0].url;
 
     if (url) {
@@ -391,7 +412,13 @@ function updateBadgeByCurrentTab() {
 }
 
 chrome.tabs.onUpdated.addListener(function () {
+  if (chrome.runtime.lastError) {
+    return;
+  }
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    if (chrome.runtime.lastError) {
+      return;
+    }
     if (tabs[0] && tabs[0].url) {
       updateBadge(tabs[0].url);
     }
@@ -420,9 +447,16 @@ async function init() {
     loadShortcuts(automations.map((item) => item.id));
   });
   chrome.runtime.onInstalled.addListener(() => {
+    if (chrome.runtime.lastError) {
+      return;
+    }
     initCommands();
   });
   chrome.tabs.onActivated.addListener((tab) => {
+    if (chrome.runtime.lastError) {
+      return;
+    }
+    updateBadgeByCurrentTab();
     runMethod(tab.tabId, PAGE_ACTIONS.RECONNECT);
   });
 }
