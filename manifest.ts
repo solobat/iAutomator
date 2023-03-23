@@ -28,7 +28,7 @@ const manifest: chrome.runtime.ManifestV3 = {
       css: ["assets/css/contentStyle.chunk.css"],
     },
   ],
-  permissions: ["storage", "tabs", "contextMenus", "notifications"],
+  permissions: ["tabs", "contextMenus", "notifications"],
   optional_permissions: ["background", "clipboardWrite"],
   web_accessible_resources: [
     {
