@@ -33,6 +33,7 @@ const local_i18n = {
     single_tab: "Single tab",
     wait: "Wait",
     close_page: "Close page",
+    text_replacing: "Text replacing",
   },
   zh_CN: {
     read_mode: "阅读模式",
@@ -68,11 +69,12 @@ const local_i18n = {
     single_tab: "标签唯一",
     wait: "等待",
     close_page: "关闭页面",
+    text_replacing: "文本替换",
   },
 };
 
-const lang = chrome.i18n.getUILanguage().replace("-", "_");
-// const lang = "zh_CN";
+// const lang = chrome.i18n.getUILanguage().replace("-", "_");
+const lang = "zh_CN";
 
 function t(key: string): string {
   const texts = local_i18n[lang] ?? local_i18n.en;
@@ -159,6 +161,7 @@ export const BUILTIN_ACTIONS = {
   SINGLE_TAB: "singleTab",
   WAIT: "wait",
   CLOSE_PAGE: "closePage",
+  TEXT_REAPLCING: "textReplacing",
 };
 
 type CommandContext = "all";
@@ -323,6 +326,12 @@ export const BUILTIN_ACTION_CONFIGS: BuildInActionConfig[] = [
   {
     name: "CLOSE_PAGE",
     title: t("close_page"),
+    contexts: ["all"],
+    asCommand: false,
+  },
+  {
+    name: "TEXT_REAPLCING",
+    title: t("text_replacing"),
     contexts: ["all"],
     asCommand: false,
   },
@@ -824,6 +833,27 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
       {
         tips: "Path",
         name: "path",
+        type: "string",
+        value: "",
+        defaultValue: "",
+      },
+    ],
+  },
+
+  {
+    value: BUILTIN_ACTIONS.TEXT_REAPLCING,
+    label: t("text_replacing"),
+    args: [
+      {
+        tips: "Rules",
+        name: "rules",
+        type: "string",
+        value: "",
+        defaultValue: "",
+      },
+      {
+        tips: "Selector",
+        name: "selector",
         type: "string",
         value: "",
         defaultValue: "",
