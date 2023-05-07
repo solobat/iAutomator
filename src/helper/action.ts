@@ -135,6 +135,8 @@ function resolveInstructionArgs(instruction: ScriptInstruction) {
     const element = args[key];
     if (typeof element === "function") {
       args[key] = element(env);
+    } else if (element == null) {
+      args[key] = env.search(key);
     }
   }
 }
@@ -170,7 +172,11 @@ export function exceScriptAutomation(
       times = 0;
       tryAgain();
     };
-    resolveInstructionArgs(instruction);
+    try {
+      resolveInstructionArgs(instruction);
+    } catch (error) {
+      console.log(error);
+    }
 
     const staticOptions: ExecOptions = instruction.args;
     const options = Object.assign(staticOptions, runtimeOptions, {

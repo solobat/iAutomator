@@ -32,7 +32,7 @@ export class Env {
   search(key: string) {
     const result = this.pair[0] === key;
     if (result) {
-      return result[1] as ValueType;
+      return this.pair[1] as ValueType;
     } else {
       if (this.prev) {
         return this.prev.search(key);
