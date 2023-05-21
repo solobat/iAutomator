@@ -48,6 +48,7 @@ export function ShortcutsPanel() {
             }
             icon={
               <PlusSquareOutlined
+                rev=""
                 style={{ fontSize: "20px", cursor: "pointer" }}
                 translate="no"
               />
@@ -215,7 +216,7 @@ function DeleteBtn(props: { record: IShortcut }) {
 
   return (
     <span onClick={onClick}>
-      <DeleteOutlined translate="no" />
+      <DeleteOutlined translate="no" rev="" />
     </span>
   );
 }
@@ -238,7 +239,7 @@ function EditBtn(props: { record: IShortcut }) {
 
   return (
     <span onClick={onClick}>
-      <EditOutlined translate="no" />
+      <EditOutlined translate="no" rev="" />
     </span>
   );
 }

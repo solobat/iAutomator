@@ -91,6 +91,7 @@ function Buttons() {
           <SearchOutlined
             style={{ fontSize: "20px", cursor: "pointer" }}
             translate="no"
+            rev=""
           />
         }
         label={t("get_new_automations")}
@@ -105,6 +106,7 @@ function Buttons() {
         }
         icon={
           <PlusSquareOutlined
+            rev=""
             style={{ fontSize: "20px", cursor: "pointer" }}
             translate="no"
           />
@@ -123,6 +125,7 @@ function Buttons() {
         }
         icon={
           <PlusSquareOutlined
+            rev=""
             style={{ fontSize: "20px", cursor: "pointer" }}
             translate="no"
           />
@@ -378,7 +381,7 @@ function AutomationEditor() {
               dispatch
             );
           }}
-          suffixIcon={<PlayCircleOutlined />}
+          suffixIcon={<PlayCircleOutlined rev="" />}
         >
           <Option value={0}>{t("run_at_immediately")}</Option>
           <Option value={1}>{t("run_at_dom_ready")}</Option>
@@ -560,7 +563,7 @@ function InstructionEditor(props: {
               />
             }
           >
-            <EditOutlined />
+            <EditOutlined rev="" />
           </Popover>
         }
         onChange={(event) => {
@@ -589,8 +592,9 @@ function InstructionEditor(props: {
         style={{ width: 150 }}
       />
       <div className="am-ins-editor-btns">
-        <PlusSquareOutlined size={25} onClick={onAddNewInsClick} />
+        <PlusSquareOutlined rev="" size={25} onClick={onAddNewInsClick} />
         <MinusSquareOutlined
+          rev=""
           size={25}
           onClick={onDelInsClick}
           style={{ marginLeft: "5px" }}
@@ -716,7 +720,7 @@ function EditBtn(props: { record: IAutomation }) {
 
   return (
     <span onClick={onClick}>
-      <EditOutlined translate="no" />
+      <EditOutlined rev="" translate="no" />
     </span>
   );
 }
@@ -737,7 +741,7 @@ function ShareBtn(props: { item: Automation }) {
 
   return (
     <span onClick={onClick}>
-      <ShareAltOutlined translate="no" />
+      <ShareAltOutlined rev="" translate="no" />
     </span>
   );
 }
@@ -755,7 +759,7 @@ function ShortcutBtn(props: { item: Automation }) {
 
   return (
     <span onClick={() => onShortcutBtnClick(props.item, dispatch)}>
-      <MacCommandOutlined translate="no" />
+      <MacCommandOutlined rev="" translate="no" />
     </span>
   );
 }
@@ -773,7 +777,7 @@ function DeleteBtn(props: any) {
 
   return (
     <span onClick={onClick}>
-      <DeleteOutlined translate="no" />
+      <DeleteOutlined rev="" translate="no" />
     </span>
   );
 }

@@ -1,11 +1,12 @@
-@import "antd/dist/antd.css";
-
-$primary-color: darkblue;
-$background-color: #bada55;
-
 // Chrome applies an 8px margin by default (gross).
 body {
   margin: 0px;
+  box-sizing: border-box;
+  background-color: #141414;
+
+  * {
+    box-sizing: inherit;
+  }
 }
 
 .popupContainer {
@@ -50,8 +51,9 @@ body {
 }
 
 .am-ins-editor-box {
-  margin-top: 5px; 
-  border: 1px solid #ccc;
+  margin-top: 5px;
+  border: 1px solid #424242;
+  border-radius: 6px;
   padding: 5px;
 }
 
@@ -66,7 +68,7 @@ body {
 
 .editor {
   counter-reset: line;
-  border: 1px solid #ced4da;
+  border: 1px solid #424242;
 }
 
 .editor textarea {

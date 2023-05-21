@@ -101,7 +101,7 @@ function DeleteBtn(props: { record: IAutomation; onDeleted: () => void }) {
 
   return (
     <span onClick={onClick}>
-      <DeleteOutlined translate="no" />
+      <DeleteOutlined rev="" translate="no" />
     </span>
   );
 }

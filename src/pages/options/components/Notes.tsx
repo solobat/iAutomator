@@ -66,7 +66,7 @@ export function Notes() {
           title="Options"
           width={100}
           render={(_, record) => (
-            <DeleteOutlined onClick={() => onDelete(record.id)} />
+            <DeleteOutlined rev="" onClick={() => onDelete(record.id)} />
           )}
         />
       </Table>

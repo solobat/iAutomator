@@ -1,12 +1,18 @@
-@import 'antd/dist/antd.css';
-
+body {
+  box-sizing: border-box;
+  background-color: #141414;
+  
+  * {
+    box-sizing: inherit;
+  }
+}
 .container {
   padding: 20px 30px;
 }
 
 .btns {
   margin-top: 20px;
-  
+
   .ant-btn {
     margin-right: 20px;
   }
