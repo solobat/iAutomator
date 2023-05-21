@@ -203,6 +203,7 @@ function ScriptsEditor() {
           scripts,
           result[0].pattern,
           result[0].runAt,
+          "New Script",
           form.id
         )
         .then((resp) => {
@@ -297,7 +298,14 @@ function AutomationEditor() {
     if (validateAmForm(instructions, pattern)) {
       setSaving(true);
       automationsController
-        .saveAutomation(instructions, "", pattern, form.runAt, form.id)
+        .saveAutomation(
+          instructions,
+          "",
+          pattern,
+          form.runAt,
+          form.name,
+          form.id
+        )
         .then((resp) => {
           if (resp.code === 0) {
             setSaving(false);
@@ -320,6 +328,21 @@ function AutomationEditor() {
 
   return (
     <div className="am-editor" ref={boxRef}>
+      <div className="am-editor-fields">
+        <Input
+          value={form.name}
+          placeholder={t("name")}
+          className="ipt-name"
+          onChange={(event) => {
+            onAmFormChange(
+              {
+                name: event.target.value,
+              },
+              dispatch
+            );
+          }}
+        />
+      </div>
       <div className="am-ins-editor-box">
         {form.data.map((item, index) => (
           <InstructionEditor
@@ -579,9 +602,16 @@ function InstructionEditor(props: {
 
 const AutomationsColumns = [
   {
-    title: "ID",
+    title: t("id"),
     dataIndex: "id",
     width: "50px",
+  },
+  {
+    title: t("name"),
+    dataIndex: "name",
+    width: "180px",
+    textWrap: "word-break",
+    ellipsis: true,
   },
   {
     title: t("instructions"),
@@ -594,13 +624,6 @@ const AutomationsColumns = [
     title: t("scripts"),
     dataIndex: "scripts",
     width: "150px",
-    textWrap: "word-break",
-    ellipsis: true,
-  },
-  {
-    title: t("pattern"),
-    dataIndex: "pattern",
-    width: "180px",
     textWrap: "word-break",
     ellipsis: true,
   },

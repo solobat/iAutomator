@@ -6,13 +6,15 @@ export async function save(
   instructions: string,
   scripts: string,
   runAt: RunAt,
-  pattern?: string
+  pattern?: string,
+  name?: string
 ) {
   const automation: Automation = new Automation(
     instructions,
     scripts,
     runAt,
-    pattern
+    pattern,
+    name
   );
   const db = await getDb();
 

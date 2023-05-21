@@ -1,4 +1,4 @@
-import { getDb, IAutomation } from "../db/database";
+import { IAutomation } from "../db/database";
 import { RunAt } from "../enum/Automation.enum";
 
 export default class Automation implements IAutomation {
@@ -18,6 +18,7 @@ export default class Automation implements IAutomation {
     scripts: string,
     runAt: RunAt = RunAt.END,
     pattern: string,
+    name?: string,
     rid?: number,
     createTime?: number
   ) {

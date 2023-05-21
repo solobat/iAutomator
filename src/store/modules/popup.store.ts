@@ -109,6 +109,7 @@ export interface AutomationForm {
   scripts: string;
   runAt: RunAt.END;
   id?: number;
+  name?: string;
 }
 
 function getDefaultNewIns() {
@@ -126,6 +127,7 @@ function getDefaultAutomationForm(): AutomationForm {
     pattern: "",
     scripts: "",
     runAt: RunAt.END,
+    name: "New Automation",
   };
 }
 

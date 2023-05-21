@@ -8,6 +8,7 @@ export async function saveAutomation(
   scripts: string,
   pattern: string,
   runAt: RunAt = RunAt.END,
+  name?: string,
   id?: number
 ): Promise<Response> {
   if (instructions || scripts) {
@@ -17,6 +18,7 @@ export async function saveAutomation(
         scripts,
         pattern,
         runAt,
+        name,
       });
 
       return Response.ok(result);
@@ -25,7 +27,8 @@ export async function saveAutomation(
         instructions,
         scripts,
         runAt,
-        pattern
+        pattern,
+        name
       );
 
       return Response.ok(result);
