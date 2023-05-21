@@ -1,6 +1,6 @@
 {
   "name": "ihelpers",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "iHelpers: Convenience and automation of commonly used browser actions",
   "scripts": {
     "build": "tsc --noEmit && vite build",
