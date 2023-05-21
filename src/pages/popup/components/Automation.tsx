@@ -279,6 +279,7 @@ function AutomationEditor() {
   const form = state.automationForm as PageState["automationForm"];
   const [saving, setSaving] = useState(false);
   const urlPatterns = getURLPatterns(state.tab.hostname, state.tab.pathname);
+  const boxRef = React.useRef<HTMLDivElement>(null);
 
   function onAmEditorSaveClick() {
     const { pattern, data } = form;
@@ -313,8 +314,12 @@ function AutomationEditor() {
     dispatch({ type: ACTIONS.AUTOMATION_FORM_CLOSE, payload: null });
   }
 
+  useEffect(() => {
+    boxRef.current?.scrollIntoView();
+  }, [form.id]);
+
   return (
-    <div className="am-editor">
+    <div className="am-editor" ref={boxRef}>
       <div className="am-ins-editor-box">
         {form.data.map((item, index) => (
           <InstructionEditor
