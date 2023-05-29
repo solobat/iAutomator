@@ -146,7 +146,12 @@ function MenuBtn(props: {
   return (
     <Button
       onClick={props.onClick}
-      style={{ display: "flex", alignItems: "center", ...props.styles }}
+      style={{
+        display: "flex",
+        borderRadius: "6px",
+        alignItems: "center",
+        ...props.styles,
+      }}
       icon={props.icon}
     >
       {props.label}
