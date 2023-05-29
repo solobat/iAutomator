@@ -254,6 +254,8 @@ function ScriptsEditor() {
           fontFamily: '"Fira code", "Fira Mono", monospace',
           fontSize: 14,
           outline: 0,
+          backgroundColor: "#f5f5f5",
+          borderRadius: "6px",
         }}
       />
       <div className="am-editor-btns">

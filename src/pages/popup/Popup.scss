@@ -16,6 +16,14 @@ body {
   overflow: auto;
   width: 800px;
   padding: 10px;
+
+  &.theme-dark {
+    background-color: #141414;
+  }
+
+  &.theme-light {
+    background-color: #fff;
+  }
 }
 
 .tab-info {

@@ -1,13 +1,24 @@
 body {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
   background-color: #141414;
-  
+
   * {
     box-sizing: inherit;
   }
 }
 .container {
   padding: 20px 30px;
+  min-height: 100vh;
+
+  &.theme-dark {
+    background-color: #141414;
+  }
+
+  &.theme-light {
+    background-color: #fff;
+  }
 }
 
 .btns {

@@ -20,6 +20,7 @@ import { Records } from "./components/Record";
 import { ShortcutsPanel } from "./components/Shortcut";
 import { Help } from "./components/Help";
 import { ConfigProvider, theme } from "antd";
+import ThemeContextProvider, { ThemeContext } from "@src/context/ThemeContext";
 
 export default function Page(props) {
   const [state, dispatch] = useReducer(pageReducer, getInitialState());
@@ -32,16 +33,19 @@ export default function Page(props) {
 
   return (
     <PageContext.Provider value={{ state, dispatch }}>
-      <Popup />
+      <ThemeContextProvider>
+        <Popup />
+      </ThemeContextProvider>
     </PageContext.Provider>
   );
 }
 
 function Popup() {
   const { state } = useModel();
+  const { mode } = React.useContext(ThemeContext);
 
   return (
-    <div className="popupContainer">
+    <div className={`popupContainer theme-${mode}`}>
       {state.tab ? <TabInfo tab={state.tab} /> : null}
     </div>
   );
@@ -55,11 +59,13 @@ const { TabPane } = Tabs;
 function TabInfo(props: TabInfoProps) {
   const { host } = props.tab;
   const { dispatch, state } = useModel();
+  const { mode } = React.useContext(ThemeContext);
 
   return (
     <ConfigProvider
       theme={{
-        algorithm: theme.darkAlgorithm,
+        algorithm:
+          mode === "dark" ? theme.darkAlgorithm : theme.defaultAlgorithm,
       }}
     >
       <div className="tab-info">
