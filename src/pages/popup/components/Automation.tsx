@@ -527,6 +527,7 @@ function InstructionEditor(props: {
           onAmFormInsChange(
             {
               action: value,
+              rawArgs: "",
             },
             props.index,
             dispatch
