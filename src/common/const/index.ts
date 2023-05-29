@@ -837,6 +837,14 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         value: "",
         defaultValue: "",
       },
+      {
+        tips: "Action",
+        name: "action",
+        type: "string",
+        value: "",
+        defaultValue: "",
+        optionalValues: ["tab", "video"],
+      },
     ],
   },
 

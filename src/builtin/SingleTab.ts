@@ -5,6 +5,7 @@ import { ExecOptions } from "./types";
 
 export interface SingleTabExecOptions extends ExecOptions {
   path?: string;
+  action?: "tab" | "video";
 }
 
 export class SingleTab extends Base {
@@ -15,21 +16,52 @@ export class SingleTab extends Base {
       GlobalEvents().nameForReceive("singleTab"),
       (data) => {
         if (data.domain === window.location.host) {
-          window.close();
+          if (data.action === "tab") {
+            this.closeTab();
+          } else if (data.action === "video") {
+            this.updateVideoStatus("pause");
+          }
         }
       }
     );
   }
 
-  noticeOthersToClose() {
+  private closeTab() {
+    window.close();
+  }
+
+  private updateVideoStatus(status: "play" | "pause") {
+    const video = document.querySelector("video");
+    if (video) {
+      if (status === "play") {
+        video.play();
+      } else {
+        video.pause();
+      }
+    }
+  }
+
+  private emitSingleTab(action = "tab") {
     this.helper.broadcast.emit("singleTab", {
       domain: window.location.host,
+      action,
     });
+  }
+
+  private noticeOthersToSingle(action = "tab") {
+    this.emitSingleTab(action);
+
+    if (action === "video") {
+      this.helper.onRevisible(() => {
+        this.emitSingleTab(action);
+        this.updateVideoStatus("play");
+      });
+    }
   }
 
   execute(elem, options: Partial<SingleTabExecOptions>) {
     this.listenEvents();
-    this.noticeOthersToClose();
+    this.noticeOthersToSingle(options.action);
     this.recordIfNeeded(options);
 
     return true;
