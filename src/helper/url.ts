@@ -118,10 +118,30 @@ export function isURLhasArgs(url: string) {
 
 export function generateURL(url: string, args: OpenPageData["args"]) {
   const match = new URL(url);
-  const toPattern = new UrlPattern(match.pathname);
-  const pathname = toPattern.stringify(args);
+  const parts = [
+    {
+      name: "pathname",
+      value: match.pathname,
+    },
+    {
+      name: "search",
+      value: match.search,
+    },
+    {
+      name: "hash",
+      value: match.hash,
+    },
+  ];
+  const part = parts.find((item) => isURLhasArgs(item.value));
 
-  return url.replace(match.pathname, pathname);
+  if (!part) {
+    return url;
+  }
+
+  const toPattern = new UrlPattern(part.value);
+  const realText = toPattern.stringify(args);
+
+  return url.replace(part.value, realText);
 }
 
 export function generateURLByType(type: PageType, args: OpenPageData["args"]) {
