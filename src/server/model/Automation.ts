@@ -12,6 +12,7 @@ export default class Automation implements IAutomation {
   createTime?: number;
   updateTime?: number;
   deleted?: boolean;
+  name?: string;
 
   constructor(
     instructions: string,
@@ -28,6 +29,7 @@ export default class Automation implements IAutomation {
     this.pattern = pattern;
     this.rid = rid;
     this.deleted = false;
+    this.name = name;
     this.active = true;
 
     if (createTime) {
