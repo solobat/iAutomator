@@ -58,6 +58,8 @@ export async function dbUpdate(
 
   if (!(await Dexie.exists(db.name))) {
     show("Db does not exist");
+
+    return;
   }
 
   await db.open();
