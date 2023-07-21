@@ -1607,10 +1607,10 @@ check-error@^1.0.2:
   optionalDependencies:
     fsevents "~2.3.2"
 
-chrome-extension-libs@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/chrome-extension-libs/-/chrome-extension-libs-1.1.0.tgz#1185d84f982444b2b2224fd959b5db1df4271208"
-  integrity sha512-2ffmzjJm6B+DVZM2l6X1uCeQ/IJiDN0jjQSDD64+JAWe6VMjHsADdmFJrPhSdwQZgiqfll4b1Tzbyd7VPdPIHQ==
+chrome-extension-libs@^1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/chrome-extension-libs/-/chrome-extension-libs-1.1.4.tgz#626af095db1bbaedc362c9cd94a6441db8860bf1"
+  integrity sha512-4Cc+JHTIVN1YeWQIQQwYQBgTjLZIFlAAozMEs1l/09dS+Z4XFc2sr+XO7iUP+Y0HwUnrR3LRkHDdGXkMEBgxGA==
   dependencies:
     "@vespaiach/axios-fetch-adapter" "^0.3.1"
     axios "^0.27.2"
