@@ -257,7 +257,7 @@ function msgHandler(req: PageMsg, sender: chrome.runtime.MessageSender, resp) {
     activePage(sender.tab);
     handler("");
   } else if (action === APP_ACTIONS.IMPORT_DATA) {
-    init();
+    initData();
     handler("");
   } else if (action === APP_ACTIONS.START_SYNC) {
     state.sync?.tryStartSync();
@@ -433,13 +433,16 @@ function loadShortcuts(aids: number[]) {
   });
 }
 
+async function initData() {
+  const automations = await loadAutomations();
+  loadShortcuts(automations.map((item) => item.id));
+}
+
 async function init() {
   await checkUpdate();
   state.libs = await initLibs();
   state.sync = state.libs.Sync.getSync();
-  loadAutomations().then((automations) => {
-    loadShortcuts(automations.map((item) => item.id));
-  });
+  await initData();
   chrome.runtime.onInstalled.addListener(() => {
     if (chrome.runtime.lastError) {
       return;
