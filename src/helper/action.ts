@@ -180,6 +180,7 @@ export function exceScriptAutomation(
 
     const staticOptions: ExecOptions = instruction.args;
     const options = Object.assign(staticOptions, runtimeOptions, {
+      silent: true,
       next:
         runtimeOptions.mode === "group"
           ? runtimeOptions.next
@@ -242,6 +243,7 @@ export function exceAutomation(
     };
     const staticOptions: ExecOptions = instruction.args;
     const options = Object.assign(staticOptions, runtimeOptions, {
+      silent: true,
       next:
         runtimeOptions.mode === "group"
           ? runtimeOptions.next
@@ -419,16 +421,35 @@ export function fetchPageDataAndApply() {
   );
 }
 
+function categorizeItems(activeItems: IAutomation[]) {
+  const { START, END, IDLE } = RunAt;
+
+  return activeItems.reduce(
+    (acc, item) => {
+      switch (item.runAt) {
+        case START:
+          acc.immediateItems.push(item);
+          break;
+        case END:
+          acc.readyItems.push(item);
+          break;
+        case IDLE:
+          acc.delayedItems.push(item);
+          break;
+        default:
+          break;
+      }
+      return acc;
+    },
+    { immediateItems: [], readyItems: [], delayedItems: [] }
+  );
+}
+
 function initAutomations() {
   if (automations.length) {
     const activeItems = automations.filter((item) => item.active);
-    const immediateItems = activeItems.filter(
-      (item) => item.runAt === RunAt.START
-    );
-    const readyItems = activeItems.filter((item) => item.runAt === RunAt.END);
-    const delayedItems = activeItems.filter(
-      (item) => item.runAt === RunAt.IDLE
-    );
+    const { immediateItems, readyItems, delayedItems } =
+      categorizeItems(activeItems);
 
     execAutomations(immediateItems, RunAt.START);
 
