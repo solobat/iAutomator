@@ -193,8 +193,7 @@ function onUpdateAutomation(data: AutomationPayload, handler: MsgHandlerFn) {
       }, 100);
     }
   }
-
-  handler("");
+  onRefreshAutmations(handler);
 }
 
 function notifyTabs(type: "update" | "create" | "delete", data: IAutomation) {
