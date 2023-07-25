@@ -369,6 +369,45 @@ export function install(actionFns: (helper: ActionHelper<Base>) => void) {
   actionFns(helper);
 }
 
+export function mount(item: IAutomation) {
+  automations.push(item);
+  execAutomationItem(item, item.runAt);
+}
+
+export function unmount(item: IAutomation) {
+  if (item.instructions) {
+    unmountAutomation(item.instructions);
+  } else if (item.scripts) {
+    unmountAutomationScript(item.scripts);
+  }
+
+  automations = automations.filter((a) => a.id !== item.id);
+}
+
+function unmountAutomation(instructions: string) {
+  const list = parseInstructions(instructions);
+
+  list.forEach((item) => {
+    const instance = findAction(item.action);
+
+    if (instance) {
+      instance.doExit();
+    }
+  });
+}
+
+function unmountAutomationScript(scripts: string) {
+  const [am] = parseScript(scripts);
+
+  am.instructions.forEach((item) => {
+    const instance = findAction(item.action);
+
+    if (instance) {
+      instance.doExit();
+    }
+  });
+}
+
 export function startAction(actionName: string) {
   const action = findAction(actionName);
 

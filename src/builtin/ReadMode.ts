@@ -98,7 +98,7 @@ export class ReadMode extends Base {
     keyboardJS.bind("right", nextFn);
     keyboardJS.bind("left", prevFn);
 
-    this.resetFns.push(() => {
+    this.registerUnload(() => {
       keyboardJS.unbind("right", nextFn);
       keyboardJS.unbind("left", prevFn);
     });
@@ -119,7 +119,7 @@ export class ReadMode extends Base {
       this.hideEl($el.siblings().not(this.excludes));
       this.hideSiblings($el.parent());
     } else {
-      this.resetFns.push(() => this.showEl($(this.selector)));
+      this.registerUnload(() => this.showEl($(this.selector)));
     }
   }
 }

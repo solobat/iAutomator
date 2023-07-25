@@ -64,6 +64,10 @@ export class Button extends Base {
     });
 
     $("body").append($top);
+
+    this.registerUnload(() => {
+      $top.remove();
+    });
   }
 
   private insertToggleButton(
@@ -104,6 +108,9 @@ export class Button extends Base {
       if (isFirst) {
         nextPageEl = el;
       }
+      this.registerUnload(() => {
+        $toggle.remove();
+      });
     };
 
     function run() {
@@ -129,6 +136,9 @@ export class Button extends Base {
     });
 
     $("body").append($icon);
+    this.registerUnload(() => {
+      $icon.remove();
+    });
   }
 
   private insertTranslate(
@@ -158,6 +168,9 @@ export class Button extends Base {
         return false;
       });
       $(el).addClass(iconCls).append($translate);
+      this.registerUnload(() => {
+        $translate.remove();
+      });
     };
 
     function run() {

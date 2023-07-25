@@ -105,7 +105,7 @@ export class Scroll extends Base<ScrollExecOptions> {
     };
     this.helper.emitter.on("visibilitychange", onVisibleChange);
 
-    this.resetFns.push(() => {
+    this.registerUnload(() => {
       this.stopScroll();
     });
   }

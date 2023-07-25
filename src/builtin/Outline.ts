@@ -117,9 +117,14 @@ export class Outline extends Base {
 `;
     const $html = $(html);
     $("body").append($html);
-    $("body").on("click", ".ext-hp-outline-fold-btn", () => {
+    const handler = () => {
       $html.remove();
       this.createOutline(scope, options);
+    };
+    $("body").on("click", ".ext-hp-outline-fold-btn", handler);
+    this.registerUnload(() => {
+      $html.remove();
+      $("body").off("click", ".ext-hp-outline-fold-btn", handler);
     });
   }
 
@@ -135,16 +140,24 @@ export class Outline extends Base {
     const outline = this.renderOutline(elems, options);
 
     $("body").append($(outline));
-    $("body").on("click", "#ext-hp-outline a", (elem) => {
+    const itemHandler = (elem) => {
       const index = $(elem.target).attr("data-index");
 
       this.headerElems[Number(index)].scrollIntoView();
       if (options.autoHide) {
         this.toggle();
       }
-    });
-    $("body").on("click", ".ext-hp-outline-fold", () => {
+    };
+    $("body").on("click", "#ext-hp-outline a", itemHandler);
+    const togglerHandler = () => {
       this.toggle();
+    };
+    $("body").on("click", ".ext-hp-outline-fold", togglerHandler);
+    this.registerUnload(() => {
+      $("body").off("click", "#ext-hp-outline a", itemHandler);
+      $("body").off("click", "#ext-hp-outline-fold a", togglerHandler);
+      $(outline).remove();
+      $("#ext-hp-outline").remove();
     });
   }
 

@@ -23,7 +23,7 @@ export class SimpleEvent<T extends string = string> {
     }
   }
 
-  off(name: T, fn: (...args) => void) {
+  off(name: T, fn?: (...args) => void) {
     const fns = this.callbacks[name];
 
     if (fns && fns.length) {

@@ -67,7 +67,7 @@ export class Bookmark extends Base<BookmarkExecOptions> {
       }, this.autoRefreshDelay);
     });
 
-    this.resetFns.push(unbindFn);
+    this.registerUnload(unbindFn);
   }
 
   private setupManualRefresh(item: string) {
@@ -105,7 +105,7 @@ export class Bookmark extends Base<BookmarkExecOptions> {
     const unbindFn = this.helper.onRevisible(() => {
       this.$elem[0].scrollIntoView();
     });
-    this.resetFns.push(unbindFn);
+    this.registerUnload(unbindFn);
   }
 
   execute(elem, options: Partial<BookmarkExecOptions>) {

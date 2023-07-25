@@ -18,7 +18,11 @@ export class SetTitle extends Base {
       title = options.title;
     }
 
+    const originTitle = document.title;
     document.title = title;
+    this.registerUnload(() => {
+      document.title = originTitle;
+    });
     this.recordIfNeeded(options);
 
     return true;
