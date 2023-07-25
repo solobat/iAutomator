@@ -55,7 +55,7 @@
   "dependencies": {
     "ahooks": "^3.7.5",
     "antd": "^5.5.0",
-    "chrome-extension-libs": "^1.0.9",
+    "chrome-extension-libs": "^1.1.4",
     "css-selector-generator": "^2.0.1",
     "dayjs": "^1.9.1",
     "dexie": "^3.2.2",
