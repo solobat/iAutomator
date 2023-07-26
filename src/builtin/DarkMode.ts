@@ -74,7 +74,7 @@ export class DarkMode extends Base<DarkModeOptions> {
 
     this.recordIfNeeded(options);
 
-    this.resetFns.push(() => {
+    this.registerUnload(() => {
       $("html").attr("theme", "");
     });
 

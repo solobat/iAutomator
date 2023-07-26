@@ -31,7 +31,7 @@ export abstract class Base<T extends ExecOptions = ExecOptions> {
   /**
    * cleanup functions to be executed on exit
    */
-  resetFns: Array<() => void>;
+  private resetFns: Array<() => void>;
   /**
    * options of action
    */
@@ -153,19 +153,23 @@ export abstract class Base<T extends ExecOptions = ExecOptions> {
       this.helper.emitter.on("exit", () => {
         // NOTE: only the top action should to call exit
         if (this.helper.activeActions.top() === this) {
-          // FIXME: avoid to affect other action
-          setTimeout(() => {
-            this.active = false;
-          });
-
-          const shouldContinue = this.beforeExit();
-
-          if (shouldContinue) {
-            this.exit();
-            this.afterExit();
-          }
+          this.doExit();
         }
       });
+    }
+  }
+
+  doExit() {
+    // FIXME: avoid to affect other action
+    setTimeout(() => {
+      this.active = false;
+    });
+
+    const shouldContinue = this.beforeExit();
+
+    if (shouldContinue) {
+      this.exit();
+      this.afterExit();
     }
   }
 
@@ -225,6 +229,10 @@ export abstract class Base<T extends ExecOptions = ExecOptions> {
    */
   afterExit() {
     return;
+  }
+
+  registerUnload(fn: () => void) {
+    this.resetFns.push(fn);
   }
 
   private exit() {

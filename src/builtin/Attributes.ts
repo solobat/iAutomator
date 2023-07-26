@@ -18,7 +18,14 @@ export class ModifyAttributes extends Base<ModifyAttributesExecOptions> {
     Object.entries(options).forEach((pair) => {
       const [key, value] = pair;
 
-      $el.filter(`[${key}]`).attr(key, String(value));
+      $el.filter(`[${key}]`).each((_, elem) => {
+        const $target = $(elem);
+        const oldValue = $target.attr(key);
+        this.registerUnload(() => {
+          $target.attr(key, oldValue);
+        });
+        $target.attr(key, String(value));
+      });
     });
 
     if (options.force) {
@@ -31,10 +38,15 @@ export class ModifyAttributes extends Base<ModifyAttributesExecOptions> {
     options: Partial<ModifyAttributesExecOptions>
   ) {
     if ($el.is("a") && options["target"] === "_self") {
-      $("body").on("click", "a", function (event) {
+      const handler = function (event) {
         event.stopPropagation();
         event.preventDefault();
         window.location.href = $(this).attr("href");
+      };
+      $("body").on("click", "a", handler);
+
+      this.registerUnload(() => {
+        $("body").off("click", "a", handler);
       });
     }
   }

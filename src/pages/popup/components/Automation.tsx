@@ -32,6 +32,7 @@ import "prismjs/themes/prism.css";
 
 import {
   ActionArg,
+  APP_ACTIONS,
   BUILDIN_ACTION_FIELD_CONFIGS,
   BUILTIN_ACTIONS,
   PAGE_ACTIONS,
@@ -288,6 +289,7 @@ function onAmFormChange(attrs, dispatch) {
 function AutomationEditor() {
   const { state, dispatch } = useContext(PageContext);
   const form = state.automationForm as PageState["automationForm"];
+  const initialDataRef = React.useRef(state.automationForm);
   const [saving, setSaving] = useState(false);
   const urlPatterns = getURLPatterns(state.tab.hostname, state.tab.pathname);
   const boxRef = React.useRef<HTMLDivElement>(null);
@@ -321,7 +323,16 @@ function AutomationEditor() {
             setSaving(false);
             dispatch({ type: ACTIONS.AUTOMATION_FORM_CLOSE, payload: null });
             noticeBg({
-              action: PAGE_ACTIONS.REFRESH_AUTOMATIONS,
+              action: APP_ACTIONS.AUTOMATION_UPDATED,
+              data: {
+                type: form.id ? "update" : "create",
+                old: initialDataRef.current,
+                new: {
+                  ...form,
+                  pattern,
+                  instructions,
+                },
+              },
             });
           }
         });
@@ -697,7 +708,14 @@ function SwitchBtn(props: any) {
       })
       .then(() => {
         fetchList(state, dispatch).then(() => {
-          noticeBg({ action: PAGE_ACTIONS.REFRESH_AUTOMATIONS });
+          noticeBg({
+            action: APP_ACTIONS.AUTOMATION_UPDATED,
+            data: {
+              type: checked ? "create" : "delete",
+              old: checked ? null : props.record,
+              new: checked ? props.record : null,
+            },
+          });
         });
       });
   }, []);
@@ -778,7 +796,11 @@ function DeleteBtn(props: any) {
     automationsController.deleteItem(props.record.id).then(() => {
       fetchList(state, dispatch);
       noticeBg({
-        action: PAGE_ACTIONS.REFRESH_AUTOMATIONS,
+        action: APP_ACTIONS.AUTOMATION_UPDATED,
+        data: {
+          type: "delete",
+          old: props.record,
+        },
       });
     });
   }, []);

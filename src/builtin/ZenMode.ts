@@ -58,6 +58,9 @@ export class ZenMode extends Base<ZenModeExecOptions> {
       }
 
       $("body").append(this.layer);
+      this.registerUnload(() => {
+        this.layer.remove();
+      });
 
       this.recordIfNeeded(options, elem);
     } else {

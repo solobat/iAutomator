@@ -31,7 +31,7 @@ export class TimeUpdate extends Base {
     if (elem) {
       elem.addEventListener("timeupdate", onTimeupdate, false);
 
-      this.resetFns.push(() => {
+      this.registerUnload(() => {
         elem.removeEventListener("timeupdate", onTimeupdate);
       });
 

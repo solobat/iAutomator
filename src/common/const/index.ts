@@ -98,6 +98,7 @@ export const PAGE_ACTIONS = {
   NOTICE: "createNotice",
   EXEC_INSTRUCTIONS: "execInstructions",
   CREATE_NOTE: "createNote",
+  AUTOMATION_UPDATED: "automationUpdated",
 };
 
 export const WEB_ACTIONS = {
@@ -113,6 +114,7 @@ export const APP_ACTIONS = {
   MSG_RESP: "msgResp",
   START_SYNC: "startSync",
   STOP_SYNC: "stopSync",
+  AUTOMATION_UPDATED: "automationUpdated",
 };
 
 export const IFRAME_ID = "steward-helper-iframe";

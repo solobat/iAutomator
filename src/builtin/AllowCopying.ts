@@ -6,11 +6,16 @@ export class AllowCopying extends Base {
   name = BUILTIN_ACTIONS.ALLOW_COPYING;
 
   execute(elem: HTMLElement, options: Partial<ExecOptions>) {
-    elem.addEventListener("copy", (event) => {
+    const handler = (event) => {
       event.clipboardData.setData(
         "text/plain",
         window.getSelection().toString()
       );
+    };
+    elem.addEventListener("copy", handler);
+
+    this.registerUnload(() => {
+      elem.removeEventListener("copy", handler);
     });
 
     return true;

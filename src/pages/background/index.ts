@@ -175,6 +175,41 @@ function onInstallAutomation(data, handler: MsgHandlerFn) {
   handler("");
 }
 
+interface AutomationPayload {
+  type: "update" | "create" | "delete";
+  new?: IAutomation;
+  old: IAutomation;
+}
+function onUpdateAutomation(data: AutomationPayload, handler: MsgHandlerFn) {
+  const { type, new: newAutomation, old } = data;
+  if (type === "create") {
+    notifyTabs("create", newAutomation);
+  } else if (type === "update" || type === "delete") {
+    notifyTabs("delete", old);
+
+    if (type === "update" && newAutomation.active) {
+      setTimeout(() => {
+        notifyTabs("create", newAutomation);
+      }, 100);
+    }
+  }
+  onRefreshAutmations(handler);
+}
+
+function notifyTabs(type: "update" | "create" | "delete", data: IAutomation) {
+  chrome.tabs.query({ url: data.pattern }, function (tabs) {
+    if (chrome.runtime.lastError) {
+      return;
+    }
+    tabs.forEach((tab) => {
+      runMethod(tab.id, PAGE_ACTIONS.AUTOMATION_UPDATED, {
+        type,
+        data,
+      });
+    });
+  });
+}
+
 function onNewNotice(data, handler: MsgHandlerFn) {
   const { title, message, iconUrl } = data;
 
@@ -269,6 +304,8 @@ function msgHandler(req: PageMsg, sender: chrome.runtime.MessageSender, resp) {
     openPage(data, handler);
   } else if (action === WEB_ACTIONS.INSTALL_AUTOMATION) {
     onInstallAutomation(data, handler);
+  } else if (action === APP_ACTIONS.AUTOMATION_UPDATED) {
+    onUpdateAutomation(data, handler);
   } else if (action === PAGE_ACTIONS.NOTICE) {
     onNewNotice(data, handler);
   } else if (action === APP_ACTIONS.RUN_COMMAND) {

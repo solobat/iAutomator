@@ -30,8 +30,10 @@ import {
   exceAutomation,
   fetchPageDataAndApply,
   install,
+  mount,
   receiveGlobalEvent,
   startAction,
+  unmount,
 } from "../../helper/action";
 import { appBridge } from "../../helper/bridge";
 import { handleWebEvents, noticeWeb } from "../../helper/web";
@@ -61,6 +63,13 @@ function bindAppEvents() {
     } else if (method === PAGE_ACTIONS.RECONNECT) {
       show("should reconnect heartheat...");
       Heartheat.start();
+    } else if (method === PAGE_ACTIONS.AUTOMATION_UPDATED) {
+      show("automation updated...", data);
+      if (data.type === "create") {
+        mount(data.data);
+      } else if (data.type === "delete") {
+        unmount(data.data);
+      }
     } else {
       startAction(method);
     }
