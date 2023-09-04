@@ -34,6 +34,7 @@ const local_i18n = {
     wait: "Wait",
     close_page: "Close page",
     text_replacing: "Text replacing",
+    style: "Style",
   },
   zh_CN: {
     read_mode: "阅读模式",
@@ -70,6 +71,7 @@ const local_i18n = {
     wait: "等待",
     close_page: "关闭页面",
     text_replacing: "文本替换",
+    style: "样式",
   },
 };
 
@@ -164,6 +166,7 @@ export const BUILTIN_ACTIONS = {
   WAIT: "wait",
   CLOSE_PAGE: "closePage",
   TEXT_REAPLCING: "textReplacing",
+  STYLE: "style",
 };
 
 type CommandContext = "all";
@@ -244,6 +247,12 @@ export const BUILTIN_ACTION_CONFIGS: BuildInActionConfig[] = [
   {
     name: "CLICK",
     title: t("click"),
+    contexts: ["all"],
+    asCommand: false,
+  },
+  {
+    name: "STYLE",
+    title: t("style"),
     contexts: ["all"],
     asCommand: false,
   },
@@ -491,6 +500,28 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
   {
     value: BUILTIN_ACTIONS.CLICK,
     label: t("click"),
+  },
+  {
+    value: BUILTIN_ACTIONS.STYLE,
+    label: t("style"),
+    args: [
+      {
+        tips: "content of the style",
+        name: "content",
+        type: "string",
+        defaultValue: "",
+        value: "",
+      },
+      {
+        tips: "type of style",
+        name: "type",
+        type: "string",
+        value: "",
+        defaultValue: "",
+        placeholder: "full",
+        optionalValues: ["full"],
+      },
+    ],
   },
   {
     value: BUILTIN_ACTIONS.FOCUS,
