@@ -904,6 +904,11 @@
   resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.11.tgz#d421b6c527a3037f7c84433fd2c4229e016863d3"
   integrity sha512-wOuvG1SN4Us4rez+tylwwwCV1psiNVOkJeM3AUWUNWg/jDQY2+HE/444y5gc+jBmRqASOm2Oeh5c1axHobwRKQ==
 
+"@types/keyboardjs@^2.5.1":
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/@types/keyboardjs/-/keyboardjs-2.5.1.tgz#1d2655844f976e1621dc28803d1310dd6daf6d13"
+  integrity sha512-kCDf9oJW5Y74dqJJNnFRcpgeVNko6FUc3kQf1Vf5rIYzchRztWBfx5E2fT8ULGPEviOiMezMeuya51DTIvPy9Q==
+
 "@types/lodash@^4.14.149":
   version "4.14.194"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.194.tgz#b71eb6f7a0ff11bff59fc987134a093029258a76"
