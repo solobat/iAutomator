@@ -44,7 +44,10 @@ export class Redirect extends Base {
     if (match) {
       const toPattern = new URLPattern(toPatternStr);
       const toPath = toPattern.stringify(match);
-      const toURL = `${window.location.protocol}//${toHost}${toPath}`;
+      const host = toHost.startsWith("http")
+        ? toHost
+        : `${window.location.protocol}://${toHost}`;
+      const toURL = `${host}${toPath}${window.location.search}`;
 
       window.location.href = toURL;
     }
