@@ -305,6 +305,8 @@ export const helper: ActionHelper<Base> = {
 
   activeActions: Stack(),
 
+  redoActions: Stack(),
+
   observe,
 
   onRevisible,
@@ -354,15 +356,26 @@ function setupRevisible(cb: () => void) {
 }
 
 function setupEsc(cb: () => void, helper: ActionHelper<Base>) {
-  keyboardJS.bind("esc", function onEsc() {
-    cb();
-    helper.resetActionCache();
+  keyboardJS.bind("esc", function onEsc(event) {
+    if (!event.shiftKey) {
+      cb();
+      helper.resetActionCache();
+    }
+  });
+}
+
+function setupRedo(cb: () => void, helper: ActionHelper<Base>) {
+  keyboardJS.bind("esc", function onRedo(event) {
+    if (event.shiftKey) {
+      cb();
+    }
   });
 }
 
 function setupEvents(helper: ActionHelper<Base>) {
   setupRevisible(() => emitter.emit("revisible"));
   setupEsc(() => emitter.emit("exit"), helper);
+  setupRedo(() => emitter.emit("redo"), helper);
 }
 
 export function install(actionFns: (helper: ActionHelper<Base>) => void) {

@@ -42,6 +42,8 @@ export abstract class Base<T extends ExecOptions = ExecOptions> {
    */
   runtimeOptions?: Partial<T>;
 
+  lastExec?: () => void;
+
   constructor(
     helper: ActionHelper<Base, T>,
     options: ActionOptions<T> = {
@@ -110,6 +112,12 @@ export abstract class Base<T extends ExecOptions = ExecOptions> {
     if (this.active) {
       return;
     }
+    this.lastExec = () => {
+      this.makeExecution(elem, options, effect);
+      setTimeout(() => {
+        this.helper.redoActions.pop();
+      });
+    };
     this.runtimeOptions = options;
     const result = this.execute(elem, options, effect);
     if (this.options.esc2exit) {
@@ -154,6 +162,14 @@ export abstract class Base<T extends ExecOptions = ExecOptions> {
         // NOTE: only the top action should to call exit
         if (this.helper.activeActions.top() === this) {
           this.doExit();
+        }
+      });
+      this.helper.emitter.on("redo", () => {
+        if (this.helper.redoActions.top() === this.lastExec) {
+          const exec = this.helper.redoActions.top();
+          if (exec) {
+            exec();
+          }
         }
       });
     }
@@ -228,6 +244,8 @@ export abstract class Base<T extends ExecOptions = ExecOptions> {
    * Hook of after exit
    */
   afterExit() {
+    this.helper.redoActions.push(this.lastExec);
+
     return;
   }
 

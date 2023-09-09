@@ -31,6 +31,7 @@ export interface ActionHelper<A, T extends ExecOptions = ExecOptions> {
   invoke(action, data, callback, target: NOTICE_TARGET);
   actions: A[];
   activeActions: Stack<A>;
+  redoActions: Stack<() => void>;
   observe: (elem, cb: () => void) => void;
   onRevisible: (fn: () => void) => () => void;
   emitter: SimpleEvent;
