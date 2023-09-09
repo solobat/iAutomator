@@ -43,7 +43,7 @@ function start() {
   function stop() {
     $(document).off("mouseover", listenMouseover);
     $(document).off("mouseout", listenMouseout);
-    keyboardJS.bind("up");
+    keyboardJS.unbind("up");
   }
 
   keyboardJS.bind("up", (event) => {
