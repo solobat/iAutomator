@@ -291,7 +291,7 @@ function AutomationEditor() {
   const form = state.automationForm as PageState["automationForm"];
   const initialDataRef = React.useRef(state.automationForm);
   const [saving, setSaving] = useState(false);
-  const urlPatterns = getURLPatterns(state.tab.hostname, state.tab.pathname);
+  const urlPatterns = getURLPatterns(state.tab.host, state.tab.pathname);
   const boxRef = React.useRef<HTMLDivElement>(null);
 
   function onAmEditorSaveClick() {
