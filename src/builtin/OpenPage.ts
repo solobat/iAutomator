@@ -3,6 +3,7 @@ import { PageType } from "@src/helper/url";
 import { BUILTIN_ACTIONS, PAGE_ACTIONS } from "../common/const";
 import { Base } from "./Base";
 import { ExecOptions } from "./types";
+import { fillTemplate } from "@src/helper/text";
 
 export interface OpenPageExecOptions extends ExecOptions {
   /**
@@ -35,7 +36,7 @@ export class OpenPage extends Base<OpenPageExecOptions> {
     this.helper.invoke(
       PAGE_ACTIONS.OPEN_PAGE,
       {
-        url,
+        url: fillTemplate(url, { value }),
         pattern,
         type,
         args: args ? { ...args.split(",") } : { 0: value },
