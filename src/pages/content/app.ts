@@ -48,6 +48,7 @@ import { Wait } from "@src/builtin/Wait";
 import { ClosePage } from "@src/builtin/ClosePage";
 import { TextReplacing } from "@src/builtin/TextReplacing";
 import { SetStyle } from "@src/builtin/Style";
+import { CommonAction } from "@src/builtin/Common";
 
 function bindAppEvents() {
   chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
@@ -130,6 +131,7 @@ function init() {
     new ClosePage(helper);
     new TextReplacing(helper);
     new SetStyle(helper);
+    new CommonAction(helper);
   });
 
   bindAppEvents();

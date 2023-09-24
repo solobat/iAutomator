@@ -35,3 +35,33 @@ export function GlobalEvents() {
     },
   };
 }
+
+const commonDOMEvents: Set<string> = new Set([
+  "click",
+  "mousedown",
+  "mouseup",
+  "mousemove",
+  "keydown",
+  "keyup",
+  "keypress",
+  "blur",
+  "focus",
+  "input",
+  "change",
+  "submit",
+  "mouseenter",
+  "mouseleave",
+  "mouseover",
+  "mouseout",
+  "touchstart",
+  "touchend",
+  "touchmove",
+  "drag",
+  "dragstart",
+  "dragend",
+  // ... 其他常见事件名
+]);
+
+export function isCommonDOMEvent(eventName: string): boolean {
+  return commonDOMEvents.has(eventName);
+}

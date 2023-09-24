@@ -350,7 +350,7 @@ async function openPage(data, hanlder: MsgHandlerFn) {
       });
   };
 
-  if (toURL) {
+  if (toURL || url === "") {
     if (pattern) {
       const isExist = await isURLExist(pattern);
 

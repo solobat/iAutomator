@@ -1,11 +1,10 @@
 import $ from "jquery";
 
-import { GlobalEvents } from "@src/helper/event";
+import { GlobalEvents, isCommonDOMEvent } from "@src/helper/event";
 
 import { BUILTIN_ACTIONS } from "../common/const";
 import { Base } from "./Base";
 import { ExecOptions } from "./types";
-import { Env } from "@src/helper/script";
 
 export interface EventExecOptions extends ExecOptions {
   events: string;
@@ -73,7 +72,7 @@ export class OnEvent extends Base {
       this.helper.emitter.on(eventName, handler);
     } else if (this.isBom(eventName)) {
       window.addEventListener(eventName, handler);
-    } else {
+    } else if (isCommonDOMEvent(eventName)) {
       // FIXME: for backward compatibility
       if (selector) {
         $(selector).on(eventName, handler);
@@ -84,6 +83,12 @@ export class OnEvent extends Base {
           elem.addEventListener(eventName, handler);
         }
       }
+    } else {
+      this.helper.keyboard.bind(eventName, (event) => {
+        event.stopPropagation();
+        event.preventDefault();
+        handler(event);
+      });
     }
   }
 

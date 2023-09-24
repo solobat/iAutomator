@@ -1,6 +1,7 @@
 import { NOTICE_TARGET } from "@src/common/enum";
 import { Stack } from "@src/helper/data";
 import { SimpleEvent } from "@src/utils/event";
+import { bind, pressKey, unbind } from "keyboardjs";
 
 export interface execFn {
   (elem, event): void;
@@ -36,6 +37,11 @@ export interface ActionHelper<A, T extends ExecOptions = ExecOptions> {
   onRevisible: (fn: () => void) => () => void;
   emitter: SimpleEvent;
   broadcast: Broadcast;
+  keyboard: {
+    bind: typeof bind;
+    unbind: typeof unbind;
+    pressKey: typeof pressKey;
+  };
 }
 
 export type ActionRunMode = "single" | "group";

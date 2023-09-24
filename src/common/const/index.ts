@@ -35,6 +35,7 @@ const local_i18n = {
     close_page: "Close page",
     text_replacing: "Text replacing",
     style: "Style",
+    common_action: "Common action",
   },
   zh_CN: {
     read_mode: "阅读模式",
@@ -72,6 +73,7 @@ const local_i18n = {
     close_page: "关闭页面",
     text_replacing: "文本替换",
     style: "样式",
+    common_action: "常用操作",
   },
 };
 
@@ -155,6 +157,7 @@ export const BUILTIN_ACTIONS = {
   REDIRECT: "redirect",
   SCROLL: "scroll",
   FOCUS: "focus",
+  COMMON: "common",
   PROTECT: "protect",
   PICTURE_IN_PICTURE: "pictureInPicture",
   DARK_MODE: "darkMode",
@@ -195,6 +198,12 @@ export const BUILTIN_ACTION_CONFIGS: BuildInActionConfig[] = [
     title: t("bookmark"),
     contexts: ["all"],
     asCommand: false,
+  },
+  {
+    name: "COMMON",
+    title: t("common_action"),
+    contexts: ["all"],
+    asCommand: true,
   },
   {
     name: "KILL_ELEMENT",
@@ -459,7 +468,42 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
       },
     ],
   },
-
+  {
+    value: BUILTIN_ACTIONS.COMMON,
+    label: t("common_action"),
+    args: [
+      {
+        tips: "Common actions",
+        name: "action",
+        type: "string",
+        value: "",
+        defaultValue: "",
+        placeholder: "",
+        optionalValues: [
+          "scrollDown",
+          "scrollUp",
+          "scrollToTop",
+          "scrollToBottom",
+          "scrollPageDown",
+          "scrollPageUp",
+          "scrollFullPageDown",
+          "scrollFullPageUp",
+          "scrollLeft",
+          "scrollRight",
+          "scrollToLeft",
+          "scrollToRight",
+          "reload",
+          "copyCurrentUrl",
+          "openCopiedUrlInCurrentTab",
+          "openCopiedUrlInNewTab",
+          "goUp",
+          "goToRoot",
+          "goPrevious",
+          "goNext",
+        ],
+      },
+    ],
+  },
   {
     value: BUILTIN_ACTIONS.CODE_COPY,
     label: t("code_copy"),
@@ -946,3 +990,26 @@ export const SYNC_STATUS = {
 export const WEBDAV_MIN_SYNC_INTERVAL = SYNC_INTERVAL_OPTIONS[0].value;
 
 export const WEBDAV_MAX_SYNC_INTERVAL = SYNC_INTERVAL_OPTIONS[4].value;
+
+export const COMMON_ACTIONS = [
+  "scrollDown",
+  "scrollUp",
+  "scrollToTop",
+  "scrollToBottom",
+  "scrollPageDown",
+  "scrollPageUp",
+  "scrollFullPageDown",
+  "scrollFullPageUp",
+  "scrollLeft",
+  "scrollRight",
+  "scrollToLeft",
+  "scrollToRight",
+  "reload",
+  "copyCurrentUrl",
+  "openCopiedUrlInCurrentTab",
+  "openCopiedUrlInNewTab",
+  "goUp",
+  "goToRoot",
+  "goPrevious",
+  "goNext",
+] as const;

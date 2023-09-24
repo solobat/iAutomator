@@ -313,6 +313,12 @@ export const helper: ActionHelper<Base> = {
 
   emitter,
 
+  keyboard: {
+    bind: keyboardJS.bind.bind(keyboardJS),
+    unbind: keyboardJS.unbind.bind(keyboardJS),
+    pressKey: keyboardJS.pressKey.bind(keyboardJS),
+  },
+
   broadcast: {
     init() {
       helper.emitter.on(
