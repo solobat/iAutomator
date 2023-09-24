@@ -1,7 +1,12 @@
+import {
+  bindKey,
+  bindKeyCombo,
+  unbindKey,
+  unbindKeyCombo,
+} from "@rwh/keystrokes";
 import { NOTICE_TARGET } from "@src/common/enum";
 import { Stack } from "@src/helper/data";
 import { SimpleEvent } from "@src/utils/event";
-import { bind, pressKey, unbind } from "keyboardjs";
 
 export interface execFn {
   (elem, event): void;
@@ -38,9 +43,10 @@ export interface ActionHelper<A, T extends ExecOptions = ExecOptions> {
   emitter: SimpleEvent;
   broadcast: Broadcast;
   keyboard: {
-    bind: typeof bind;
-    unbind: typeof unbind;
-    pressKey: typeof pressKey;
+    bindKeyCombo: typeof bindKeyCombo;
+    unbindKeyCombo: typeof unbindKeyCombo;
+    bindKey: typeof bindKey;
+    unbindKey: typeof unbindKey;
   };
 }
 

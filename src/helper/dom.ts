@@ -1,7 +1,7 @@
 import $ from "jquery";
-import keyboardJS from "keyboardjs";
 
 import { ROUTE_CHANGE_TYPE } from "../common/const";
+import { unbindKey, bindKey } from "@rwh/keystrokes";
 
 let stop, cssInserted;
 
@@ -43,11 +43,13 @@ function start() {
   function stop() {
     $(document).off("mouseover", listenMouseover);
     $(document).off("mouseout", listenMouseout);
-    keyboardJS.unbind("up");
+    unbindKey("ArrowUp");
   }
 
-  keyboardJS.bind("up", (event) => {
+  bindKey("ArrowUp", (event) => {
     event.preventDefault();
+    event.originalEvent.preventDefault();
+    event.originalEvent.stopPropagation();
     const $p = $(`.${outlineCls}`).parent();
 
     if ($p.length) {
@@ -105,7 +107,7 @@ export function setupOutline() {
     true
   );
 
-  keyboardJS.bind("esc", () => {
+  bindKey("Escape", () => {
     stopOutline();
   });
 }

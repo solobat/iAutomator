@@ -1,5 +1,4 @@
 import $ from "jquery";
-import keyboardJS from "keyboardjs";
 
 import { BUILTIN_ACTIONS } from "../common/const";
 import { Base } from "./Base";
@@ -95,12 +94,12 @@ export class ReadMode extends Base {
     const nextFn = fnCreator((cur) => cur.next());
     const prevFn = fnCreator((cur) => cur.prev());
 
-    keyboardJS.bind("right", nextFn);
-    keyboardJS.bind("left", prevFn);
+    this.helper.keyboard.bindKey("ArrowRight", nextFn);
+    this.helper.keyboard.bindKey("ArrowLeft", prevFn);
 
     this.registerUnload(() => {
-      keyboardJS.unbind("right", nextFn);
-      keyboardJS.unbind("left", prevFn);
+      this.helper.keyboard.unbindKey("ArrowRight", nextFn);
+      this.helper.keyboard.unbindKey("ArrowLeft", prevFn);
     });
   }
 

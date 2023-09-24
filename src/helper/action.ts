@@ -1,5 +1,10 @@
 import getCssSelector from "css-selector-generator";
-import keyboardJS from "keyboardjs";
+import {
+  bindKeyCombo,
+  unbindKeyCombo,
+  bindKey,
+  unbindKey,
+} from "@rwh/keystrokes";
 
 import {
   ActionHelper,
@@ -25,7 +30,7 @@ import {
   setupOutline,
   startOutline,
 } from "./dom";
-import { GlobalEvents, noticeBg } from "./event";
+import { GlobalEvents, isComboKey, noticeBg } from "./event";
 import { InstructionData } from "./instruction";
 import { parseScript, ScriptAutomation, ScriptInstruction } from "./script";
 
@@ -314,9 +319,10 @@ export const helper: ActionHelper<Base> = {
   emitter,
 
   keyboard: {
-    bind: keyboardJS.bind.bind(keyboardJS),
-    unbind: keyboardJS.unbind.bind(keyboardJS),
-    pressKey: keyboardJS.pressKey.bind(keyboardJS),
+    bindKeyCombo: bindKeyCombo,
+    unbindKeyCombo: unbindKeyCombo,
+    bindKey: bindKey,
+    unbindKey: unbindKey,
   },
 
   broadcast: {
@@ -362,8 +368,8 @@ function setupRevisible(cb: () => void) {
 }
 
 function setupEsc(cb: () => void, helper: ActionHelper<Base>) {
-  keyboardJS.bind("esc", function onEsc(event) {
-    if (!event.shiftKey) {
+  bindKey("Escape", function onEsc(event) {
+    if (!event.originalEvent.shiftKey) {
       cb();
       helper.resetActionCache();
     }
@@ -371,8 +377,8 @@ function setupEsc(cb: () => void, helper: ActionHelper<Base>) {
 }
 
 function setupRedo(cb: () => void, helper: ActionHelper<Base>) {
-  keyboardJS.bind("esc", function onRedo(event) {
-    if (event.shiftKey) {
+  bindKey("Escape", function onRedo(event) {
+    if (event.originalEvent.shiftKey) {
       cb();
     }
   });
@@ -526,15 +532,27 @@ function initAutomations() {
 
 function initShortcuts() {
   shortcuts.map((shortcut) => {
-    const onTrigger = (event) => {
-      event.preventDefault();
-      exceAutomationById(shortcut.aid);
-    };
-    keyboardJS.bind(shortcut.shortcut, onTrigger);
+    if (isComboKey(shortcut.shortcut)) {
+      const onTrigger = ({ finalKeyEvent }) => {
+        finalKeyEvent.preventDefault();
+        exceAutomationById(shortcut.aid);
+      };
+      bindKeyCombo(shortcut.shortcut, onTrigger);
 
-    return () => {
-      keyboardJS.unbind(shortcut.shortcut, onTrigger);
-    };
+      return () => {
+        unbindKeyCombo(shortcut.shortcut, onTrigger);
+      };
+    } else {
+      const onTrigger = (event) => {
+        event.originalEvent.preventDefault();
+        exceAutomationById(shortcut.aid);
+      };
+      bindKey(shortcut.shortcut, onTrigger);
+
+      return () => {
+        unbindKey(shortcut.shortcut, onTrigger);
+      };
+    }
   });
 }
 

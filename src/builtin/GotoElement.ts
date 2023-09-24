@@ -1,5 +1,4 @@
 import $ from "jquery";
-import keyboardJS from "keyboardjs";
 
 import { BUILTIN_ACTIONS } from "../common/const";
 import { Base } from "./Base";
@@ -96,10 +95,10 @@ export class GotoElement extends Base {
         this.goto(1);
       }
 
-      keyboardJS.bind("command+shift+down", () => {
+      this.helper.keyboard.bindKeyCombo("Meta+Shift+ArrowDown", () => {
         this.goto(1);
       });
-      keyboardJS.bind("command+shift+up", () => {
+      this.helper.keyboard.bindKeyCombo("Meta+Shift+ArrowUp", () => {
         this.goto(-1);
       });
 

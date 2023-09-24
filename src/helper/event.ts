@@ -65,3 +65,7 @@ const commonDOMEvents: Set<string> = new Set([
 export function isCommonDOMEvent(eventName: string): boolean {
   return commonDOMEvents.has(eventName);
 }
+
+export function isComboKey(eventName: string): boolean {
+  return [",", ">", "+"].some((c) => eventName.includes(c));
+}

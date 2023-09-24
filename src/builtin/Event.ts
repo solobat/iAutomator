@@ -1,6 +1,6 @@
 import $ from "jquery";
 
-import { GlobalEvents, isCommonDOMEvent } from "@src/helper/event";
+import { GlobalEvents, isComboKey, isCommonDOMEvent } from "@src/helper/event";
 
 import { BUILTIN_ACTIONS } from "../common/const";
 import { Base } from "./Base";
@@ -84,11 +84,21 @@ export class OnEvent extends Base {
         }
       }
     } else {
-      this.helper.keyboard.bind(eventName, (event) => {
-        event.stopPropagation();
-        event.preventDefault();
-        handler(event);
-      });
+      if (isComboKey(eventName)) {
+        this.helper.keyboard.bindKeyCombo(eventName, ({ finalKeyEvent }) => {
+          console.log("combokey event trigger: ", eventName, finalKeyEvent);
+
+          finalKeyEvent.preventDefault();
+          handler(finalKeyEvent);
+        });
+      } else {
+        this.helper.keyboard.bindKey(eventName, (event) => {
+          console.log("key event trigger: ", eventName, event);
+
+          event.preventDefault();
+          handler(event);
+        });
+      }
     }
   }
 

@@ -53,7 +53,7 @@
     "ws": "8.9.0"
   },
   "dependencies": {
-    "@types/keyboardjs": "^2.5.1",
+    "@rwh/keystrokes": "^1.2.3",
     "ahooks": "^3.7.5",
     "antd": "^5.5.0",
     "chrome-extension-libs": "^1.1.4",
@@ -62,7 +62,6 @@
     "dexie": "^3.2.2",
     "is-in-viewport": "^3.0.4",
     "jquery": "^3.4.1",
-    "keyboardjs": "^2.5.1",
     "lodash": "^4.17.15",
     "prismjs": "^1.29.0",
     "react": "18.2.0",
