@@ -5,7 +5,11 @@ import { ExecOptions } from "./types";
 interface CommonExecOptions extends ExecOptions {
   action: keyof typeof COMMON_ACTIONS;
 }
-const actionFns = {};
+const actionFns = {
+  scrollToTop,
+  scrollToBottom,
+  reload,
+};
 
 export class CommonAction extends Base {
   name = BUILTIN_ACTIONS.COMMON;
@@ -20,4 +24,16 @@ export class CommonAction extends Base {
 
     return true;
   }
+}
+
+function scrollToTop() {
+  window.scrollBy(0, -document.body.scrollHeight);
+}
+
+function scrollToBottom() {
+  window.scrollBy(0, document.body.scrollHeight);
+}
+
+function reload() {
+  location.reload();
 }

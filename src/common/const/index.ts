@@ -133,6 +133,29 @@ export const ROUTE_CHANGE_TYPE = {
 
 export type BuiltInActionName = keyof typeof BUILTIN_ACTIONS;
 
+export const COMMON_ACTIONS = [
+  // "scrollDown",
+  // "scrollUp",
+  "scrollToTop",
+  "scrollToBottom",
+  // "scrollPageDown",
+  // "scrollPageUp",
+  // "scrollFullPageDown",
+  // "scrollFullPageUp",
+  // "scrollLeft",
+  // "scrollRight",
+  // "scrollToLeft",
+  // "scrollToRight",
+  "reload",
+  // "copyCurrentUrl",
+  // "openCopiedUrlInCurrentTab",
+  // "openCopiedUrlInNewTab",
+  // "goUp",
+  // "goToRoot",
+  // "goPrevious",
+  // "goNext",
+] as const;
+
 export const BUILTIN_ACTIONS = {
   HIGHLIGHT_ENGLISH_SYNTAX: "highlightEnglishSyntax",
   KILL_ELEMENT: "killElement",
@@ -479,28 +502,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         value: "",
         defaultValue: "",
         placeholder: "",
-        optionalValues: [
-          "scrollDown",
-          "scrollUp",
-          "scrollToTop",
-          "scrollToBottom",
-          "scrollPageDown",
-          "scrollPageUp",
-          "scrollFullPageDown",
-          "scrollFullPageUp",
-          "scrollLeft",
-          "scrollRight",
-          "scrollToLeft",
-          "scrollToRight",
-          "reload",
-          "copyCurrentUrl",
-          "openCopiedUrlInCurrentTab",
-          "openCopiedUrlInNewTab",
-          "goUp",
-          "goToRoot",
-          "goPrevious",
-          "goNext",
-        ],
+        optionalValues: COMMON_ACTIONS as unknown as string[],
       },
     ],
   },
@@ -990,26 +992,3 @@ export const SYNC_STATUS = {
 export const WEBDAV_MIN_SYNC_INTERVAL = SYNC_INTERVAL_OPTIONS[0].value;
 
 export const WEBDAV_MAX_SYNC_INTERVAL = SYNC_INTERVAL_OPTIONS[4].value;
-
-export const COMMON_ACTIONS = [
-  "scrollDown",
-  "scrollUp",
-  "scrollToTop",
-  "scrollToBottom",
-  "scrollPageDown",
-  "scrollPageUp",
-  "scrollFullPageDown",
-  "scrollFullPageUp",
-  "scrollLeft",
-  "scrollRight",
-  "scrollToLeft",
-  "scrollToRight",
-  "reload",
-  "copyCurrentUrl",
-  "openCopiedUrlInCurrentTab",
-  "openCopiedUrlInNewTab",
-  "goUp",
-  "goToRoot",
-  "goPrevious",
-  "goNext",
-] as const;
