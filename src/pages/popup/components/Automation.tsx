@@ -10,6 +10,7 @@ import { useCallback, useContext, useEffect, useState } from "react";
 
 import {
   DeleteOutlined,
+  EditFilled,
   EditOutlined,
   MacCommandOutlined,
   MinusSquareOutlined,
@@ -53,6 +54,7 @@ import Editor from "react-simple-code-editor";
 import { Grammar, highlight } from "prismjs";
 import Form from "antd/es/form";
 import { ExecOptions } from "@src/builtin/types";
+import { useToggle } from "ahooks";
 
 const { Option } = Select;
 const hightlightWithLineNumbers = (
@@ -635,6 +637,7 @@ const AutomationsColumns = [
     width: "180px",
     textWrap: "word-break",
     ellipsis: true,
+    render: (runAt, record) => <ItemName record={record} />,
   },
   {
     title: t("instructions"),
@@ -662,6 +665,39 @@ const AutomationsColumns = [
   },
 ];
 
+function ItemName(props: any) {
+  const { state, dispatch } = useModel();
+  const [editable, setEditable] = useState(false);
+  const [name, setName] = useState(props.record.name);
+  const onChange = (event) => {
+    setName(event.target.value);
+  };
+  const onEnter = () => {
+    automationsController
+      .updateAutomation(props.record.id, {
+        name,
+      })
+      .then(() => {
+        setEditable(false);
+        fetchList(state, dispatch).then(() => {
+          noticeBg({ action: PAGE_ACTIONS.REFRESH_AUTOMATIONS });
+        });
+      });
+  };
+
+  return (
+    <Input
+      value={name}
+      disabled={!editable}
+      onChange={onChange}
+      suffix={
+        !editable && <EditFilled rev={""} onClick={() => setEditable(true)} />
+      }
+      onPressEnter={onEnter}
+    ></Input>
+  );
+}
+
 function RunAt(props: any) {
   const { state, dispatch } = useModel();
   const onChange = useCallback((value) => {
@@ -688,7 +724,10 @@ function RunAt(props: any) {
 
 function OpBtns(props: any) {
   return (
-    <div className="op-btns" style={{ minWidth: "120px" }}>
+    <div
+      className="op-btns"
+      style={{ minWidth: "120px", display: "flex", alignItems: "center" }}
+    >
       <SwitchBtn record={props.record} />
       <EditBtn record={props.record} />
       <ShareBtn item={props.record} />
