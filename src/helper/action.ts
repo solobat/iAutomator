@@ -398,7 +398,7 @@ export function install(actionFns: (helper: ActionHelper<Base>) => void) {
 
 export function mount(item: IAutomation) {
   automations.push(item);
-  execAutomationItem(item, item.runAt);
+  execAutomationItem(item, -1, item.runAt);
 }
 
 export function unmount(item: IAutomation) {
@@ -599,21 +599,29 @@ function parseInstructions(content: string): InstructionData[] {
   });
 }
 
+function scriptAutomationId(id: number, index: number) {
+  return id * 10000 + index;
+}
+
 function execAutomationScripts(
   scripts: string,
+  index: number,
   id: number,
   options?: ExecOptions
 ) {
   try {
-    const [automation] = parseScript(scripts);
+    const automations = parseScript(scripts);
+    const list = index === -1 ? automations : [automations[index]];
 
-    automation.id = id;
-    exceScriptAutomation(
-      automation.instructions,
-      0,
-      automation.runAt,
-      getScriptAutomationOptions(automation, options)
-    );
+    list.forEach((automation, index) => {
+      automation.id = scriptAutomationId(id, index);
+      exceScriptAutomation(
+        automation.instructions,
+        0,
+        automation.runAt,
+        getScriptAutomationOptions(automation, options)
+      );
+    });
   } catch (error) {
     console.log("parse error", error);
   }
@@ -621,12 +629,13 @@ function execAutomationScripts(
 
 function execAutomations(automations: IAutomation[], runAt: RunAt) {
   automations.forEach((item) => {
-    execAutomationItem(item, runAt);
+    execAutomationItem(item, -1, runAt);
   });
 }
 
 function execAutomationItem(
   item: IAutomation,
+  index: number,
   runAt: RunAt,
   options?: ExecOptions
 ) {
@@ -638,15 +647,27 @@ function execAutomationItem(
       getOptions(item, options)
     );
   } else if (item.scripts) {
-    execAutomationScripts(item.scripts, item.id, options);
+    execAutomationScripts(item.scripts, index, item.id, options);
+  }
+}
+
+function parseAutomationId(id: number) {
+  if (id >= 10000) {
+    const index = id % 10000;
+    const aid = Math.floor(id / 10000);
+
+    return { index, aid };
+  } else {
+    return { index: 0, aid: id };
   }
 }
 
 export function exceAutomationById(id: number, options?: ExecOptions) {
-  const item = automations.find((a) => a.id === id);
+  const { index, aid } = parseAutomationId(id);
+  const item = automations.find((a) => a.id === aid);
 
   if (item) {
-    execAutomationItem(item, item.runAt, options);
+    execAutomationItem(item, index, item.runAt, options);
   }
 }
 

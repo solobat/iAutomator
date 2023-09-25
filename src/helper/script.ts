@@ -61,6 +61,7 @@ export interface ScriptInstruction {
 
 export interface ScriptAutomation {
   id?: number;
+  index?: number;
   pattern: string;
   runAt: RunAt;
   instructions: ScriptInstruction[];
