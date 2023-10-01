@@ -11,7 +11,6 @@ export class FocusElement extends Base {
     } else {
       elem.focus();
     }
-    this.recordIfNeeded(options);
 
     return true;
   }

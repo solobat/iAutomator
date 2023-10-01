@@ -62,7 +62,6 @@ export class SingleTab extends Base {
   execute(elem, options: Partial<SingleTabExecOptions>) {
     this.listenEvents();
     this.noticeOthersToSingle(options.action);
-    this.recordIfNeeded(options);
 
     return true;
   }

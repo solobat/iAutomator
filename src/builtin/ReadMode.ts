@@ -40,8 +40,6 @@ export class ReadMode extends Base {
       this.hideSiblings($(elem));
     });
 
-    this.recordIfNeeded(options, elem);
-
     return true;
   }
 

@@ -23,7 +23,6 @@ export class SetTitle extends Base {
     this.registerUnload(() => {
       document.title = originTitle;
     });
-    this.recordIfNeeded(options);
 
     return true;
   }

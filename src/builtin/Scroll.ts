@@ -135,7 +135,6 @@ export class Scroll extends Base<ScrollExecOptions> {
     this.runtimeOptions = options;
 
     this.initScroll(speed);
-    this.recordIfNeeded(options);
 
     return true;
   }

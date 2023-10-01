@@ -42,6 +42,8 @@ export abstract class Base<T extends ExecOptions = ExecOptions> {
    */
   runtimeOptions?: Partial<T>;
 
+  recordable = true;
+
   lastExec?: () => void;
 
   constructor(
@@ -120,6 +122,7 @@ export abstract class Base<T extends ExecOptions = ExecOptions> {
     };
     this.runtimeOptions = options;
     const result = this.execute(elem, options, effect);
+    this.recordIfNeeded(options as T, elem);
     if (this.options.esc2exit) {
       this.active = true;
     }
@@ -228,7 +231,7 @@ export abstract class Base<T extends ExecOptions = ExecOptions> {
    * create a record when action executed by user command
    */
   recordIfNeeded(options: T, elem?) {
-    if (this.options.shouldRecord && !options.silent) {
+    if (this.options.shouldRecord && !options.silent && this.recordable) {
       this.helper.recordAction(this.name, elem, options);
     }
   }

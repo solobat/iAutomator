@@ -54,7 +54,6 @@ export class CreateNote extends Base {
         this.create(options.value, false);
       }
     }
-    this.recordIfNeeded(options);
     setTimeout(() => {
       this.callNext(options, options);
     }, 1000);

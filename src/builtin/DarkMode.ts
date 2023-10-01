@@ -72,8 +72,6 @@ export class DarkMode extends Base<DarkModeOptions> {
 
     $("html").attr("theme", this.theme);
 
-    this.recordIfNeeded(options);
-
     this.registerUnload(() => {
       $("html").attr("theme", "");
     });

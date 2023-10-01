@@ -7,7 +7,6 @@ export class ClosePage extends Base {
 
   execute(_, options: Partial<ExecOptions>) {
     window.close();
-    this.recordIfNeeded(options);
 
     return true;
   }

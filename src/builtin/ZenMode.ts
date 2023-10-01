@@ -36,6 +36,7 @@ export class ZenMode extends Base<ZenModeExecOptions> {
     const { word = "Zen", delay, bgcolor, color } = options;
     const skey = "ex-hp-zen-pass";
     const passed = Boolean(window.sessionStorage.getItem(skey));
+    this.recordable = false;
 
     if (passed) {
       return true;
@@ -62,7 +63,7 @@ export class ZenMode extends Base<ZenModeExecOptions> {
         this.layer.remove();
       });
 
-      this.recordIfNeeded(options, elem);
+      this.recordable = true;
     } else {
       this.layer.css("opacity", "1");
       this.layer.show();

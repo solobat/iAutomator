@@ -102,7 +102,6 @@ export class GotoElement extends Base {
         this.goto(-1);
       });
 
-      this.recordIfNeeded(options);
       this.inited = true;
     }
 

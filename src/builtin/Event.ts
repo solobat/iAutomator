@@ -120,7 +120,6 @@ export class OnEvent extends Base {
         this.emitEvents(options);
       }
     }
-    this.recordIfNeeded(options);
 
     return true;
   }

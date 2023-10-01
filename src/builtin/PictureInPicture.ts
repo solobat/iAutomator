@@ -25,14 +25,15 @@ export class PictureInPicture extends Base {
   }
 
   execute(elem, options: Partial<ExecOptions>) {
+    this.recordable = false;
+
     if (document.pictureInPictureEnabled) {
       if (this.started) {
         this.stopPIP();
       } else {
         if (elem) {
           this.startPIP(elem);
-
-          this.recordIfNeeded(options);
+          this.recordable = true;
         } else {
           noticeBg({
             action: PAGE_ACTIONS.NOTICE,

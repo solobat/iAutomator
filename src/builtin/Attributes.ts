@@ -53,7 +53,6 @@ export class ModifyAttributes extends Base<ModifyAttributesExecOptions> {
 
   execute(elem, options: Partial<ModifyAttributesExecOptions>) {
     this.modify(elem, options);
-    this.recordIfNeeded(options);
     this.callNext(options, options);
 
     return true;

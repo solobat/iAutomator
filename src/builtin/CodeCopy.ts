@@ -139,8 +139,9 @@ export class CodeCopy extends Base<CodeCopyExecOptions> {
     const inlineResult = this.handleInlineCode(options);
 
     if (blockResult || inlineResult) {
-      this.recordIfNeeded(options);
       this.inited = true;
+    } else {
+      this.recordable = false;
     }
 
     return true;

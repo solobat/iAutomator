@@ -168,8 +168,6 @@ export class Outline extends Base {
       this.createOutlineBtn(elem, options);
     }
 
-    this.recordIfNeeded(options);
-
     return true;
   }
 }

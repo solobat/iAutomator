@@ -35,10 +35,9 @@ export class TimeUpdate extends Base {
         elem.removeEventListener("timeupdate", onTimeupdate);
       });
 
-      this.recordIfNeeded(options);
-
       return true;
     } else {
+      this.recordable = false;
       return false;
     }
   }

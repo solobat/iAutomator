@@ -52,7 +52,6 @@ export class OpenPage extends Base<OpenPageExecOptions> {
       },
       NOTICE_TARGET.BACKGROUND
     );
-    this.recordIfNeeded(options);
 
     return true;
   }

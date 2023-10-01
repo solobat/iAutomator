@@ -16,7 +16,6 @@ export class ProtectPage extends Base {
     window.onbeforeunload = function () {
       return "This page has been protect by yourself";
     };
-    this.recordIfNeeded(options);
     this.registerUnload(() => {
       document.title = this.rawTitle;
       window.onbeforeunload = null;

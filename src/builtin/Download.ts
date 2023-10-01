@@ -110,8 +110,8 @@ export class Download extends Base {
       const result = this.downloadSource(elem);
       this.downloaded = result;
 
-      if (result) {
-        this.recordIfNeeded(options, elem);
+      if (!result) {
+        this.recordable = false;
       }
 
       return true;
@@ -119,8 +119,8 @@ export class Download extends Base {
       const result = this.downloadBg(elem);
       this.downloaded = result;
 
-      if (result) {
-        this.recordIfNeeded(options, elem);
+      if (!result) {
+        this.recordable = false;
       }
 
       return true;

@@ -27,6 +27,7 @@ export class ReloadPage extends Base {
 
   execute(_, options: Partial<ReloadPageExecOptions>) {
     const interval = Number(options.interval);
+    this.recordable = false;
 
     if (
       interval &&
@@ -36,7 +37,7 @@ export class ReloadPage extends Base {
       setTimeout(() => {
         window.location.reload();
       }, interval * 1000);
-      this.recordIfNeeded(options);
+      this.recordable = true;
     } else {
       setTimeout(() => {
         this.callNext(options, options);

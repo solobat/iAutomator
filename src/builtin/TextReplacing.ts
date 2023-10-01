@@ -30,7 +30,6 @@ export class TextReplacing extends Base<TextReplacingExecOptions> {
 
   execute(elem, options: Partial<TextReplacingExecOptions>) {
     this.replace(options);
-    this.recordIfNeeded(options);
     this.callNext(options, options);
 
     return true;

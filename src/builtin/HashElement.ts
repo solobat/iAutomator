@@ -20,8 +20,6 @@ export class HashElement extends Base {
       })
       .addClass(this.cls);
 
-    this.recordIfNeeded(options);
-
     return true;
   }
 }

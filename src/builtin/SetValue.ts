@@ -29,7 +29,6 @@ export class SetValue extends Base {
 
       this.callNext(options, options);
     }
-    this.recordIfNeeded(options);
 
     return true;
   }

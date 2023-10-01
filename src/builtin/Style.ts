@@ -35,7 +35,6 @@ export class SetStyle extends Base {
         elem.classList.remove(`${this.cls}-${options.type}`);
       });
     }
-    this.recordIfNeeded(options);
     setTimeout(() => {
       this.callNext(options, options);
     }, 1000);

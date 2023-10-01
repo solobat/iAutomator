@@ -26,7 +26,6 @@ export class CommonAction extends Base {
     const fn = actionFns[action];
 
     fn?.();
-    this.recordIfNeeded(options);
 
     return true;
   }

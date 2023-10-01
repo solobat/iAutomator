@@ -16,8 +16,6 @@ export class Wait extends Base {
       this.callNext(options, options);
     }, time * 1000);
 
-    this.recordIfNeeded(options);
-
     return true;
   }
 }
