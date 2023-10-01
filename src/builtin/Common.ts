@@ -9,6 +9,12 @@ const actionFns = {
   scrollToTop,
   scrollToBottom,
   reload,
+  forwardVideo,
+  rewindVideo,
+  videoVolumeUp,
+  videoVolumeDown,
+  videoRateUp,
+  videoRateDown,
 };
 
 export class CommonAction extends Base {
@@ -36,4 +42,46 @@ function scrollToBottom() {
 
 function reload() {
   location.reload();
+}
+
+function forwardVideo() {
+  const video = document.querySelector("video");
+  if (video) {
+    video.currentTime += 10;
+  }
+}
+
+function rewindVideo() {
+  const video = document.querySelector("video");
+  if (video) {
+    video.currentTime -= 10;
+  }
+}
+
+function videoVolumeUp() {
+  const video = document.querySelector("video");
+  if (video) {
+    video.volume += 0.1;
+  }
+}
+
+function videoVolumeDown() {
+  const video = document.querySelector("video");
+  if (video) {
+    video.volume -= 0.1;
+  }
+}
+
+function videoRateUp() {
+  const video = document.querySelector("video");
+  if (video) {
+    video.playbackRate *= 2;
+  }
+}
+
+function videoRateDown() {
+  const video = document.querySelector("video");
+  if (video) {
+    video.playbackRate /= 2;
+  }
 }
