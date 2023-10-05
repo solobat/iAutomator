@@ -93,10 +93,20 @@ export class OnEvent extends Base {
         });
       } else {
         this.helper.keyboard.bindKey(eventName, (event) => {
-          console.log("key event trigger: ", eventName, event);
+          const elem = event.originalEvent.target as any;
+          const tagName = elem.tagName;
 
-          event.preventDefault();
-          handler(event);
+          if (
+            tagName !== "INPUT" &&
+            tagName !== "TEXTAREA" &&
+            tagName !== "SELECT" &&
+            elem.contentEditable !== "true"
+          ) {
+            console.log("key event trigger: ", eventName, event);
+
+            event.preventDefault();
+            handler(event);
+          }
         });
       }
     }
