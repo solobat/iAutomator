@@ -134,8 +134,6 @@ export const ROUTE_CHANGE_TYPE = {
 export type BuiltInActionName = keyof typeof BUILTIN_ACTIONS;
 
 export const COMMON_ACTIONS = [
-  // "scrollDown",
-  // "scrollUp",
   "scrollToTop",
   "scrollToBottom",
   "forwardVideo",
@@ -144,22 +142,11 @@ export const COMMON_ACTIONS = [
   "videoVolumeDown",
   "videoRateUp",
   "videoRateDown",
-  // "scrollPageDown",
-  // "scrollPageUp",
-  // "scrollFullPageDown",
-  // "scrollFullPageUp",
-  // "scrollLeft",
-  // "scrollRight",
-  // "scrollToLeft",
-  // "scrollToRight",
+  "nextPage",
+  "prevPage",
+  "scrollItemDown",
+  "scrollItemUp",
   "reload",
-  // "copyCurrentUrl",
-  // "openCopiedUrlInCurrentTab",
-  // "openCopiedUrlInNewTab",
-  // "goUp",
-  // "goToRoot",
-  // "goPrevious",
-  // "goNext",
 ] as const;
 
 export const BUILTIN_ACTIONS = {
