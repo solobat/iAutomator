@@ -1,7 +1,10 @@
+import getCssSelector from "css-selector-generator";
 import { BUILTIN_ACTIONS, COMMON_ACTIONS } from "../common/const";
 import { Base } from "./Base";
 import { ExecOptions } from "./types";
 import $ from "jquery";
+import { create } from "@src/helper/notifications";
+import { copyToClipboard } from "@src/helper/others";
 
 interface CommonExecOptions extends ExecOptions {
   action: keyof typeof COMMON_ACTIONS;
@@ -22,6 +25,7 @@ const actionFns = {
   nextPage,
   scrollItemDown,
   scrollItemUp,
+  selectDom,
 };
 
 export class CommonAction extends Base {
@@ -223,4 +227,16 @@ function nextPage() {
   if (elem) {
     elem.click();
   }
+}
+
+function selectDom(this: CommonAction) {
+  this.helper.prepare(
+    (elem) => {
+      const selector = getCssSelector(elem, { blacklist: [/ext-hp/] });
+      copyToClipboard(selector);
+    },
+    {
+      withOutline: true,
+    }
+  );
 }

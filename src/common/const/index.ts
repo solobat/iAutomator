@@ -147,6 +147,7 @@ export const COMMON_ACTIONS = [
   "scrollItemDown",
   "scrollItemUp",
   "reload",
+  "selectDom",
 ] as const;
 
 export const BUILTIN_ACTIONS = {
