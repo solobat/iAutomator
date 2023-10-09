@@ -50,7 +50,9 @@ test("parse work", () => {
   const automations = parseScript(
     `
   automation for "https://weibo.com/*" on "load"
-    apply "readMode" with (excludes=".Frame_wrap_16as0")  on "#homeWrap"
+    set a = 1
+    set b = exist("video")
+    require a == b
   end
   
   `.trim()

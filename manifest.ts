@@ -45,4 +45,9 @@ const manifest: chrome.runtime.ManifestV3 = {
   ],
 };
 
+const isDev = process.env.__DEV__ === "true";
+if (isDev) {
+  manifest.web_accessible_resources[0].resources.push("assets/js/*.js.map");
+}
+
 export default manifest;

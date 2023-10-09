@@ -32,7 +32,12 @@ export class Env {
   search(key: string) {
     const result = this.pair[0] === key;
     if (result) {
-      return this.pair[1] as ValueType;
+      const s = this.pair[1];
+      if (typeof s === "function") {
+        return s(this) as ValueType;
+      } else {
+        return s as ValueType;
+      }
     } else {
       if (this.prev) {
         return this.prev.search(key);
@@ -82,6 +87,8 @@ const Keywords = [
   "as",
   "with",
   "apply",
+  "len",
+  "exist",
 ];
 
 function parseAutomations(
@@ -173,7 +180,7 @@ function stage2runAt(stage: string) {
 }
 
 export interface Rule {
-  type: Token["type"];
+  type: Token["type"] | Array<Token["type"]>;
   keyword?: string;
   variableName?: string;
   isVariable?: boolean;
@@ -227,6 +234,8 @@ function parseStatement(
     return [env, parseNativeStatement(tokens, env)];
   } else if (isApplyStatementStart(firstToken)) {
     return [env, parseApplyStatement(tokens, env)];
+  } else if (isRequireStatementStart(firstToken)) {
+    return [env, parseRequireStatement(tokens, env)];
   } else {
     throwError("unsupport statement", tokens[0]);
   }
@@ -428,8 +437,16 @@ function getFirstPairTokens(tokens: Token[]) {
   }
 }
 
+function isRuleType(tokenType: string, ruleType: Rule["type"]) {
+  if (Array.isArray(ruleType)) {
+    return ruleType.includes(tokenType);
+  } else {
+    return ruleType === tokenType;
+  }
+}
+
 function matchRule(token: Token, rule: Rule, env: Env) {
-  if (rule && token.type === rule.type) {
+  if (rule && isRuleType(token.type, rule.type)) {
     if (rule.keyword) {
       if (rule.keyword === token.value) {
         if (rule.isVariable) {
@@ -540,6 +557,85 @@ function isApplyStatementStart(token: Token) {
   return token.type === "id" && token.value === "apply";
 }
 
+function isRequireStatementStart(token: Token) {
+  return token.type === "id" && token.value === "require";
+}
+
+function parseRequireStatement(tokens: Token[], env: Env) {
+  return parseComparisonExp(tokens.slice(1, -1), env);
+}
+
+function parseComparisonExp(tokens: Token[], env: Env): ScriptInstruction {
+  const rules: Rule[] = [
+    { type: ["id", "string", "number"] },
+    { type: "operator" },
+    { type: ["id", "string", "number"] },
+  ];
+
+  matchTokensWithRules(tokens, rules, env);
+  const [left, operator, right] = tokens;
+  const leftValue = parseValuableExp([left], left.value, env);
+  const rightValue = parseValuableExp([right], right.value, env);
+  const value = generateComparisonExpValue(
+    leftValue,
+    rightValue,
+    operator.value
+  );
+
+  return {
+    action: BUILTIN_ACTIONS.REQUIRE,
+    args: {},
+    env,
+    effect: () => {
+      if (typeof value === "function") {
+        return Boolean(value(env));
+      } else {
+        return Boolean(value);
+      }
+    },
+  };
+}
+
+function generateComparisonExpValue(
+  left: ValueResult,
+  right: ValueResult,
+  operator: string
+): ValueType | ((env: Env) => ValueType) {
+  const leftValue = left.value;
+  const rightValue = right.value;
+
+  if (typeof leftValue === "function" && typeof rightValue === "function") {
+    return (env: Env) => {
+      const left = leftValue(env);
+      const right = rightValue(env);
+
+      return compare(left, right, operator);
+    };
+  } else if (
+    typeof leftValue !== "function" &&
+    typeof rightValue !== "function"
+  ) {
+    return compare(leftValue, rightValue, operator);
+  }
+}
+
+function compare(left: ValueType, right: ValueType, operator: string) {
+  switch (operator) {
+    case "==":
+      return left === right;
+    case ">":
+      return left > right;
+    case ">=":
+      return left >= right;
+    case "<":
+      return left < right;
+    case "<=":
+      return left <= right;
+    default:
+      throwError(`unsupport operator: ${operator}`);
+  }
+}
+
 function parseAssignStatement(
   tokens: Token[],
   env: Env
@@ -566,14 +662,12 @@ function parseAssignExp(tokens: Token[], env) {
   return tokens[1].value;
 }
 
-function parseValuableExp(
-  tokens: Token[],
-  key: string,
-  env: Env
-): {
+interface ValueResult {
   value: ValueType | ((env: Env) => ValueType);
   instruction?: ScriptInstruction;
-} {
+}
+
+function parseValuableExp(tokens: Token[], key: string, env: Env): ValueResult {
   const [first, ...rest] = tokens;
 
   if (isValue(first) && expectExpEnd(rest)) {
@@ -592,7 +686,41 @@ function parseValuableExp(
       value: null,
       instruction,
     };
+  } else {
+    return {
+      value: parseFunctionCallExp(tokens, env),
+    };
   }
+}
+
+function parseFunctionCallExp(tokens: Token[], env: Env) {
+  const rules: Rule[] = [
+    { type: "id" },
+    { type: "LeftParenthesis" },
+    { type: "string" },
+    { type: "RightParenthesis" },
+  ];
+  matchTokensWithRules(tokens, rules, env);
+  const [funcName, , arg] = tokens;
+
+  if (isSupportFunctionName(funcName.value)) {
+    return resolveFunctionCallValue(funcName.value, arg.value);
+  } else {
+    throwError(`unsupport function: ${funcName.value}`);
+  }
+}
+
+function resolveFunctionCallValue(name: "len" | "exist", arg: string) {
+  if (name === "len") {
+    // HACK: a little hack, since the dom query is async
+    return () => document.querySelectorAll(arg).length;
+  } else if (name === "exist") {
+    return () => document.querySelector(arg) !== null;
+  }
+}
+
+function isSupportFunctionName(name: string) {
+  return ["len", "exist"].includes(name);
 }
 
 function parseListenExp(tokens: Token[], env: Env): ScriptInstruction {
@@ -704,6 +832,15 @@ function createLexer() {
   });
   lexer.rule(/"([^\r\n"]*)"/, (ctx, match) => {
     ctx.accept("string", match[1].replace(/\\"/g, '"'));
+  });
+  lexer.rule(/(>=|>|<=|<|==)/, (ctx) => {
+    ctx.accept("operator");
+  });
+  lexer.rule(/\(/, (ctx) => {
+    ctx.accept("LeftParenthesis");
+  });
+  lexer.rule(/\)/, (ctx) => {
+    ctx.accept("RightParenthesis");
   });
   lexer.rule(/\/\/[^\r\n]*\r?\n/, (ctx) => {
     ctx.ignore();

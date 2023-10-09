@@ -3,7 +3,6 @@ import { BUILTIN_ACTIONS, COMMON_ACTIONS } from "../common/const";
 import { Base } from "./Base";
 import { ExecOptions } from "./types";
 import $ from "jquery";
-import { create } from "@src/helper/notifications";
 import { copyToClipboard } from "@src/helper/others";
 
 interface CommonExecOptions extends ExecOptions {
@@ -26,6 +25,7 @@ const actionFns = {
   scrollItemDown,
   scrollItemUp,
   selectDom,
+  call,
 };
 
 export class CommonAction extends Base {
@@ -33,12 +33,16 @@ export class CommonAction extends Base {
 
   timers: Record<string, number> = {};
 
-  execute(elem, options: Partial<CommonExecOptions>) {
+  execute(
+    elem,
+    options: Partial<CommonExecOptions>,
+    effect?: (options?: any) => any
+  ) {
     const { action } = options;
 
     const fn = actionFns[action];
 
-    fn?.call(this, options);
+    fn?.call(this, options, effect);
 
     return true;
   }
@@ -239,4 +243,8 @@ function selectDom(this: CommonAction) {
       withOutline: true,
     }
   );
+}
+
+function call(this: CommonAction, elem, options, effect) {
+  effect?.(options);
 }

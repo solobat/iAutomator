@@ -36,6 +36,7 @@ const local_i18n = {
     text_replacing: "Text replacing",
     style: "Style",
     common_action: "Common action",
+    require: "Require",
   },
   zh_CN: {
     read_mode: "阅读模式",
@@ -74,6 +75,7 @@ const local_i18n = {
     text_replacing: "文本替换",
     style: "样式",
     common_action: "常用操作",
+    require: "判断",
   },
 };
 
@@ -148,6 +150,7 @@ export const COMMON_ACTIONS = [
   "scrollItemUp",
   "reload",
   "selectDom",
+  "call",
 ] as const;
 
 export const BUILTIN_ACTIONS = {
@@ -175,6 +178,7 @@ export const BUILTIN_ACTIONS = {
   SCROLL: "scroll",
   FOCUS: "focus",
   COMMON: "common",
+  REQUIRE: "require",
   PROTECT: "protect",
   PICTURE_IN_PICTURE: "pictureInPicture",
   DARK_MODE: "darkMode",
@@ -273,6 +277,12 @@ export const BUILTIN_ACTION_CONFIGS: BuildInActionConfig[] = [
   {
     name: "CLICK",
     title: t("click"),
+    contexts: ["all"],
+    asCommand: false,
+  },
+  {
+    name: "REQUIRE",
+    title: t("require"),
     contexts: ["all"],
     asCommand: false,
   },
@@ -433,6 +443,19 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         type: "boolean",
         value: false,
         defaultValue: false,
+      },
+    ],
+  },
+  {
+    value: BUILTIN_ACTIONS.REQUIRE,
+    label: t("read_mode"),
+    args: [
+      {
+        tips: "Expression",
+        name: "expression",
+        type: "string",
+        value: "",
+        defaultValue: "",
       },
     ],
   },
