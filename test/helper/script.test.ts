@@ -49,10 +49,10 @@ import { parseScript } from "../../src/helper/script";
 test("parse work", () => {
   const automations = parseScript(
     `
-  automation for "https://weibo.com/*" on "load"
-    set a = 1
-    set b = exist("video")
-    require a == b
+  automation for "https://baidu.com" on "load"
+    set selector = ".main-content"
+    set target = selector
+    apply "readMode" with (target=target) on "body"  
   end
   
   `.trim()

@@ -349,9 +349,9 @@ function parseEmitHeadExp(tokens: Token[], env: Env) {
 
 function parseArgsPairsExp(tokens: Token[], env: Env) {
   const start = tokens.shift();
-  matchRule(start, { type: "char", keyword: "(" }, env);
+  matchRule(start, { type: "LeftParenthesis", keyword: "(" }, env);
   const end = tokens.pop();
-  matchRule(end, { type: "char", keyword: ")" }, env);
+  matchRule(end, { type: "RightParenthesis", keyword: ")" }, env);
 
   return parseArgsExp(tokens, {}, env);
 }
@@ -604,17 +604,15 @@ function generateComparisonExpValue(
   const leftValue = left.value;
   const rightValue = right.value;
 
-  if (typeof leftValue === "function" && typeof rightValue === "function") {
+  if (typeof leftValue === "function" || typeof rightValue === "function") {
     return (env: Env) => {
-      const left = leftValue(env);
-      const right = rightValue(env);
+      const left = typeof leftValue === "function" ? leftValue(env) : leftValue;
+      const right =
+        typeof rightValue === "function" ? rightValue(env) : rightValue;
 
       return compare(left, right, operator);
     };
-  } else if (
-    typeof leftValue !== "function" &&
-    typeof rightValue !== "function"
-  ) {
+  } else {
     return compare(leftValue, rightValue, operator);
   }
 }
@@ -892,7 +890,8 @@ export const iscript = {
       alias: "boolean",
     },
     {
-      pattern: /open\b|close\b|wait\b|active\b|listen\b|emit\b|apply\b/,
+      pattern:
+        /open\b|close\b|wait\b|active\b|listen\b|emit\b|apply\b|len\b|exist\b/,
       alias: "function",
     },
     {

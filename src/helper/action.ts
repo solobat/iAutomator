@@ -605,15 +605,16 @@ function scriptAutomationId(id: number, index: number) {
 
 function execAutomationScripts(
   scripts: string,
-  index: number,
+  aIndex: number,
   id: number,
   options?: ExecOptions
 ) {
   try {
     const automations = parseScript(scripts);
-    const list = index === -1 ? automations : [automations[index]];
+    const list = aIndex === -1 ? automations : [automations[aIndex]];
 
-    list.forEach((automation, index) => {
+    list.forEach((automation, inaIndex) => {
+      const index = aIndex === -1 ? inaIndex : aIndex;
       automation.id = scriptAutomationId(id, index);
       exceScriptAutomation(
         automation.instructions,
@@ -635,7 +636,7 @@ function execAutomations(automations: IAutomation[], runAt: RunAt) {
 
 function execAutomationItem(
   item: IAutomation,
-  index: number,
+  aIndex: number,
   runAt: RunAt,
   options?: ExecOptions
 ) {
@@ -647,7 +648,7 @@ function execAutomationItem(
       getOptions(item, options)
     );
   } else if (item.scripts) {
-    execAutomationScripts(item.scripts, index, item.id, options);
+    execAutomationScripts(item.scripts, aIndex, item.id, options);
   }
 }
 
@@ -663,11 +664,11 @@ function parseAutomationId(id: number) {
 }
 
 export function exceAutomationById(id: number, options?: ExecOptions) {
-  const { index, aid } = parseAutomationId(id);
+  const { index: aIndex, aid } = parseAutomationId(id);
   const item = automations.find((a) => a.id === aid);
 
   if (item) {
-    execAutomationItem(item, index, item.runAt, options);
+    execAutomationItem(item, aIndex, item.runAt, options);
   }
 }
 
