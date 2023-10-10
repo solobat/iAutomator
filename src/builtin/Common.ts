@@ -217,7 +217,7 @@ function prevPage() {
 function selectByText(textArr: string[], baseSelector = "div") {
   return (
     Array.from(document.querySelectorAll(baseSelector)) as HTMLElement[]
-  ).find((item) => textArr.includes(item.innerText));
+  ).find((item) => textArr.includes(item.innerText.replaceAll(/[<>]/g, "")));
 }
 
 const nextSelectors: Array<string | (() => HTMLElement | null)> = [
