@@ -42,12 +42,12 @@ Statements are written inside an `automation` block and can be divided into the 
 
  ## Language Grammar 
  ```
- Script ::= *empty*
+Script ::= *empty*
        ::= Automations
 
 Automations ::= Automation
             ::= Automations
-Automation::= automation AutomationHead AutomationBody end
+Automation ::= automation AutomationHead AutomationBody end
 
 AutomationHead ::= for URLRegString on Stage
 Stage ::= '"immediate"'
@@ -63,6 +63,7 @@ Statements ::= Statement
 Statement ::= AssignStatement
           ::= NativeStatement
           ::= ApplyStatement
+          ::= RequireStatement
           
 AssignStatement ::= AssignExp = ValuableExp
                 
@@ -70,6 +71,7 @@ ValuableExp ::= ValueExp
             ::= Identiﬁer
             ::= ListenExp
             ::= GetValueExp
+            ::= BuiltinFunctionCall
             
 ValueExp ::= number
          ::= string
@@ -117,4 +119,14 @@ ArgExp ::= Identiﬁer
        ::= Identiﬁer = Identiﬁer
 
 CssSelectorExp ::= string
-```
+
+RequireStatement ::= require Expression [, ErrorMessage]
+ErrorMessage ::= string
+
+Expression ::= ValuableExp ComparisonOperator ValuableExp
+ComparisonOperator ::= '>=' | '>' | '<=' | '<' | '=='
+
+BuiltinFunctionCall ::= FunctionName ( CssSelectorExp )
+FunctionName ::= 'len' | 'exist'
+
+``` 
