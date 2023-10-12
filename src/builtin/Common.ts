@@ -33,6 +33,14 @@ export class CommonAction extends Base {
 
   timers: Record<string, number> = {};
 
+  style = `
+  .ext-ih-common-scroll-current {
+    outline: 1px dashed;
+    font-weight: 700;
+    transition: all 0.2s;
+  }
+  `;
+
   execute(
     elem,
     options: Partial<CommonExecOptions>,
@@ -70,7 +78,9 @@ function findSibling(
       return sibling;
     }
   } else {
-    const elem = document.querySelector(selector);
+    const elem =
+      getTopmostElementInViewport(document.querySelectorAll(selector)) ||
+      document.querySelector(selector);
     if (elem) {
       elem.classList.add(cls);
       return elem;
@@ -247,4 +257,22 @@ function selectDom(this: CommonAction) {
 
 function call(this: CommonAction, elem, options, effect) {
   effect?.(options);
+}
+
+function getTopmostElementInViewport(elements: NodeListOf<Element>) {
+  let topmostElement: HTMLElement | null = null;
+  let highestPosition = Infinity;
+
+  for (const elem of elements) {
+    const rect = elem.getBoundingClientRect();
+
+    if (rect.top < window.innerHeight && rect.bottom > 0) {
+      if (rect.top < highestPosition) {
+        highestPosition = rect.top;
+        topmostElement = elem as HTMLElement;
+      }
+    }
+  }
+
+  return topmostElement;
 }
