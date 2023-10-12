@@ -444,13 +444,10 @@ export function startAction(actionName: string) {
 }
 
 function onStateChange(type: string) {
-  const actions = helper.actions.filter((item) => item.options.shouldRedo);
-
-  actions.forEach((item) => {
-    if (item.reExecute && item.active) {
-      item.reExecute(type);
-    }
+  helper.activeActions.forEach((item) => {
+    item.doExit();
   });
+  fetchPageDataAndApply();
 }
 
 function setup(withOutline?: boolean) {
@@ -469,6 +466,15 @@ function findAction(name: string): Base | null {
   return helper.actions.find((item) => item.name === name);
 }
 
+function sortAutomationByPattern(list: IAutomation[]) {
+  return list.sort((a, b) => {
+    const aPattern = a.pattern ?? "";
+    const bPattern = b.pattern ?? "";
+
+    return bPattern.length - aPattern.length;
+  });
+}
+
 export function fetchPageDataAndApply() {
   noticeBg(
     {
@@ -476,7 +482,7 @@ export function fetchPageDataAndApply() {
       data: { url: window.location.href },
     },
     (result) => {
-      automations = result.data.automations;
+      automations = sortAutomationByPattern(result.data.automations);
       shortcuts = result.data.shortcuts;
 
       initAutomations();

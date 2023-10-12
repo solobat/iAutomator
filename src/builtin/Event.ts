@@ -15,6 +15,8 @@ export interface EventExecOptions extends ExecOptions {
 export class OnEvent extends Base {
   name = BUILTIN_ACTIONS.EVENT;
 
+  private bindedKeys = new Set<string>();
+
   private normalizeEvent<T = ClipboardEvent | Event>(event): T {
     return event.originalEvent ? event.originalEvent : event;
   }
@@ -84,10 +86,13 @@ export class OnEvent extends Base {
         }
       }
     } else {
+      if (this.bindedKeys.has(eventName)) {
+        return;
+      } else {
+        this.bindedKeys.add(eventName);
+      }
       if (isComboKey(eventName)) {
         this.helper.keyboard.bindKeyCombo(eventName, ({ finalKeyEvent }) => {
-          console.log("combokey event trigger: ", eventName, finalKeyEvent);
-
           finalKeyEvent.preventDefault();
           handler(finalKeyEvent);
         });
@@ -100,10 +105,9 @@ export class OnEvent extends Base {
             tagName !== "INPUT" &&
             tagName !== "TEXTAREA" &&
             tagName !== "SELECT" &&
-            elem.contentEditable !== "true"
+            elem.contentEditable !== "true" &&
+            !isComboKeyEvent(event.originalEvent)
           ) {
-            console.log("key event trigger: ", eventName, event);
-
             event.preventDefault();
             handler(event);
           }
@@ -133,4 +137,8 @@ export class OnEvent extends Base {
 
     return true;
   }
+}
+
+function isComboKeyEvent(event: KeyboardEvent) {
+  return event.ctrlKey || event.altKey || event.metaKey;
 }

@@ -22,10 +22,15 @@ export function Stack<T>() {
     return arr;
   };
 
+  const forEach = (cb: (item: T) => void) => {
+    arr.forEach(cb);
+  };
+
   return {
     push,
     pop,
     top,
     empty,
+    forEach,
   };
 }
