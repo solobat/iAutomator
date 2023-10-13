@@ -218,6 +218,12 @@ function onNewNotice(data, handler: MsgHandlerFn) {
   handler("");
 }
 
+function onDiscardTab(sender: chrome.runtime.MessageSender) {
+  if (!sender.tab.active) {
+    chrome.tabs.discard(sender.tab.id);
+  }
+}
+
 function onRunMethod(data, sender, handler: MsgHandlerFn) {
   runMethod(sender.tab.id, BUILTIN_ACTIONS[data.command]);
   handler("");
@@ -308,6 +314,9 @@ function msgHandler(req: PageMsg, sender: chrome.runtime.MessageSender, resp) {
     onUpdateAutomation(data, handler);
   } else if (action === PAGE_ACTIONS.NOTICE) {
     onNewNotice(data, handler);
+  } else if (action === PAGE_ACTIONS.DISCARD_TAB) {
+    onDiscardTab(sender);
+    handler("");
   } else if (action === APP_ACTIONS.RUN_COMMAND) {
     onRunMethod(data, sender, handler);
   } else if (action === APP_ACTIONS.LIST_ACTIONS) {

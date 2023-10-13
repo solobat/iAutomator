@@ -104,6 +104,7 @@ export const PAGE_ACTIONS = {
   NOTICE: "createNotice",
   EXEC_INSTRUCTIONS: "execInstructions",
   CREATE_NOTE: "createNote",
+  DISCARD_TAB: "discardTab",
   AUTOMATION_UPDATED: "automationUpdated",
 };
 
@@ -939,7 +940,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         type: "string",
         value: "",
         defaultValue: "",
-        optionalValues: ["tab", "video"],
+        optionalValues: ["tab", "video", "active"],
       },
     ],
   },

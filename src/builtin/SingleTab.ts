@@ -5,7 +5,7 @@ import { ExecOptions } from "./types";
 
 export interface SingleTabExecOptions extends ExecOptions {
   path?: string;
-  action?: "tab" | "video";
+  action?: "tab" | "video" | "active";
 }
 
 export class SingleTab extends Base {
@@ -20,6 +20,8 @@ export class SingleTab extends Base {
             this.closeTab();
           } else if (data.action === "video") {
             this.updateVideoStatus("pause");
+          } else if (data.action === "active") {
+            this.helper.discardTab();
           }
         }
       }

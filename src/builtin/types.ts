@@ -42,6 +42,7 @@ export interface ActionHelper<A, T extends ExecOptions = ExecOptions> {
   onRevisible: (fn: () => void) => () => void;
   emitter: SimpleEvent;
   broadcast: Broadcast;
+  discardTab: () => void;
   keyboard: {
     bindKeyCombo: typeof bindKeyCombo;
     unbindKeyCombo: typeof unbindKeyCombo;

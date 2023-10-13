@@ -312,6 +312,12 @@ export const helper: ActionHelper<Base> = {
 
   redoActions: Stack(),
 
+  discardTab: () => {
+    appBridge.invoke(PAGE_ACTIONS.DISCARD_TAB, {}, () => {
+      console.log("discard tab");
+    });
+  },
+
   observe,
 
   onRevisible,
