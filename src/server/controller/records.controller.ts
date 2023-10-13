@@ -45,3 +45,18 @@ export async function query(query: object) {
 
   return Response.ok(result);
 }
+
+export async function deleteAll() {
+  const result = await recordService.deleteAll();
+
+  return Response.ok(result);
+}
+
+export async function totalSize() {
+  const records = await recordService.getAll();
+  const texts = records.map((record) => JSON.stringify(record)).join("");
+
+  const sizeInBytes = new Blob([texts]).size;
+
+  return sizeInBytes;
+}

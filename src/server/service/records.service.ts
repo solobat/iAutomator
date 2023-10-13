@@ -42,3 +42,9 @@ export async function query(attrs = {}) {
 
   return db.records.where(attrs).reverse().sortBy("createTime");
 }
+
+export async function deleteAll() {
+  const db = await getDb();
+
+  return db.records.clear();
+}
