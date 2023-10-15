@@ -4,7 +4,7 @@ import { BUILTIN_ACTIONS } from "../common/const";
 import { Base } from "./Base";
 import { ActionHelper, ExecOptions } from "./types";
 
-interface ReadModeExecOptions extends ExecOptions {
+export interface ReadModeExecOptions extends ExecOptions {
   autoScroll?: boolean;
   metaKey?: boolean;
 }
