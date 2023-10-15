@@ -44,6 +44,7 @@ const commonDOMEvents: Set<string> = new Set([
   "keydown",
   "keyup",
   "keypress",
+  "copy",
   "blur",
   "focus",
   "input",
