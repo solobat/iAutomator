@@ -891,11 +891,11 @@ export const iscript = {
     },
     {
       pattern:
-        /open\b|close\b|wait\b|active\b|listen\b|emit\b|apply\b|len\b|exist\b/,
+        /open\b|close\b|wait\b|active\b|listen\b|emit\b|apply\b|\blen\b|\bexist\b/,
       alias: "function",
     },
     {
-      pattern: /for\b|on\b|as\b|with\b/,
+      pattern: /\bfor\b|\bon\b|\bas\b|\bwith\b/,
       alias: "operator",
     },
     {
