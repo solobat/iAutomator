@@ -644,14 +644,9 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
     label: t("attributes"),
     args: [
       {
-        tips: "Name of the attribute",
-        name: "name",
-        type: "string",
-        required: true,
-      },
-      {
-        tips: "Value of the attribute",
-        name: "value",
+        tips: "Attributes",
+        placeholder: "attr1=value1,attr2=value2",
+        name: "attrs",
         type: "string",
         required: true,
       },

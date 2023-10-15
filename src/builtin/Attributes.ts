@@ -1,21 +1,31 @@
 import $ from "jquery";
 import { BUILTIN_ACTIONS } from "../common/const";
 import { Base } from "./Base";
+import { ExecOptions } from "child_process";
+import { ActionHelper } from "./types";
 
-export interface ModifyAttributesExecOptions {
+export interface ModifyAttributesExecOptions extends ExecOptions {
   force?: boolean;
+  attrs?: string;
 }
 
 export class ModifyAttributes extends Base<ModifyAttributesExecOptions> {
   name = BUILTIN_ACTIONS.ATTRIBUTES;
+
+  constructor(helper: ActionHelper<Base>) {
+    super(helper, {
+      esc2exit: true,
+      shouldRedo: true,
+    });
+  }
 
   private modify(
     elem: HTMLElement,
     options: Partial<ModifyAttributesExecOptions>
   ) {
     const $el = $(elem);
-
-    Object.entries(options).forEach((pair) => {
+    const attrs = options.attrs.split(",").map((attr) => attr.split("="));
+    attrs.forEach((pair) => {
       const [key, value] = pair;
 
       $el.filter(`[${key}]`).each((_, elem) => {
