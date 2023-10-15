@@ -4,6 +4,10 @@ import { BUILTIN_ACTIONS } from "../common/const";
 import { Base } from "./Base";
 import { ActionHelper, ExecOptions } from "./types";
 
+interface ReadModeExecOptions extends ExecOptions {
+  autoScroll?: boolean;
+  metaKey?: boolean;
+}
 export class ReadMode extends Base {
   name = BUILTIN_ACTIONS.READ_MODE;
   cls = "s-a-rm-hn";
@@ -23,15 +27,18 @@ export class ReadMode extends Base {
     });
   }
 
-  execute(elem, options: Partial<ExecOptions>) {
+  execute(elem, options: Partial<ReadModeExecOptions>) {
     const $elem = $(elem);
+    const { autoScroll = true, metaKey } = options;
 
     this.helper.actionCache.$elem = $elem;
     this.hideSiblings($elem);
 
-    elem.scrollIntoView();
+    if (autoScroll) {
+      elem.scrollIntoView();
+    }
 
-    if (options.metaKey) {
+    if (metaKey) {
       this.initModePlus($elem);
     }
 

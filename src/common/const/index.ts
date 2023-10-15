@@ -439,6 +439,13 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
     label: t("read_mode"),
     args: [
       {
+        name: "autoScroll",
+        type: "boolean",
+        value: true,
+        defaultValue: true,
+        tips: "Whether to scroll to the element automatically.",
+      },
+      {
         tips: "Whether to enable read mode using meta key (e.g. Ctrl key on Windows or Command key on Mac).",
         name: "metaKey",
         type: "boolean",
