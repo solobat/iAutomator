@@ -50,6 +50,7 @@ import { TextReplacing } from "@src/builtin/TextReplacing";
 import { SetStyle } from "@src/builtin/Style";
 import { CommonAction } from "@src/builtin/Common";
 import { RequireExp } from "@src/builtin/Require";
+import { AutoGroupTab } from "@src/builtin/AutoGroup";
 
 function bindAppEvents() {
   chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
@@ -134,6 +135,7 @@ function init() {
     new SetStyle(helper);
     new CommonAction(helper);
     new RequireExp(helper);
+    new AutoGroupTab(helper);
   });
 
   bindAppEvents();

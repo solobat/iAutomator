@@ -43,6 +43,7 @@ export interface ActionHelper<A, T extends ExecOptions = ExecOptions> {
   emitter: SimpleEvent;
   broadcast: Broadcast;
   discardTab: () => void;
+  autoGroupTab: (groupName: string) => void;
   keyboard: {
     bindKeyCombo: typeof bindKeyCombo;
     unbindKeyCombo: typeof unbindKeyCombo;

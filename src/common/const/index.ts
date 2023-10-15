@@ -37,6 +37,7 @@ const local_i18n = {
     style: "Style",
     common_action: "Common action",
     require: "Require",
+    auto_group: "Auto group",
   },
   zh_CN: {
     read_mode: "阅读模式",
@@ -76,6 +77,7 @@ const local_i18n = {
     style: "样式",
     common_action: "常用操作",
     require: "判断",
+    auto_group: "自动分组",
   },
 };
 
@@ -105,6 +107,7 @@ export const PAGE_ACTIONS = {
   EXEC_INSTRUCTIONS: "execInstructions",
   CREATE_NOTE: "createNote",
   DISCARD_TAB: "discardTab",
+  AUTO_GROUP_TAB: "autoGroupTab",
   AUTOMATION_UPDATED: "automationUpdated",
 };
 
@@ -185,6 +188,7 @@ export const BUILTIN_ACTIONS = {
   DARK_MODE: "darkMode",
   OUTLINE: "outline",
   BUTTON: "button",
+  AUTO_GROUP: "autoGroup",
   BOOKMARK: "bookmark",
   RELOAD: "reload",
   SINGLE_TAB: "singleTab",
@@ -224,6 +228,12 @@ export const BUILTIN_ACTION_CONFIGS: BuildInActionConfig[] = [
   {
     name: "COMMON",
     title: t("common_action"),
+    contexts: ["all"],
+    asCommand: true,
+  },
+  {
+    name: "AUTO_GROUP",
+    title: t("auto_group"),
     contexts: ["all"],
     asCommand: true,
   },
@@ -461,6 +471,20 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
       {
         tips: "Expression",
         name: "expression",
+        type: "string",
+        value: "",
+        defaultValue: "",
+      },
+    ],
+  },
+  {
+    value: BUILTIN_ACTIONS.AUTO_GROUP,
+    label: t("auto_group"),
+    args: [
+      {
+        tips: "Group Name",
+        name: "name",
+        required: true,
         type: "string",
         value: "",
         defaultValue: "",

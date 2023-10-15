@@ -318,6 +318,18 @@ export const helper: ActionHelper<Base> = {
     });
   },
 
+  autoGroupTab: (groupName: string) => {
+    appBridge.invoke(
+      PAGE_ACTIONS.AUTO_GROUP_TAB,
+      {
+        name: groupName,
+      },
+      () => {
+        console.log("auto group tab");
+      }
+    );
+  },
+
   observe,
 
   onRevisible,

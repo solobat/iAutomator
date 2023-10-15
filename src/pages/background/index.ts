@@ -224,6 +224,24 @@ function onDiscardTab(sender: chrome.runtime.MessageSender) {
   }
 }
 
+async function onAutoGroupTab(
+  data: { groupName: string },
+  sender: chrome.runtime.MessageSender
+) {
+  const { groupName } = data;
+  const { tab } = sender;
+
+  const group = await chrome.tabGroups.query({
+    title: groupName,
+  });
+  if (group.length && group[0].id !== tab.groupId) {
+    chrome.tabs.group({
+      groupId: group[0].id,
+      tabIds: [tab.id],
+    });
+  }
+}
+
 function onRunMethod(data, sender, handler: MsgHandlerFn) {
   runMethod(sender.tab.id, BUILTIN_ACTIONS[data.command]);
   handler("");
@@ -316,6 +334,9 @@ function msgHandler(req: PageMsg, sender: chrome.runtime.MessageSender, resp) {
     onNewNotice(data, handler);
   } else if (action === PAGE_ACTIONS.DISCARD_TAB) {
     onDiscardTab(sender);
+    handler("");
+  } else if (action === PAGE_ACTIONS.AUTO_GROUP_TAB) {
+    onAutoGroupTab(data, sender);
     handler("");
   } else if (action === APP_ACTIONS.RUN_COMMAND) {
     onRunMethod(data, sender, handler);
