@@ -1,4 +1,4 @@
-import { Alert, AutoComplete, Popover } from "antd";
+import { Alert, AutoComplete, Popover, Radio, RadioChangeEvent } from "antd";
 import Button from "antd/es/button";
 import ButtonGroup from "antd/es/button/button-group";
 import Input from "antd/es/input";
@@ -6,7 +6,7 @@ import Select from "antd/es/select";
 import Switch from "antd/es/switch";
 import Table from "antd/es/table";
 import * as React from "react";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 import {
   DeleteOutlined,
@@ -862,9 +862,32 @@ function fetchList(state, dispatch) {
   });
 }
 
+const scopeOptions = [
+  {
+    label: "Local",
+    value: "local",
+  },
+  {
+    label: "Global",
+    value: "global",
+  },
+];
 function Automations(props: any) {
   const { host } = props;
   const { state, dispatch } = useContext(PageContext);
+  const [scope, setScope] = useState<"local" | "global">("local");
+  const onChange = ({ target: { value } }: RadioChangeEvent) => {
+    setScope(value);
+  };
+  const list = useMemo(() => {
+    return state.automations.filter((item) => {
+      if (scope === "local") {
+        return item.pattern !== "*";
+      } else {
+        return item.pattern === "*";
+      }
+    });
+  }, [scope, state.automations]);
 
   useEffect(() => {
     fetchList(state, dispatch);
@@ -872,9 +895,15 @@ function Automations(props: any) {
 
   return (
     <div>
+      <Radio.Group
+        value={scope}
+        options={scopeOptions}
+        onChange={onChange}
+        optionType="button"
+      />
       <Table
         columns={AutomationsColumns}
-        dataSource={state.automations}
+        dataSource={list}
         rowKey="id"
         pagination={false}
         size="small"

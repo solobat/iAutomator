@@ -429,7 +429,9 @@ function getAutomationsByURL(url: string) {
 
 function updateBadgeByURL(url: string) {
   const pageAutomations = getAutomationsByURL(url);
-  const realNum = pageAutomations.filter((item) => item.active).length;
+  const realNum = pageAutomations.filter(
+    (item) => item.active && item.pattern !== "*"
+  ).length;
 
   badgesHelper.setItem({
     url: url,
