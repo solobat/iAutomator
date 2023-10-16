@@ -194,3 +194,21 @@ export function getURLByArgs(
 
   return toURL;
 }
+
+export function isURL(url?: string) {
+  if (!url) {
+    return false;
+  }
+
+  try {
+    new URL(url);
+
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+export function isURLLike(url?: string) {
+  return ["http", "/"].some((prefix) => url?.startsWith(prefix));
+}

@@ -3,7 +3,11 @@ import { BUILTIN_ACTIONS } from "../common/const";
 import { Base } from "./Base";
 import { ExecOptions } from "child_process";
 import { ActionHelper } from "./types";
+import { createTemplateHandler } from "@src/helper/str";
+import { isURL, isURLLike } from "@src/helper/url";
 
+const { extract: extractAttrs } = createTemplateHandler("[[", "]]");
+const { extract: extractVars } = createTemplateHandler("{{", "}}");
 export interface ModifyAttributesExecOptions extends ExecOptions {
   force?: boolean;
   attrs?: string;
@@ -19,6 +23,28 @@ export class ModifyAttributes extends Base<ModifyAttributesExecOptions> {
     });
   }
 
+  private resolveNewValue(
+    $elem: JQuery<HTMLElement>,
+    key: string,
+    attrVar?: string,
+    innerVar?: string
+  ) {
+    const attrValue = attrVar ? $elem.attr(attrVar) : undefined;
+    const resolveInnerValue = (varName: string) => {
+      const oldValue = $elem.attr(key);
+      if (varName === "target" && key === "href" && isURL(oldValue)) {
+        return new URL(oldValue).searchParams.get("target");
+      }
+    };
+    const innerValue = innerVar ? resolveInnerValue(innerVar) : undefined;
+
+    return attrValue || innerValue;
+  }
+
+  private isValidValue(key: string, val?: string) {
+    return ["href", "src"].includes(key) && isURLLike(val);
+  }
+
   private modify(
     elem: HTMLElement,
     options: Partial<ModifyAttributesExecOptions>
@@ -27,6 +53,8 @@ export class ModifyAttributes extends Base<ModifyAttributesExecOptions> {
     const attrs = options.attrs.split(",").map((attr) => attr.split("="));
     attrs.forEach((pair) => {
       const [key, value] = pair;
+      const attrVar = extractAttrs(value).shift();
+      const innerVar = extractVars(value).shift();
 
       $el.filter(`[${key}]`).each((_, elem) => {
         const $target = $(elem);
@@ -34,7 +62,12 @@ export class ModifyAttributes extends Base<ModifyAttributesExecOptions> {
         this.registerUnload(() => {
           $target.attr(key, oldValue);
         });
-        $target.attr(key, String(value));
+        const val =
+          this.resolveNewValue($target, key, attrVar, innerVar) || value;
+
+        if (this.isValidValue(key, val)) {
+          $target.attr(key, String(val));
+        }
       });
     });
 
