@@ -142,14 +142,6 @@ export function listenRouteChangeEvents(onChange: (type: string) => void) {
     onChange(ROUTE_CHANGE_TYPE.PUSH_STATE);
   };
 
-  $(document).on("click", "a", function () {
-    const $a = $(this);
-    const href = $a.attr("href");
-
-    if (!href?.startsWith("http") && !$a.hasClass("ext-hp-link")) {
-      onChange(ROUTE_CHANGE_TYPE.LINK);
-    }
-  });
   window.addEventListener("popstate", () => {
     onChange(ROUTE_CHANGE_TYPE.POP_STATE);
   });
