@@ -1,5 +1,5 @@
 export default {
-  title: 'iHelpers Document',
+  title: 'iAutomator Document',
   description: 'A Chrome automation extension',
   type: "module"
 }

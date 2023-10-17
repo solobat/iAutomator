@@ -6,12 +6,12 @@ export function Help() {
   return (
     <ul style={{ listStyle: "none", paddingLeft: 0 }}>
       <li>
-        <Button href="https://ihelpers.xyz/" target="_blank" type="link">
+        <Button href="https://iautomator.xyz/" target="_blank" type="link">
           {t("website")}
         </Button>
       </li>
       <li>
-        <Button href="https://docs.ihelpers.xyz/" target="_blank" type="link">
+        <Button href="https://docs.iautomator.xyz/" target="_blank" type="link">
           {t("documents")}
         </Button>
       </li>

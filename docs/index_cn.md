@@ -1,19 +1,19 @@
-<h1 align="center">iHelpers</h1>
-<p align="left">iHelpers 是一个 Chrome 扩展程序，为用户提供了内置的快捷方式，例如阅读模式、夜间模式、页面概述，以及一些基本操作如点击、输入、事件监听和派发等等。除了通过 IScript 支持脚本模式的自动化之外，iHelpers 还允许通过其界面进行指令配置。无论你是想提高生产力还是在浏览 Web 时寻求更多便利，iHelpers 都是一个非常实用的工具。
+<h1 align="center">iAutomator</h1>
+<p align="left">iAutomator 是一个 Chrome 扩展程序，为用户提供了内置的快捷方式，例如阅读模式、夜间模式、页面概述，以及一些基本操作如点击、输入、事件监听和派发等等。除了通过 IScript 支持脚本模式的自动化之外，iAutomator 还允许通过其界面进行指令配置。无论你是想提高生产力还是在浏览 Web 时寻求更多便利，iAutomator 都是一个非常实用的工具。
 </p>
 <p align="center">
-   <a href="https://github.com/solobat/iHelpers/releases"><img src="https://img.shields.io/badge/lastest_version-1.8.0-blue.svg"></a>
-   <a target="_blank" href="https://chrome.google.com/webstore/detail/ihelpers/hcnekoladldejmeindnhpjkfhjadcick"><img src="https://img.shields.io/badge/download-_chrome_webstore-brightgreen.svg"></a>
+   <a href="https://github.com/solobat/iAutomator/releases"><img src="https://img.shields.io/badge/lastest_version-1.8.0-blue.svg"></a>
+   <a target="_blank" href="https://chrome.google.com/webstore/detail/iautomator/hcnekoladldejmeindnhpjkfhjadcick"><img src="https://img.shields.io/badge/download-_chrome_webstore-brightgreen.svg"></a>
 </p>
 
 ---
 
 ## 安装
 
-- [Chrome Web Store](https://chrome.google.com/webstore/detail/ihelpers/hcnekoladldejmeindnhpjkfhjadcick)
+- [Chrome Web Store](https://chrome.google.com/webstore/detail/iautomator/hcnekoladldejmeindnhpjkfhjadcick)
 
 ## 功能类型
-### iHelpers 内置操作列表
+### iAutomator 内置操作列表
 
 #### Reload
 
@@ -275,7 +275,7 @@
 
 ## 文档
 - [IScript 脚本文档](./IScript.md)
-- [类型文档](https://types.ihelpers.xyz/)
+- [类型文档](https://types.iautomator.xyz/)
 - [Youtube 视频](https://www.youtube.com/watch?v=L7DpcRtkq2U)
 
 ## 开发
@@ -300,7 +300,7 @@ yarn build
 <!-- Link -->
 
 [version-badge]: https://img.shields.io/badge/lastest_version-1.6.0-blue.svg
-[version-link]: https://github.com/solobat/iHelpers
+[version-link]: https://github.com/solobat/iAutomator
 [chrome-badge]: https://img.shields.io/badge/download-_chrome_webstore-brightgreen.svg
 [offline-badge]: https://img.shields.io/badge/download-_crx-brightgreen.svg
 [license-badge]: https://img.shields.io/github/license/mashape/apistatus.svg

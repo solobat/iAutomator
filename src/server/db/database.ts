@@ -19,7 +19,7 @@ const schema: Schema = {
   notes: "++id,content,domain,path,nid,createTime,updateTime,deleted",
 };
 
-export class IHelpersDatabase extends Dexie {
+export class IAutomatorDatabase extends Dexie {
   rules: Dexie.Table<IRule, number>;
   records: Dexie.Table<IRecord, number>;
   automations: Dexie.Table<IAutomation, number>;
@@ -90,7 +90,7 @@ export interface IShortcut {
   deleted?: boolean;
 }
 
-let db: IHelpersDatabase;
+let db: IAutomatorDatabase;
 
 export async function getDb() {
   if (db) {
@@ -99,7 +99,7 @@ export async function getDb() {
     const v = await getVersion();
     show("now version: ", v);
 
-    db = new IHelpersDatabase(v);
+    db = new IAutomatorDatabase(v);
     db.shortcuts.mapToClass(Shortcut);
     db.automations.mapToClass(Automation);
     db.records.mapToClass(Record);

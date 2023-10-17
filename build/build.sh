@@ -8,10 +8,10 @@ rm -fr dist/
 echo "Compiling....."
 yarn turbo build || { echo "Compilation failed, please check and try again"; exit 1; }
 
-zip -r ihelpers.zip dist/
+zip -r iautomator.zip dist/
 
 echo "Packaged done"
 
-mv -f ihelpers.zip ~/Downloads/
+mv -f iautomator.zip ~/Downloads/
 
 echo "Move to Download"

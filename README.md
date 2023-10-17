@@ -1,8 +1,8 @@
-<h1 align="center">iHelpers</h1>
-<p align="left">iHelpers is a Chrome extension that provides users with built-in shortcuts such as reading mode, night mode, page outlines, and basic operations like clicking, inputting, event listening and emitting, and more. In addition to supporting custom functions through script mode, iHelpers also allows for instruction configuration through its user interface. Whether you are looking to increase productivity or seeking more convenience while browsing the web, iHelpers is a very practical tool.</p>
+<h1 align="center">iAutomator</h1>
+<p align="left">iAutomator is a Chrome extension that provides users with built-in shortcuts such as reading mode, night mode, page outlines, and basic operations like clicking, inputting, event listening and emitting, and more. In addition to supporting custom functions through script mode, iAutomator also allows for instruction configuration through its user interface. Whether you are looking to increase productivity or seeking more convenience while browsing the web, iAutomator is a very practical tool.</p>
 <p align="center">
-   <a href="https://github.com/solobat/iHelpers/releases"><img src="https://img.shields.io/badge/lastest_version-2.5.0-blue.svg"></a>
-   <a target="_blank" href="https://chrome.google.com/webstore/detail/ihelpers/hcnekoladldejmeindnhpjkfhjadcick"><img src="https://img.shields.io/badge/download-_chrome_webstore-brightgreen.svg"></a>
+   <a href="https://github.com/solobat/iAutomator/releases"><img src="https://img.shields.io/badge/lastest_version-2.5.0-blue.svg"></a>
+   <a target="_blank" href="https://chrome.google.com/webstore/detail/iautomator/hcnekoladldejmeindnhpjkfhjadcick"><img src="https://img.shields.io/badge/download-_chrome_webstore-brightgreen.svg"></a>
 </p>
 
 ---
@@ -11,17 +11,17 @@
 
 ## Install
 
-- [Chrome Web Store](https://chrome.google.com/webstore/detail/ihelpers/hcnekoladldejmeindnhpjkfhjadcick)
+- [Chrome Web Store](https://chrome.google.com/webstore/detail/iautomator/hcnekoladldejmeindnhpjkfhjadcick)
 
 ## Docs
 
 - [IScript Documents](./docs/IScript_en.md) / [中文](./docs/IScript.md)
-- [Types Documents](https://types.ihelpers.xyz/)
+- [Types Documents](https://types.iautomator.xyz/)
 - [Youtube Video](https://www.youtube.com/watch?v=L7DpcRtkq2U)
 
 ## Features
 
-### Table of Built-in Actions in iHelpers
+### Table of Built-in Actions in iAutomator
 
 #### Reload
 
@@ -305,7 +305,7 @@ yarn build
 <!-- Link -->
 
 [version-badge]: https://img.shields.io/badge/lastest_version-1.6.0-blue.svg
-[version-link]: https://github.com/solobat/iHelpers
+[version-link]: https://github.com/solobat/iAutomator
 [chrome-badge]: https://img.shields.io/badge/download-_chrome_webstore-brightgreen.svg
 [offline-badge]: https://img.shields.io/badge/download-_crx-brightgreen.svg
 [license-badge]: https://img.shields.io/github/license/mashape/apistatus.svg

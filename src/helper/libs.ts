@@ -6,10 +6,10 @@ export function initLibs() {
   return getDb().then((db) => {
     const libs = getLibs({
       storageKey: "cuid",
-      extName: "ihelpers",
+      extName: "iautomator",
       db: db as Dexie,
       dbNames: ["automations", "records", "notes"],
-      ROOT_PATH: "/iHelpers",
+      ROOT_PATH: "/iAutomator",
     });
 
     return libs;

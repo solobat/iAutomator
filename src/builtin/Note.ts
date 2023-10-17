@@ -7,8 +7,8 @@ export interface CreateNoteExecOptions extends ExecOptions {
   isComment?: boolean;
 }
 
-const NID_KEY = "ihelpers_nid";
-const NID_KEY_CONTENT = "ihelpers_nid_content";
+const NID_KEY = "iautomator_nid";
+const NID_KEY_CONTENT = "iautomator_nid_content";
 
 export class CreateNote extends Base {
   name = BUILTIN_ACTIONS.NOTE;

@@ -82,15 +82,17 @@ function bindAppEvents() {
 }
 
 function isTrustDomain() {
-  const domains: string[] = ["localhost", "ihelpers.xyz", "www.dicts.cn"];
+  const domains: string[] = ["localhost", "iautomator.xyz", "ihelpers.xyz"];
 
   return domains.indexOf(window.location.hostname) !== -1;
 }
 
 function bindWebsiteEvents() {
   if (isTrustDomain()) {
-    document.addEventListener("ihelpers", function (event) {
-      handleWebEvents(event);
+    ["ihelpers", "iautomator"].forEach((domain) => {
+      document.addEventListener(domain, function (event) {
+        handleWebEvents(event);
+      });
     });
   }
 }

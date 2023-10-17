@@ -88,7 +88,7 @@ function Buttons() {
     <ButtonGroup style={{ marginBottom: "10px" }}>
       <MenuBtn
         onClick={() =>
-          chrome.tabs.create({ url: "https://ihelpers.xyz/automations" })
+          chrome.tabs.create({ url: "https://iautomator.xyz/automations" })
         }
         icon={
           <SearchOutlined
@@ -163,7 +163,7 @@ function MenuBtn(props: {
 }
 
 const defaultScript = `
-# example, see: https://docs.ihelpers.xyz/IScript_en.html
+# example, see: https://docs.iautomator.xyz/IScript_en.html
 automation for "https://weibo.com/*" on "load"
   set excludes = ".Frame_wrap_16as0"
   apply "readMode" with (excludes=excludes)  on "#homeWrap"
@@ -793,7 +793,7 @@ function EditBtn(props: { record: IAutomation }) {
 function getShareURL(item: Automation) {
   const { instructions, runAt, pattern } = item;
 
-  return `https://ihelpers.xyz/create?instructions=${encodeURIComponent(
+  return `https://iautomator.xyz/create?instructions=${encodeURIComponent(
     instructions
   )}&runAt=${runAt}&pattern=${encodeURIComponent(pattern)}`;
 }
