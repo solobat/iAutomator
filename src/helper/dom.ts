@@ -114,9 +114,25 @@ export function setupOutline() {
 
 export function getElem(selector: string) {
   if (selector.startsWith("!")) {
-    return document.querySelectorAll(selector.substring(1));
+    return queryAll(selector.substring(1));
   } else {
+    return query(selector);
+  }
+}
+
+function query(selector: string) {
+  try {
     return document.querySelector(selector);
+  } catch (error) {
+    return $(selector)[0];
+  }
+}
+
+function queryAll(selector: string) {
+  try {
+    return document.querySelectorAll(selector);
+  } catch (error) {
+    return $(selector);
   }
 }
 
