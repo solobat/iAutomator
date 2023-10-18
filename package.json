@@ -1,6 +1,6 @@
 {
   "name": "iautomator",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "description": "iAutomator: Convenience and automation of commonly used browser actions",
   "scripts": {
     "build": "tsc --noEmit && vite build",
