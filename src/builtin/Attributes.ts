@@ -35,6 +35,18 @@ export class ModifyAttributes extends Base<ModifyAttributesExecOptions> {
       if (varName === "target" && key === "href" && isURL(oldValue)) {
         return new URL(oldValue).searchParams.get("target");
       }
+
+      if (varName === "value") {
+        const val = $elem[0].textContent;
+
+        if ($elem[0].tagName === "A") {
+          if (val && val.includes(".")) {
+            return isURLLike(val) ? val : `https://${val}`;
+          }
+        } else {
+          return val;
+        }
+      }
     };
     const innerValue = innerVar ? resolveInnerValue(innerVar) : undefined;
 
