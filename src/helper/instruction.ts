@@ -1,5 +1,15 @@
 import { ExecOptions } from "@src/builtin/types";
 
+// 核心结构：一条指令的抽象表示（AST）
+export interface InstructionAST {
+  action: string;
+  scope: string;
+  args: ExecOptions;
+  comment?: string;
+  id?: string | number;
+  version?: number;
+}
+
 export interface InstructionData {
   action: string;
   args: ExecOptions;
@@ -151,4 +161,94 @@ export const jsonInstruction: Instruction = {
 
 export function getInstruction<T extends string>(raw: T) {
   return [basicInstruction, jsonInstruction].find((t) => t.is(raw));
+}
+
+/**
+ * 将存储的指令字符串解析为统一的 AST 列表。
+ * 支持三种格式：
+ * 1. JSON 数组   → `[{"action":"...","scope":"...","args":{...}}, ...]`
+ * 2. JSON 对象   → `{"action":"...","scope":"...","args":{...}}`
+ * 3. 旧的 basic 指令串 → `ACTION^k!v@scope;ACTION2@scope2`
+ */
+export function parseInstructionContent(content: string): InstructionAST[] {
+  const trimmed = content?.trim();
+
+  if (!trimmed) {
+    return [];
+  }
+
+  // 优先尝试 JSON 数组
+  if (trimmed.startsWith("[")) {
+    try {
+      const data = JSON.parse(trimmed) as any[];
+      return (data || []).map((item) => ({
+        action: item.action,
+        scope: item.scope,
+        args: (item.args || {}) as ExecOptions,
+        comment: item.comment,
+        id: item.id,
+        version: item.version,
+      }));
+    } catch {
+      // 解析失败则回落到旧格式解析
+    }
+  }
+
+  // 单个 JSON 对象
+  if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
+    try {
+      const item = JSON.parse(trimmed) as any;
+      return [
+        {
+          action: item.action,
+          scope: item.scope,
+          args: (item.args || {}) as ExecOptions,
+          comment: item.comment,
+          id: item.id,
+          version: item.version,
+        },
+      ];
+    } catch {
+      // 回落到旧格式解析
+    }
+  }
+
+  // 旧格式：以 ; 分隔多条，以 ^/@ 分隔 action/参数/scope
+  return trimmed
+    .split(";")
+    .map((instruction) => instruction.trim())
+    .filter(Boolean)
+    .map((instruction) => {
+      const inst = basicInstruction.parse(instruction);
+
+      return {
+        action: inst.action,
+        scope: inst.scope,
+        args: inst.args,
+      } as InstructionAST;
+    });
+}
+
+/**
+ * 将 AST 列表序列化为 JSON 数组字符串，用于持久化。
+ */
+export function stringifyInstructions(list: InstructionAST[]): string {
+  const payload = list.map((item) => {
+    const { action, scope, args, comment, id, version } = item;
+    const base: any = { action, scope, args };
+
+    if (comment) {
+      base.comment = comment;
+    }
+    if (id !== undefined) {
+      base.id = id;
+    }
+    if (version !== undefined) {
+      base.version = version;
+    }
+
+    return base;
+  });
+
+  return JSON.stringify(payload);
 }

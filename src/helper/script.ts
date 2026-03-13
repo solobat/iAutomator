@@ -5,6 +5,7 @@ import { withCache } from "@src/utils/cache";
 import { valueType } from "antd/lib/statistic/utils";
 import Tokenizr, { Token } from "tokenizr";
 
+// 旧版 iscript 解析入口（暂保留，后续可删除或仅用于向后兼容）
 export const parseScript = withCache((script: string) => {
   const tokens = tokenize(script);
 
@@ -15,6 +16,225 @@ export const parseScript = withCache((script: string) => {
   } else {
     return [];
   }
+});
+
+// --- v0.2 iscript 解析（新 DSL 执行入口） ---
+
+export interface IscriptAutomationMeta {
+  name: string;
+  matches: string[];
+  excludes: string[];
+  stage: "immediate" | "load" | "delay";
+}
+
+interface ParsedIscriptBlock {
+  meta: IscriptAutomationMeta;
+  bodyLines: string[];
+}
+
+function parseIscriptBlocks(source: string): ParsedIscriptBlock[] {
+  const text = source.trim();
+  if (!text) {
+    return [];
+  }
+
+  const blocks: ParsedIscriptBlock[] = [];
+
+  const rawLines = text.split("\n");
+  let i = 0;
+
+  while (i < rawLines.length) {
+    const line = rawLines[i].trim();
+
+    if (!line || line.startsWith("#")) {
+      i++;
+      continue;
+    }
+
+    if (!line.startsWith("automation ")) {
+      i++;
+      continue;
+    }
+
+    // 找到一个 automation 块的起始行
+    const blockLines: string[] = [];
+    blockLines.push(line);
+    i++;
+
+    while (i < rawLines.length) {
+      const cur = rawLines[i].trim();
+      blockLines.push(cur);
+      if (cur === "end") {
+        i++;
+        break;
+      }
+      i++;
+    }
+
+    const lines = blockLines.map((l) => l.trim());
+    if (!lines.length) continue;
+
+    const firstLine = lines[0];
+    const headMatch = firstLine.match(/^automation\s+"([^"]+)"\s*\{/);
+    if (!headMatch) {
+      continue;
+    }
+    const name = headMatch[1];
+
+    const meta: IscriptAutomationMeta = {
+      name,
+      matches: [],
+      excludes: [],
+      stage: "load",
+    };
+
+    let j = 1;
+    for (; j < lines.length; j++) {
+      const l = lines[j];
+      if (l.startsWith("}")) {
+        j++;
+        break;
+      }
+      const mMatch = l.match(/^match\s+"([^"]+)"/);
+      if (mMatch) {
+        meta.matches.push(mMatch[1]);
+        continue;
+      }
+      const eMatch = l.match(/^exclude\s+"([^"]+)"/);
+      if (eMatch) {
+        meta.excludes.push(eMatch[1]);
+        continue;
+      }
+      const sMatch = l.match(/^stage\s+"(immediate|load|delay)"/);
+      if (sMatch) {
+        meta.stage = sMatch[1] as IscriptAutomationMeta["stage"];
+        continue;
+      }
+    }
+
+    const bodyLines: string[] = [];
+    for (; j < lines.length; j++) {
+      const l = lines[j];
+      if (l === "end") {
+        break;
+      }
+      if (!l || l.startsWith("#")) {
+        continue;
+      }
+      bodyLines.push(l);
+    }
+
+    blocks.push({ meta, bodyLines });
+  }
+
+  return blocks;
+}
+
+function parseIscriptArgs(text: string, env: Env): ExecOptions {
+  const opts: ExecOptions = { silent: true };
+
+  if (!text.trim()) return opts;
+
+  text
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .forEach((pair) => {
+      const [rawKey, rawValue] = pair.split("=").map((s) => s.trim());
+      const key = rawKey;
+      const v = rawValue;
+
+      if (!key) return;
+
+      if (v === "true" || v === "false") {
+        opts[key] = v === "true";
+      } else if (/^[0-9]+$/.test(v)) {
+        opts[key] = Number(v);
+      } else if (/^".*"$/.test(v)) {
+        opts[key] = v.slice(1, -1);
+      } else if (v) {
+        try {
+          opts[key] = env.search(v as string) as any;
+        } catch {
+          opts[key] = v;
+        }
+      }
+    });
+
+  return opts;
+}
+
+function parseIscriptStatement(line: string, env: Env): ScriptInstruction | void {
+  const applyMatch =
+    line.match(
+      /^apply\s+([A-Z_][A-Z0-9_]*)\s+with\s*\((.*)\)\s+on\s+"([^"]+)"/
+    ) ||
+    line.match(
+      /^apply\s+([A-Z_][A-Z0-9_]*)\s+with\s*\((.*)\)\s+on\s+(.+)$/
+    );
+
+  if (applyMatch) {
+    const [, actionName, argsText, scopeRaw] = applyMatch;
+    const scope = scopeRaw.replace(/^"|"$/g, "");
+    const args = parseIscriptArgs(argsText, env);
+    // 将大写常量名映射为实际的 BUILTIN_ACTIONS 值，例如 READ_MODE -> "readMode"
+    const mapped = (BUILTIN_ACTIONS as any)[actionName];
+    const finalActionName = mapped || actionName;
+    return {
+      action: finalActionName,
+      args,
+      env,
+      scope,
+    };
+  }
+
+  const waitMatch = line.match(/^wait\s+([0-9]+)$/);
+  if (waitMatch) {
+    const seconds = Number(waitMatch[1]);
+    return {
+      action: BUILTIN_ACTIONS.WAIT,
+      args: { time: seconds },
+      env,
+    };
+  }
+
+  if (/^close$/.test(line)) {
+    return {
+      action: BUILTIN_ACTIONS.CLOSE_PAGE,
+      args: {},
+      env,
+    };
+  }
+}
+
+export const parseIscript = withCache((script: string) => {
+  const blocks = parseIscriptBlocks(script);
+
+  const automations: ScriptAutomation[] = blocks.map((block) => {
+    const env = new Env(["empty", null]);
+    const stage = block.meta.stage;
+    const pattern = block.meta.matches[0] || "*";
+
+    const runAt = stage2runAt(stage);
+    const instructions: ScriptInstruction[] = [];
+
+    block.bodyLines.forEach((line) => {
+      const inst = parseIscriptStatement(line, env);
+      if (inst) {
+        instructions.push(inst);
+      }
+    });
+
+    return {
+      name: block.meta.name,
+      pattern,
+      runAt,
+      instructions,
+      env,
+    };
+  });
+
+  return automations;
 });
 
 type ValueType = string | number | boolean;
@@ -67,6 +287,7 @@ export interface ScriptInstruction {
 export interface ScriptAutomation {
   id?: number;
   index?: number;
+  name?: string;
   pattern: string;
   runAt: RunAt;
   instructions: ScriptInstruction[];

@@ -31,8 +31,17 @@ import {
   startOutline,
 } from "./dom";
 import { GlobalEvents, isComboKey, noticeBg } from "./event";
-import { InstructionData } from "./instruction";
-import { parseScript, ScriptAutomation, ScriptInstruction } from "./script";
+import {
+  InstructionData,
+  basicArgsHandler,
+  parseInstructionContent,
+} from "./instruction";
+import {
+  parseIscript,
+  parseScript,
+  ScriptAutomation,
+  ScriptInstruction,
+} from "./script";
 
 let isSetup;
 const emitter = new SimpleEvent();
@@ -596,17 +605,16 @@ function getScriptAutomationOptions(
 }
 
 function parseInstructions(content: string): InstructionData[] {
-  const instructions = content.split(";");
+  const list = parseInstructionContent(content);
 
-  return instructions.map((instruction) => {
-    const [actionStr, selector] = instruction.split("@");
-    const [action, ...modifiers] = actionStr.split("^");
+  return list.map((item) => {
+    const rawArgs = basicArgsHandler.stringify(item.args, item.action);
 
     return {
-      action,
-      args: getExecOptions(modifiers),
-      rawArgs: modifiers.join("^"),
-      scope: selector,
+      action: item.action,
+      args: item.args,
+      rawArgs,
+      scope: item.scope,
     };
   });
 }
@@ -622,7 +630,7 @@ function execAutomationScripts(
   options?: ExecOptions
 ) {
   try {
-    const automations = parseScript(scripts);
+    const automations = parseIscript(scripts);
     const list = aIndex === -1 ? automations : [automations[aIndex]];
 
     list.forEach((automation, inaIndex) => {

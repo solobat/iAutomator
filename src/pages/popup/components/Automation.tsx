@@ -22,10 +22,12 @@ import { PlayCircleOutlined } from "@ant-design/icons";
 import { list2options } from "@src/helper/antd";
 import { t } from "@src/helper/i18n.helper";
 import {
+  InstructionAST,
   basicArgsHandler,
-  basicInstruction,
-  InstructionData,
+  parseInstructionContent,
+  stringifyInstructions,
 } from "@src/helper/instruction";
+import { parseIscript } from "@src/helper/script";
 import { getURLPatterns } from "@src/helper/url";
 import { IAutomation } from "@src/server/db/database";
 import Automation from "@src/server/model/Automation";
@@ -161,9 +163,11 @@ function MenuBtn(props: {
 
 const defaultScript = `
 # example, see: https://docs.iautomator.xyz/IScript_en.html
-automation for "https://weibo.com/*" on "load"
-  set excludes = ".Frame_wrap_16as0"
-  apply "readMode" with (excludes=excludes)  on "#homeWrap"
+automation "weibo-readmode" {
+  match "https://weibo.com/*"
+  stage "load"
+}
+  apply READ_MODE with (autoScroll=true, excludes=".Frame_wrap_16as0") on "body"
 end
 `;
 
@@ -188,7 +192,7 @@ function ScriptsEditor() {
   };
   const onTest = () => {
     try {
-      const result = parseScript(scripts);
+      const result = parseIscript(scripts);
       console.log("parse scripts result: ", result);
       setError("");
       setSuccess("parse successfully");
@@ -205,13 +209,14 @@ function ScriptsEditor() {
     setSaving(true);
     const result = onTest();
     if (result) {
+      const metaName = result[0]?.name || "New Script";
       automationsController
         .saveAutomation(
           "",
           scripts,
           result[0].pattern,
           result[0].runAt,
-          "New Script",
+          metaName,
           form.id
         )
         .then((resp) => {
@@ -231,7 +236,7 @@ function ScriptsEditor() {
                   runAt: result[0].runAt,
                   scripts,
                   active: true,
-                  name: "New Script",
+                  name: metaName,
                 },
               },
             });
@@ -310,16 +315,16 @@ function AutomationEditor() {
 
   function onAmEditorSaveClick() {
     const { pattern, data } = form;
-    const instructions = data
-      .map((item) => {
-        return basicInstruction.generate({
-          action: item.action,
-          args: basicInstruction.argsHandler.parse(item.rawArgs, item.action),
-          scope: item.scope,
-          rawArgs: item.rawArgs,
-        });
-      })
-      .join(";");
+    const astList: InstructionAST[] = data.map((item) => {
+      const args = basicArgsHandler.parse(item.rawArgs, item.action);
+
+      return {
+        action: item.action,
+        scope: item.scope,
+        args,
+      };
+    });
+    const instructions = stringifyInstructions(astList);
 
     if (validateAmForm(instructions, pattern)) {
       setSaving(true);
@@ -379,14 +384,17 @@ function AutomationEditor() {
             if (!source) {
               return;
             }
-            const isScript = !!source.scripts;
-            const instructions = source.instructions || "";
-            const data = !isScript && instructions
-              ? instructions
-                  .split(";")
-                  .filter(Boolean)
-                  .map((item) => basicInstruction.parse(item))
-              : form.data;
+        const isScript = !!source.scripts;
+        const instructions = source.instructions || "";
+        const astList = !isScript ? parseInstructionContent(instructions) : [];
+        const data =
+          !isScript && astList.length
+            ? astList.map((ast) => ({
+                action: ast.action,
+                rawArgs: basicArgsHandler.stringify(ast.args, ast.action),
+                scope: ast.scope,
+              }))
+            : form.data;
 
             const nextForm = {
               ...form,
@@ -569,7 +577,7 @@ function ActionArgField(props: { arg: ActionArg }) {
 }
 
 function InstructionEditor(props: {
-  form: Omit<InstructionData, "args">;
+  form: Omit<InstructionAST, "args"> & { rawArgs: string };
   index: number;
   dispatch;
 }) {
@@ -600,6 +608,12 @@ function InstructionEditor(props: {
     );
   };
 
+  const parsedArgs = basicArgsHandler.parse(form.rawArgs, actionItem?.value);
+  const argSummary = Object.keys(parsedArgs)
+    .filter((key) => key !== "silent")
+    .map((key) => `${key}=${String(parsedArgs[key])}`)
+    .join(", ");
+
   return (
     <Input.Group compact className="am-ins-editor">
       <Select
@@ -624,8 +638,8 @@ function InstructionEditor(props: {
         ))}
       </Select>
       <Input
-        placeholder={"key1!val1^key2!val2..."}
-        value={form.rawArgs}
+        placeholder={t("arguments")}
+        value={argSummary}
         className="ipt-ins"
         readOnly
         style={{ width: 370 }}
@@ -637,10 +651,7 @@ function InstructionEditor(props: {
             content={
               <ActionArgsForm
                 config={actionItem?.args}
-                defaultValues={basicArgsHandler.parse(
-                  form.rawArgs,
-                  actionItem?.value
-                )}
+                defaultValues={parsedArgs}
                 onChange={(_, values) =>
                   onArgsChange(actionItem?.value, values)
                 }
@@ -650,15 +661,6 @@ function InstructionEditor(props: {
             <EditOutlined />
           </Popover>
         }
-        onChange={(event) => {
-          onAmFormInsChange(
-            {
-              rawArgs: event.target.value,
-            },
-            props.index,
-            dispatch
-          );
-        }}
       />
       <Input
         prefix="@"
@@ -700,20 +702,6 @@ const AutomationsColumns = [
     textWrap: "word-break",
     ellipsis: true,
     render: (runAt, record) => <ItemName record={record} />,
-  },
-  {
-    title: t("instructions"),
-    dataIndex: "instructions",
-    width: "150px",
-    textWrap: "word-break",
-    ellipsis: true,
-  },
-  {
-    title: t("scripts"),
-    dataIndex: "scripts",
-    width: "150px",
-    textWrap: "word-break",
-    ellipsis: true,
   },
   {
     title: t("run_at"),
@@ -838,9 +826,15 @@ function SwitchBtn(props: any) {
 function EditBtn(props: { record: IAutomation }) {
   const { dispatch } = useModel();
   const onClick = useCallback(() => {
-    const data = props.record.instructions
-      .split(";")
-      .map((item) => basicInstruction.parse(item));
+    const astList = parseInstructionContent(props.record.instructions || "");
+    const data =
+      astList.length > 0
+        ? astList.map((ast) => ({
+            action: ast.action,
+            rawArgs: basicArgsHandler.stringify(ast.args, ast.action),
+            scope: ast.scope,
+          }))
+        : [];
     const record = {
       ...props.record,
       data,
