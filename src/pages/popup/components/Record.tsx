@@ -61,7 +61,6 @@ function RunBtn(props: any) {
     <Tooltip title={t("redo")}>
       <PlayCircleOutlined
         translate="no"
-        rev=""
         onClick={() => onRecordRunClick(props.record, id)}
       />
     </Tooltip>
@@ -86,7 +85,6 @@ function AddAmBtn(props: any) {
     <Tooltip title={t("as_automation")}>
       <PlusCircleOutlined
         translate="no"
-        rev=""
         onClick={() => onRecordAddAmClick(props.record, dispatch)}
       />
     </Tooltip>

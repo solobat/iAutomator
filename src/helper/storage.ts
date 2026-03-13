@@ -10,7 +10,7 @@ function getTab() {
   return browser.tabs.query({ active: true });
 }
 
-export default async function hanlder(req) {
+export default async function handler(req) {
   const { data, action } = req;
 
   if (action === "storages.getAll") {

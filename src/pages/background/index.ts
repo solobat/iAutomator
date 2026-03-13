@@ -1,7 +1,7 @@
 import reloadOnUpdate from "virtual:reload-on-update-in-background-script";
 
 import { GlobalEvent } from "@src/builtin/types";
-import hanlder from "@src/helper/cookies";
+import cookiesHandler from "@src/helper/cookies";
 import { isURLExist } from "@src/helper/tab";
 import { getURLByArgs } from "@src/helper/url";
 import { warn } from "@src/utils/log";
@@ -53,7 +53,7 @@ class BadgesHelper {
     this.maxLength = 20;
   }
 
-  getItem(url): string {
+  getItem(url: string): string {
     const item = this.list.find((item) => item.url === url);
 
     if (item) {
@@ -80,7 +80,7 @@ class BadgesHelper {
 
 const badgesHelper = new BadgesHelper();
 
-function updateBadge(url) {
+function updateBadge(url: string) {
   if (url.startsWith("http")) {
     chrome.action.enable();
     chrome.action.setBadgeText({
@@ -112,7 +112,7 @@ function onPageData(data, handler: MsgHandlerFn) {
 function onEventEmitted(
   data: GlobalEvent,
   originTab: chrome.tabs.Tab,
-  hanlder
+  handler: MsgHandlerFn
 ) {
   chrome.tabs.query({}, function (tabs) {
     if (chrome.runtime.lastError) {
@@ -124,7 +124,7 @@ function onEventEmitted(
       }
     });
   });
-  hanlder("");
+  handler("");
 }
 
 function onRefreshAutmations(handler: MsgHandlerFn) {
@@ -197,15 +197,18 @@ function onUpdateAutomation(data: AutomationPayload, handler: MsgHandlerFn) {
 }
 
 function notifyTabs(type: "update" | "create" | "delete", data: IAutomation) {
-  chrome.tabs.query({ url: data.pattern }, function (tabs) {
+  chrome.tabs.query({}, function (tabs) {
     if (chrome.runtime.lastError) {
       return;
     }
     tabs.forEach((tab) => {
-      runMethod(tab.id, PAGE_ACTIONS.AUTOMATION_UPDATED, {
-        type,
-        data,
-      });
+      const url = tab.url;
+      if (url && matchAutomations([data], url).length > 0) {
+        runMethod(tab.id, PAGE_ACTIONS.AUTOMATION_UPDATED, {
+          type,
+          data,
+        });
+      }
     });
   });
 }
@@ -257,7 +260,11 @@ function onCreateNote(data, handler: MsgHandlerFn) {
 
 type MsgHandlerFn<T = any> = (results: T, isAsync?: boolean) => void;
 
-function msgHandler(req: PageMsg, sender: chrome.runtime.MessageSender, resp) {
+function msgHandler(
+  req: PageMsg,
+  sender: chrome.runtime.MessageSender,
+  resp: (msg: BackMsg) => void
+) {
   if (chrome.runtime.lastError) {
     return;
   }
@@ -285,15 +292,15 @@ function msgHandler(req: PageMsg, sender: chrome.runtime.MessageSender, resp) {
   } else if (action === PAGE_ACTIONS.PAGE_DATA) {
     initCommands();
     onPageData(data, handler);
-  } else if (action === PAGE_ACTIONS.GLOABL_EVENT_EMITTED) {
-    onEventEmitted(data, sender.tab, hanlder);
+  } else if (action === PAGE_ACTIONS.GLOBAL_EVENT_EMITTED) {
+    onEventEmitted(data, sender.tab, handler);
   } else if (action === PAGE_ACTIONS.REFRESH_AUTOMATIONS) {
     onRefreshAutmations(handler);
   } else if (action === PAGE_ACTIONS.REFRESH_SHORTCUTS) {
     onRefreshShortcuts(handler);
   } else if (action === WEB_ACTIONS.MSG_FORWARD) {
     forwardMsg(data);
-    hanlder("");
+    handler("");
   } else if (action === PAGE_ACTIONS.ACTIVE_PAGE) {
     activePage(sender.tab);
     handler("");
@@ -346,7 +353,7 @@ function forwardMsg(msg) {
   }
 }
 
-async function openPage(data, hanlder: MsgHandlerFn) {
+async function openPage(data, handler: MsgHandlerFn) {
   const { type, args, url, pattern } = data;
   const toURL = getURLByArgs(type, url, args);
   const toOpen = () => {
@@ -355,7 +362,7 @@ async function openPage(data, hanlder: MsgHandlerFn) {
         url: toURL,
       })
       .then(() => {
-        hanlder(true, true);
+        handler(true, true);
       });
   };
 
@@ -364,7 +371,7 @@ async function openPage(data, hanlder: MsgHandlerFn) {
       const isExist = await isURLExist(pattern);
 
       if (isExist) {
-        hanlder(false, true);
+        handler(false, true);
       } else {
         toOpen();
       }
@@ -462,7 +469,8 @@ chrome.tabs.onUpdated.addListener(function () {
       return;
     }
     if (tabs[0] && tabs[0].url) {
-      updateBadge(tabs[0].url);
+      // URL 变化时，重新计算当前页面匹配的自动化数量
+      updateBadgeByURL(tabs[0].url);
     }
   });
 });

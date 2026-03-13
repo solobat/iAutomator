@@ -1,6 +1,8 @@
 import { t } from "@src/helper/i18n.helper";
 import Response from "@src/server/common/response";
 import * as automationsController from "@src/server/controller/automations.controller";
+import { APP_ACTIONS, PAGE_ACTIONS } from "@src/common/const";
+import { noticeBg } from "@src/helper/event";
 import Select from "antd/es/select";
 import Table from "antd/es/table";
 import { useEffect, useState } from "react";
@@ -96,12 +98,22 @@ function DeleteBtn(props: { record: IAutomation; onDeleted: () => void }) {
   const onClick = () => {
     automationsController.deleteItem(props.record.id).then(() => {
       props.onDeleted();
+      noticeBg({
+        action: PAGE_ACTIONS.REFRESH_AUTOMATIONS,
+      });
+      noticeBg({
+        action: APP_ACTIONS.AUTOMATION_UPDATED,
+        data: {
+          type: "delete",
+          old: props.record,
+        },
+      });
     });
   };
 
   return (
     <span onClick={onClick}>
-      <DeleteOutlined rev="" translate="no" />
+      <DeleteOutlined translate="no" />
     </span>
   );
 }

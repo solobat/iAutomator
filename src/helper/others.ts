@@ -8,7 +8,7 @@ export function highlightEnglish(text) {
   }).then((result) => result.text());
 }
 
-export default async function hanlder(req) {
+export default async function handler(req) {
   const { data, action } = req;
 
   if (action === "others.highlightEnglishSyntax") {

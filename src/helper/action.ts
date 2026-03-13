@@ -337,7 +337,7 @@ export const helper: ActionHelper<Base> = {
         globalEvents.nameForSend(),
         (name: string, data: any) => {
           noticeBg({
-            action: PAGE_ACTIONS.GLOABL_EVENT_EMITTED,
+            action: PAGE_ACTIONS.GLOBAL_EVENT_EMITTED,
             data: {
               action: name,
               payload: data,

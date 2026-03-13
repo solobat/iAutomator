@@ -95,7 +95,7 @@ export const PAGE_ACTIONS = {
   RECORD: "recordAction",
   AUTOMATIONS: "getAutomations",
   PAGE_DATA: "getPageData",
-  GLOABL_EVENT_EMITTED: "globalEventEmitted",
+  GLOBAL_EVENT_EMITTED: "globalEventEmitted",
   GLOBAL_EVENT_RECEIVED: "globalEventReceived",
   REFRESH_AUTOMATIONS: "refreshAutomations",
   REFRESH_SHORTCUTS: "refreshShortcuts",

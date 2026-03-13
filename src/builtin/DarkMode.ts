@@ -62,6 +62,12 @@ export class DarkMode extends Base<DarkModeOptions> {
     return "light";
   }
 
+  beforeExit(): boolean {
+    // 确保在动作被禁用或卸载时立即还原页面主题
+    $("html").attr("theme", "");
+    return super.beforeExit();
+  }
+
   execute(_, options: Partial<DarkModeOptions>) {
     const isDark = this.checkThemeDark(options);
 

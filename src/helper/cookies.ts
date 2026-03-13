@@ -4,7 +4,7 @@ export function getAll(params = {}) {
   return browser.cookies.getAll(params);
 }
 
-export default function hanlder(req) {
+export default function handler(req) {
   const { data, action } = req;
 
   if (action === "cookies.getAll") {

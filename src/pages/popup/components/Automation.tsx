@@ -94,7 +94,6 @@ function Buttons() {
           <SearchOutlined
             style={{ fontSize: "20px", cursor: "pointer" }}
             translate="no"
-            rev=""
           />
         }
         label={t("get_new_automations")}
@@ -109,7 +108,6 @@ function Buttons() {
         }
         icon={
           <PlusSquareOutlined
-            rev=""
             style={{ fontSize: "20px", cursor: "pointer" }}
             translate="no"
           />
@@ -128,7 +126,6 @@ function Buttons() {
         }
         icon={
           <PlusSquareOutlined
-            rev=""
             style={{ fontSize: "20px", cursor: "pointer" }}
             translate="no"
           />
@@ -224,6 +221,20 @@ function ScriptsEditor() {
             noticeBg({
               action: PAGE_ACTIONS.REFRESH_AUTOMATIONS,
             });
+            noticeBg({
+              action: APP_ACTIONS.AUTOMATION_UPDATED,
+              data: {
+                type: "create",
+                new: {
+                  id: form.id,
+                  pattern: result[0].pattern,
+                  runAt: result[0].runAt,
+                  scripts,
+                  active: true,
+                  name: "New Script",
+                },
+              },
+            });
           }
         });
     } else {
@@ -293,6 +304,7 @@ function AutomationEditor() {
   const form = state.automationForm as PageState["automationForm"];
   const initialDataRef = React.useRef(state.automationForm);
   const [saving, setSaving] = useState(false);
+  const [allAutomations, setAllAutomations] = useState<IAutomation[]>([]);
   const urlPatterns = getURLPatterns(state.tab.host, state.tab.pathname);
   const boxRef = React.useRef<HTMLDivElement>(null);
 
@@ -349,8 +361,59 @@ function AutomationEditor() {
     boxRef.current?.scrollIntoView();
   }, [form.id]);
 
+   useEffect(() => {
+    automationsController.getList().then((res: Response) => {
+      if (res.code === 0) {
+        setAllAutomations(res.data ?? []);
+      }
+    });
+  }, []);
+
   return (
     <div className="am-editor" ref={boxRef}>
+      <div className="am-editor-copy">
+        <Select
+          placeholder="Copy from existing automation"
+          onChange={(id: number) => {
+            const source = allAutomations.find((item) => item.id === id);
+            if (!source) {
+              return;
+            }
+            const isScript = !!source.scripts;
+            const instructions = source.instructions || "";
+            const data = !isScript && instructions
+              ? instructions
+                  .split(";")
+                  .filter(Boolean)
+                  .map((item) => basicInstruction.parse(item))
+              : form.data;
+
+            const nextForm = {
+              ...form,
+              id: undefined,
+              name: source.name,
+              runAt: source.runAt,
+              // 不复制原来的域名 / pattern，使用当前表单里的（通常为空，由用户选择）
+              pattern: form.pattern,
+              instructions,
+              scripts: source.scripts || "",
+              data,
+            };
+
+            dispatch({
+              type: ACTIONS.AUTOMATION_FORM_UPDATE,
+              payload: nextForm,
+              editingMode: isScript
+                ? AmFormEditing.Script
+                : AmFormEditing.Instruction,
+            });
+          }}
+          options={allAutomations.map((item) => ({
+            label: `${item.name || "Automation"} (${item.pattern})`,
+            value: item.id,
+          }))}
+        />
+      </div>
       <div className="am-editor-fields">
         <Input
           value={form.name}
@@ -401,7 +464,7 @@ function AutomationEditor() {
               dispatch
             );
           }}
-          suffixIcon={<PlayCircleOutlined rev="" />}
+          suffixIcon={<PlayCircleOutlined />}
         >
           <Option value={0}>{t("run_at_immediately")}</Option>
           <Option value={1}>{t("run_at_dom_ready")}</Option>
@@ -584,7 +647,7 @@ function InstructionEditor(props: {
               />
             }
           >
-            <EditOutlined rev="" />
+            <EditOutlined />
           </Popover>
         }
         onChange={(event) => {
@@ -613,9 +676,8 @@ function InstructionEditor(props: {
         style={{ width: 150 }}
       />
       <div className="am-ins-editor-btns">
-        <PlusSquareOutlined rev="" size={25} onClick={onAddNewInsClick} />
+        <PlusSquareOutlined size={25} onClick={onAddNewInsClick} />
         <MinusSquareOutlined
-          rev=""
           size={25}
           onClick={onDelInsClick}
           style={{ marginLeft: "5px" }}
@@ -691,7 +753,7 @@ function ItemName(props: any) {
       disabled={!editable}
       onChange={onChange}
       suffix={
-        !editable && <EditFilled rev={""} onClick={() => setEditable(true)} />
+        !editable && <EditFilled onClick={() => setEditable(true)} />
       }
       onPressEnter={onEnter}
     ></Input>
@@ -701,6 +763,7 @@ function ItemName(props: any) {
 function RunAt(props: any) {
   const { state, dispatch } = useModel();
   const onChange = useCallback((value) => {
+    const oldRecord = { ...props.record };
     props.record.runAt = value;
     automationsController
       .updateAutomation(props.record.id, {
@@ -709,6 +772,14 @@ function RunAt(props: any) {
       .then(() => {
         fetchList(state, dispatch).then(() => {
           noticeBg({ action: PAGE_ACTIONS.REFRESH_AUTOMATIONS });
+          noticeBg({
+            action: APP_ACTIONS.AUTOMATION_UPDATED,
+            data: {
+              type: "update",
+              old: oldRecord,
+              new: props.record,
+            },
+          });
         });
       });
   }, []);
@@ -785,7 +856,7 @@ function EditBtn(props: { record: IAutomation }) {
 
   return (
     <span onClick={onClick}>
-      <EditOutlined rev="" translate="no" />
+      <EditOutlined translate="no" />
     </span>
   );
 }
@@ -806,7 +877,7 @@ function ShareBtn(props: { item: Automation }) {
 
   return (
     <span onClick={onClick}>
-      <ShareAltOutlined rev="" translate="no" />
+      <ShareAltOutlined translate="no" />
     </span>
   );
 }
@@ -824,7 +895,7 @@ function ShortcutBtn(props: { item: Automation }) {
 
   return (
     <span onClick={() => onShortcutBtnClick(props.item, dispatch)}>
-      <MacCommandOutlined rev="" translate="no" />
+      <MacCommandOutlined translate="no" />
     </span>
   );
 }
@@ -846,7 +917,7 @@ function DeleteBtn(props: any) {
 
   return (
     <span onClick={onClick}>
-      <DeleteOutlined rev="" translate="no" />
+      <DeleteOutlined translate="no" />
     </span>
   );
 }

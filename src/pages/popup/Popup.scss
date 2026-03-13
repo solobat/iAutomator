@@ -44,6 +44,14 @@ body {
   margin: 10px 0;
 }
 
+.am-editor-copy {
+  margin-top: 5px;
+
+  .ant-select {
+    width: 100%;
+  }
+}
+
 .am-editor-fields {
   margin-top: 5px;
   display: flex;

@@ -59,6 +59,11 @@ export default defineConfig({
       },
     },
   },
+  test: {
+    globals: true,
+    environment: "jsdom",
+    include: ["test/**/*.test.ts"],
+  },
 });
 
 function getLastElement<T>(array: ArrayLike<T>): T {
