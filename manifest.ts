@@ -22,14 +22,13 @@ const manifest: chrome.runtime.ManifestV3 = {
   },
   content_scripts: [
     {
-      matches: ["http://*/*", "https://*/*", "<all_urls>"],
+      matches: ["<all_urls>"],
       js: ["src/pages/content/index.js"],
       run_at: "document_start",
       css: ["assets/css/contentStyle.chunk.css"],
     },
   ],
   permissions: ["tabs", "contextMenus", "notifications"],
-  optional_permissions: ["background", "clipboardWrite"],
   web_accessible_resources: [
     {
       resources: [
