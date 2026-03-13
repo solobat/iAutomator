@@ -249,6 +249,74 @@ function ScriptsEditor() {
 
   return (
     <div>
+      <Select
+        placeholder="Generate script from action template"
+        style={{ width: "100%", marginBottom: 8 }}
+        onChange={(actionValue: string) => {
+          const cfg = BUILDIN_ACTION_FIELD_CONFIGS.find(
+            (item) => item.value === actionValue
+          );
+          if (!cfg) {
+            return;
+          }
+          // 反向从 BUILTIN_ACTIONS 中找到 DSL 使用的大写常量名，例如 READ_MODE
+          const builtinKey =
+            Object.keys(BUILTIN_ACTIONS).find(
+              (k) => (BUILTIN_ACTIONS as any)[k] === cfg.value
+            ) || actionValue.toUpperCase();
+          const host = state.tab?.host || "{host}";
+          const templateName = `${cfg.value.toLowerCase()}-${host}`;
+          const headerLines = [
+            `# Template: ${cfg.label} (${builtinKey})`,
+            `# This script was generated from action template. You can tweak url, selector and arguments.`,
+            `automation "${templateName}" {`,
+            `  match "https://${host}/*"`,
+            `  stage "load"`,
+            `}`,
+          ];
+
+          const bodyLines: string[] = [];
+          if (!cfg.args || cfg.args.length === 0) {
+            bodyLines.push(
+              `  # This action has no configurable arguments currently.`
+            );
+            bodyLines.push(`  apply ${builtinKey} with () on "body"`);
+          } else {
+            const comments: string[] = [];
+            const assignments: string[] = [];
+            cfg.args.forEach((arg) => {
+              const def =
+                arg.defaultValue ??
+                (arg.type === "number"
+                  ? 0
+                  : arg.type === "boolean"
+                  ? false
+                  : "");
+              const valueStr =
+                arg.type === "string" ? `"${def ?? ""}"` : String(def ?? "");
+              const comment = arg.tips
+                ? `  # ${arg.name}: ${arg.tips}`
+                : `  # ${arg.name}`;
+              comments.push(comment);
+              assignments.push(`${arg.name}=${valueStr}`);
+            });
+            bodyLines.push(...comments);
+            bodyLines.push(
+              `  apply ${builtinKey} with (${assignments.join(", ")}) on "body"`
+            );
+          }
+          bodyLines.push(`end`);
+
+          const tpl = [...headerLines, ...bodyLines].join("\n");
+          setScripts(tpl.trim());
+          setError("");
+          setSuccess("");
+        }}
+        options={BUILDIN_ACTION_FIELD_CONFIGS.map((cfg) => ({
+          label: `${cfg.value} - ${cfg.label}`,
+          value: cfg.value,
+        }))}
+      />
       {error && (
         <Alert message={error} type="error" closable onClose={onCloseAlert} />
       )}
@@ -366,7 +434,7 @@ function AutomationEditor() {
     boxRef.current?.scrollIntoView();
   }, [form.id]);
 
-   useEffect(() => {
+  useEffect(() => {
     automationsController.getList().then((res: Response) => {
       if (res.code === 0) {
         setAllAutomations(res.data ?? []);
@@ -384,17 +452,19 @@ function AutomationEditor() {
             if (!source) {
               return;
             }
-        const isScript = !!source.scripts;
-        const instructions = source.instructions || "";
-        const astList = !isScript ? parseInstructionContent(instructions) : [];
-        const data =
-          !isScript && astList.length
-            ? astList.map((ast) => ({
-                action: ast.action,
-                rawArgs: basicArgsHandler.stringify(ast.args, ast.action),
-                scope: ast.scope,
-              }))
-            : form.data;
+            const isScript = !!source.scripts;
+            const instructions = source.instructions || "";
+            const astList = !isScript
+              ? parseInstructionContent(instructions)
+              : [];
+            const data =
+              !isScript && astList.length
+                ? astList.map((ast) => ({
+                    action: ast.action,
+                    rawArgs: basicArgsHandler.stringify(ast.args, ast.action),
+                    scope: ast.scope,
+                  }))
+                : form.data;
 
             const nextForm = {
               ...form,
@@ -740,9 +810,7 @@ function ItemName(props: any) {
       value={name}
       disabled={!editable}
       onChange={onChange}
-      suffix={
-        !editable && <EditFilled onClick={() => setEditable(true)} />
-      }
+      suffix={!editable && <EditFilled onClick={() => setEditable(true)} />}
       onPressEnter={onEnter}
     ></Input>
   );
