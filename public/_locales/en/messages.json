@@ -47,6 +47,69 @@
     "add_new_script": {
         "message": "Add new script"
     },
+    "add_automation": {
+        "message": "Add automation"
+    },
+    "use_script_instead": {
+        "message": "Use script"
+    },
+    "empty_automations_title": {
+        "message": "No automations yet"
+    },
+    "empty_automations_desc": {
+        "message": "Add one for the current site, or try an example to get started."
+    },
+    "add_example_automation": {
+        "message": "Add example"
+    },
+    "example_added_message": {
+        "message": "Example added. It runs on Zhihu question pages. You can edit or disable it anytime."
+    },
+    "template_script_hint": {
+        "message": "Select a built-in action to generate a script; then change URL and selector as needed."
+    },
+    "quick_add": {
+        "message": "Quick add"
+    },
+    "quick_add_action_label": {
+        "message": "Action"
+    },
+    "quick_add_site_label": {
+        "message": "Site (URL pattern)"
+    },
+    "quick_add_create_btn": {
+        "message": "Create"
+    },
+    "read_mode_desc": {
+        "message": "Highlight main content, hide clutter"
+    },
+    "dark_mode_desc": {
+        "message": "Apply dark theme to the page"
+    },
+    "reload_desc": {
+        "message": "Reload the page at an interval"
+    },
+    "bookmark_desc": {
+        "message": "Track and notify new list items"
+    },
+    "code_copy_desc": {
+        "message": "One-click copy for code blocks"
+    },
+    "style_desc": {
+        "message": "Inject custom CSS"
+    },
+    "focus_desc": {
+        "message": "Focus or blur an element"
+    },
+    "note_desc": {
+        "message": "Create a note or comment"
+    },
+    "kill_element_desc": {
+        "message": "Hide or remove elements by selector"
+    },
+    "common_action_desc": {
+        "message": "Run a common action (e.g. scroll, copy)"
+    },
     "scripts" : {
         "message": "Scripts"
     },
@@ -85,6 +148,9 @@
     },
     "run_at_delayed": {
         "message": "Delayed"
+    },
+    "arguments": {
+        "message": "Arguments"
     },
     "action": {
         "message": "Action"

@@ -1,6 +1,14 @@
-import { Alert, AutoComplete, Popover, Radio, RadioChangeEvent } from "antd";
+import {
+  Alert,
+  AutoComplete,
+  Popover,
+  Radio,
+  RadioChangeEvent,
+  Tooltip,
+} from "antd";
 import Button from "antd/es/button";
 import ButtonGroup from "antd/es/button/button-group";
+import message from "antd/es/message";
 import Input from "antd/es/input";
 import Select from "antd/es/select";
 import Switch from "antd/es/switch";
@@ -15,6 +23,7 @@ import {
   MacCommandOutlined,
   MinusSquareOutlined,
   PlusSquareOutlined,
+  QuestionCircleOutlined,
   SearchOutlined,
   ShareAltOutlined,
 } from "@ant-design/icons";
@@ -44,6 +53,7 @@ import { matchAutomations } from "../../../helper/automations";
 import { noticeBg } from "../../../helper/event";
 import Response from "../../../server/common/response";
 import * as automationsController from "../../../server/controller/automations.controller";
+import { RunAt as RunAtEnum } from "../../../server/enum/Automation.enum";
 import {
   ACTIONS,
   AmFormEditing,
@@ -83,8 +93,91 @@ export function AutomationsPanel() {
   );
 }
 
+function QuickAddContent(props: {
+  state: PageState;
+  dispatch: React.Dispatch<any>;
+  onClose: () => void;
+}) {
+  const { state, dispatch, onClose } = props;
+  const host = state.tab?.host || "";
+  const defaultPattern = host ? `https://${host}/*` : "";
+  const [actionValue, setActionValue] = useState<string>("");
+  const [pattern, setPattern] = useState(defaultPattern);
+
+  const cfg = BUILDIN_ACTION_FIELD_CONFIGS.find((c) => c.value === actionValue);
+
+  const onCreate = () => {
+    if (!cfg) return;
+    const defaultArgs: Record<string, unknown> = {};
+    cfg.args?.forEach((a) => {
+      defaultArgs[a.name] = a.defaultValue !== undefined ? a.defaultValue : a.value;
+    });
+    const rawArgs = basicArgsHandler.stringify(
+      defaultArgs as import("@src/builtin/types").ExecOptions,
+      cfg.value
+    );
+    const row = {
+      action: cfg.value,
+      rawArgs,
+      scope: "body",
+    };
+    dispatch({
+      type: ACTIONS.AUTOMATION_FORM_UPDATE,
+      payload: {
+        pattern: pattern || defaultPattern,
+        name: `${cfg.label} - ${host || "site"}`,
+        runAt: RunAtEnum.END,
+        data: [row],
+      },
+      editingMode: AmFormEditing.Instruction,
+    });
+    onClose();
+  };
+
+  return (
+    <div className="am-quick-add-content" style={{ width: 280 }}>
+      <div style={{ marginBottom: 8 }}>
+        <div style={{ marginBottom: 4, fontSize: 12 }}>
+          {t("quick_add_action_label")}
+        </div>
+        <Select
+          placeholder={t("quick_add_action_label")}
+          value={actionValue || undefined}
+          onChange={setActionValue}
+          style={{ width: "100%" }}
+          options={BUILDIN_ACTION_FIELD_CONFIGS.map((c) => {
+            // Hide description when it looks like an untranslated i18n key (e.g. read_mode_desc)
+            const desc =
+              c.description && !/^[a-z0-9_]+_desc$/i.test(c.description)
+                ? c.description
+                : "";
+            return {
+              value: c.value,
+              label: desc ? `${c.label} — ${desc}` : c.label,
+            };
+          })}
+        />
+      </div>
+      <div style={{ marginBottom: 12 }}>
+        <div style={{ marginBottom: 4, fontSize: 12 }}>
+          {t("quick_add_site_label")}
+        </div>
+        <Input
+          value={pattern}
+          onChange={(e) => setPattern(e.target.value)}
+          placeholder="https://example.com/*"
+        />
+      </div>
+      <Button type="primary" block onClick={onCreate} disabled={!cfg}>
+        {t("quick_add_create_btn")}
+      </Button>
+    </div>
+  );
+}
+
 function Buttons() {
-  const { dispatch } = useContext(PageContext);
+  const { state, dispatch } = useContext(PageContext);
+  const [quickAddOpen, setQuickAddOpen] = useState(false);
 
   return (
     <ButtonGroup style={{ marginBottom: "10px" }}>
@@ -115,8 +208,29 @@ function Buttons() {
           />
         }
         styles={{ marginLeft: "10px" }}
-        label={t("add_new_automation")}
+        label={t("add_automation")}
       />
+
+      <Popover
+        content={
+          <QuickAddContent
+            state={state}
+            dispatch={dispatch}
+            onClose={() => setQuickAddOpen(false)}
+          />
+        }
+        title={t("quick_add")}
+        trigger="click"
+        open={quickAddOpen}
+        onOpenChange={setQuickAddOpen}
+      >
+        <Button
+          style={{ marginLeft: "6px" }}
+          icon={<PlusSquareOutlined translate="no" />}
+        >
+          {t("quick_add")}
+        </Button>
+      </Popover>
 
       <MenuBtn
         onClick={() =>
@@ -127,13 +241,13 @@ function Buttons() {
           })
         }
         icon={
-          <PlusSquareOutlined
-            style={{ fontSize: "20px", cursor: "pointer" }}
+          <MacCommandOutlined
+            style={{ fontSize: "18px", cursor: "pointer" }}
             translate="no"
           />
         }
-        styles={{ marginLeft: "10px" }}
-        label={t("add_new_script")}
+        styles={{ marginLeft: "6px" }}
+        label={t("use_script_instead")}
       />
     </ButtonGroup>
   );
@@ -170,6 +284,18 @@ automation "weibo-readmode" {
   apply READ_MODE with (autoScroll=true, excludes=".Frame_wrap_16as0") on "body"
 end
 `;
+
+const EXAMPLE_AUTOMATION_SCRIPT = `# example, see: https://docs.iautomator.xyz/IScript_en.html
+automation "zhihu-readmode" {
+  match "https://www.zhihu.com/question/*"
+  stage "load"
+}
+  apply READ_MODE with (autoScroll=true) on "#QuestionAnswers-answers"
+end
+`;
+
+const EXAMPLE_AUTOMATION_PATTERN = "https://www.zhihu.com/question/*";
+const EXAMPLE_AUTOMATION_NAME = "Zhihu Read Mode (example)";
 
 function ScriptsEditor() {
   const { dispatch, state } = useContext(PageContext);
@@ -249,6 +375,9 @@ function ScriptsEditor() {
 
   return (
     <div>
+      <div className="am-editor-template-hint" style={{ marginBottom: 6 }}>
+        {t("template_script_hint")}
+      </div>
       <Select
         placeholder="Generate script from action template"
         style={{ width: "100%", marginBottom: 8 }}
@@ -597,14 +726,28 @@ function ActionArgsForm(props: {
   );
 }
 
+function ArgLabel(props: { name: string; tips?: string }) {
+  const { name, tips } = props;
+  if (!tips) return <>{name}</>;
+  return (
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+      {name}
+      <Tooltip title={tips}>
+        <QuestionCircleOutlined className="am-arg-tip-icon" translate="no" />
+      </Tooltip>
+    </span>
+  );
+}
+
 function ActionArgField(props: { arg: ActionArg }) {
   const { arg } = props;
+  const label = <ArgLabel name={arg.name} tips={arg.tips} />;
 
   return (
     <>
       {arg.type === "boolean" && (
         <Form.Item
-          label={arg.name}
+          label={label}
           name={arg.name}
           valuePropName="checked"
           required={arg.required}
@@ -614,7 +757,7 @@ function ActionArgField(props: { arg: ActionArg }) {
       )}
       {arg.type === "string" &&
         (arg.optionalValues ? (
-          <Form.Item label={arg.name} name={arg.name} required={arg.required}>
+          <Form.Item label={label} name={arg.name} required={arg.required}>
             <Select>
               {arg.optionalValues.map((item, index) => (
                 <Option value={item} key={index}>
@@ -624,7 +767,7 @@ function ActionArgField(props: { arg: ActionArg }) {
             </Select>
           </Form.Item>
         ) : (
-          <Form.Item label={arg.name} name={arg.name} required={arg.required}>
+          <Form.Item label={label} name={arg.name} required={arg.required}>
             <Input
               placeholder={arg.tips}
               defaultValue={arg.defaultValue as string}
@@ -633,7 +776,7 @@ function ActionArgField(props: { arg: ActionArg }) {
           </Form.Item>
         ))}
       {arg.type === "number" && (
-        <Form.Item label={arg.name} name={arg.name} required={arg.required}>
+        <Form.Item label={label} name={arg.name} required={arg.required}>
           <Input
             type="number"
             placeholder={arg.tips}
@@ -1005,6 +1148,61 @@ const scopeOptions = [
     value: "global",
   },
 ];
+
+function EmptyAutomationsState(props: {
+  state: PageState;
+  dispatch: React.Dispatch<any>;
+}) {
+  const { state, dispatch } = props;
+  const [adding, setAdding] = useState(false);
+  const onAddExample = () => {
+    setAdding(true);
+    automationsController
+      .saveAutomation(
+        "",
+        EXAMPLE_AUTOMATION_SCRIPT,
+        EXAMPLE_AUTOMATION_PATTERN,
+        RunAtEnum.END,
+        EXAMPLE_AUTOMATION_NAME,
+        undefined
+      )
+      .then((res: Response) => {
+        if (res.code === 0) {
+          fetchList(state, dispatch);
+          noticeBg({ action: PAGE_ACTIONS.REFRESH_AUTOMATIONS });
+          message.success(t("example_added_message"));
+        }
+        setAdding(false);
+      });
+  };
+  const onAddAutomation = () => {
+    dispatch({
+      type: ACTIONS.AUTOMATION_FORM_UPDATE,
+      payload: { instructions: "", pattern: "" },
+    });
+  };
+  return (
+    <div className="am-empty-state">
+      <div className="am-empty-state-title">{t("empty_automations_title")}</div>
+      <div className="am-empty-state-desc">{t("empty_automations_desc")}</div>
+      <div className="am-empty-state-actions">
+        <Button
+          type="primary"
+          size="small"
+          loading={adding}
+          onClick={onAddExample}
+          style={{ marginRight: 8 }}
+        >
+          {t("add_example_automation")}
+        </Button>
+        <Button size="small" onClick={onAddAutomation}>
+          {t("add_automation")}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 function Automations(props: any) {
   const { host } = props;
   const { state, dispatch } = useContext(PageContext);
@@ -1040,7 +1238,12 @@ function Automations(props: any) {
         rowKey="id"
         pagination={false}
         size="small"
-      ></Table>
+        locale={{
+          emptyText: (
+            <EmptyAutomationsState state={state} dispatch={dispatch} />
+          ),
+        }}
+      />
     </div>
   );
 }

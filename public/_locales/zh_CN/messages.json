@@ -45,7 +45,70 @@
         "message": "添加新自动操作"
     },
     "add_new_script": {
-        "message": " 添加新脚本"
+        "message": "添加新脚本"
+    },
+    "add_automation": {
+        "message": "添加自动化"
+    },
+    "use_script_instead": {
+        "message": "用脚本"
+    },
+    "empty_automations_title": {
+        "message": "还没有自动化"
+    },
+    "empty_automations_desc": {
+        "message": "为当前网站添加一个，或先添加示例体验一下。"
+    },
+    "add_example_automation": {
+        "message": "添加示例"
+    },
+    "example_added_message": {
+        "message": "示例已添加，会在知乎问题页生效。可随时编辑或关闭。"
+    },
+    "template_script_hint": {
+        "message": "选择内置功能可自动生成脚本，再根据需要改 URL 和选择器即可。"
+    },
+    "quick_add": {
+        "message": "快速添加"
+    },
+    "quick_add_action_label": {
+        "message": "动作"
+    },
+    "quick_add_site_label": {
+        "message": "站点（URL 匹配）"
+    },
+    "quick_add_create_btn": {
+        "message": "创建"
+    },
+    "read_mode_desc": {
+        "message": "高亮主内容、隐藏干扰区"
+    },
+    "dark_mode_desc": {
+        "message": "为页面应用深色主题"
+    },
+    "reload_desc": {
+        "message": "按间隔刷新页面"
+    },
+    "bookmark_desc": {
+        "message": "跟踪并通知新列表项"
+    },
+    "code_copy_desc": {
+        "message": "代码块一键复制"
+    },
+    "style_desc": {
+        "message": "注入自定义 CSS"
+    },
+    "focus_desc": {
+        "message": "聚焦或失焦元素"
+    },
+    "note_desc": {
+        "message": "创建笔记或评论"
+    },
+    "kill_element_desc": {
+        "message": "按选择器隐藏或移除元素"
+    },
+    "common_action_desc": {
+        "message": "执行常用动作（如滚动、复制）"
     },
     "scripts" : {
         "message": "脚本"
@@ -85,6 +148,9 @@
     },
     "run_at_delayed": {
         "message": "延迟"
+    },
+    "arguments": {
+        "message": "参数"
     },
     "action": {
         "message": "动作"

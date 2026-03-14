@@ -37,6 +37,16 @@ const local_i18n = {
     style: "Style",
     common_action: "Common action",
     require: "Require",
+    read_mode_desc: "Highlight main content, hide clutter",
+    dark_mode_desc: "Apply dark theme to the page",
+    reload_desc: "Reload the page at an interval",
+    bookmark_desc: "Track and notify new list items",
+    code_copy_desc: "One-click copy for code blocks",
+    style_desc: "Inject custom CSS",
+    focus_desc: "Focus or blur an element",
+    note_desc: "Create a note or comment",
+    kill_element_desc: "Hide or remove elements by selector",
+    common_action_desc: "Run a common action (e.g. scroll, copy)",
   },
   zh_CN: {
     read_mode: "阅读模式",
@@ -76,16 +86,28 @@ const local_i18n = {
     style: "样式",
     common_action: "常用操作",
     require: "判断",
+    read_mode_desc: "高亮主内容、隐藏干扰区",
+    dark_mode_desc: "为页面应用深色主题",
+    reload_desc: "按间隔刷新页面",
+    bookmark_desc: "跟踪并通知新列表项",
+    code_copy_desc: "代码块一键复制",
+    style_desc: "注入自定义 CSS",
+    focus_desc: "聚焦或失焦元素",
+    note_desc: "创建笔记或评论",
+    kill_element_desc: "按选择器隐藏或移除元素",
+    common_action_desc: "执行常用动作（如滚动、复制）",
   },
 };
 
-// const lang = chrome.i18n.getUILanguage().replace("-", "_");
-const lang = "zh_CN";
+const lang =
+  typeof chrome !== "undefined" && chrome.i18n?.getUILanguage
+    ? chrome.i18n.getUILanguage().replace("-", "_")
+    : "en";
+const langKey = lang.startsWith("zh") ? "zh_CN" : "en";
 
 function t(key: string): string {
-  const texts = local_i18n[lang] ?? local_i18n.en;
-
-  return texts[key] ?? key;
+  const texts = local_i18n[langKey] ?? local_i18n.en;
+  return texts[key] ?? chrome.i18n?.getMessage?.(key) ?? key;
 }
 
 export const PAGE_ACTIONS = {
@@ -402,6 +424,8 @@ export interface ActionArg {
 export interface BUILDIN_ACTION_FIELD_CONFIG {
   value: string;
   label: string;
+  /** Short description for guided creation and tooltips */
+  description?: string;
   args?: ActionArg[];
 }
 
@@ -409,6 +433,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
   {
     value: BUILTIN_ACTIONS.RELOAD,
     label: t("reload"),
+    description: t("reload_desc"),
     args: [
       {
         tips: "The interval at which to reload.",
@@ -437,6 +462,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
   {
     value: BUILTIN_ACTIONS.READ_MODE,
     label: t("read_mode"),
+    description: t("read_mode_desc"),
     args: [
       {
         name: "autoScroll",
@@ -470,6 +496,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
   {
     value: BUILTIN_ACTIONS.DARK_MODE,
     label: t("dark_mode"),
+    description: t("dark_mode_desc"),
     args: [
       {
         tips: "Longitude",
@@ -493,6 +520,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
   {
     value: BUILTIN_ACTIONS.BOOKMARK,
     label: t("bookmark"),
+    description: t("bookmark_desc"),
     args: [
       {
         tips: "CSS-Selector of the target items",
@@ -519,6 +547,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
   {
     value: BUILTIN_ACTIONS.COMMON,
     label: t("common_action"),
+    description: t("common_action_desc"),
     args: [
       {
         tips: "Common actions",
@@ -534,6 +563,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
   {
     value: BUILTIN_ACTIONS.CODE_COPY,
     label: t("code_copy"),
+    description: t("code_copy_desc"),
     args: [
       {
         tips: "The child of the <pre> tag to copy",
@@ -575,6 +605,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
   {
     value: BUILTIN_ACTIONS.STYLE,
     label: t("style"),
+    description: t("style_desc"),
     args: [
       {
         tips: "content of the style",
@@ -597,6 +628,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
   {
     value: BUILTIN_ACTIONS.FOCUS,
     label: t("focus"),
+    description: t("focus_desc"),
     args: [
       {
         tips: "to blur",
@@ -610,6 +642,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
   {
     value: BUILTIN_ACTIONS.NOTE,
     label: t("note"),
+    description: t("note_desc"),
     args: [
       {
         tips: "Content of the note",

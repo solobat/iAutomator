@@ -44,6 +44,55 @@ body {
   margin: 10px 0;
 }
 
+.am-empty-state {
+  padding: 16px 0;
+  text-align: center;
+
+  .am-empty-state-title {
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .am-empty-state-desc {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.65);
+    margin-bottom: 12px;
+    max-width: 280px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .am-empty-state-actions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+}
+
+.theme-light .am-empty-state .am-empty-state-desc {
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.am-editor-template-hint {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.theme-light .am-editor-template-hint {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.am-arg-tip-icon {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.45);
+  cursor: help;
+}
+
+.theme-light .am-arg-tip-icon {
+  color: rgba(0, 0, 0, 0.35);
+}
+
 .am-editor-copy {
   margin-top: 5px;
 
