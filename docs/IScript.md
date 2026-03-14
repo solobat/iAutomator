@@ -67,6 +67,19 @@ end
 > - `match` 中的 URL pattern 与扩展内置的匹配规则一致，支持 `*` 通配。
 > - `stage "load"` 对应扩展中的 `RunAt.END`，表示在页面加载完成后执行。
 
+### 隐藏/显示元素（HIDE_SHOW）
+
+与阅读模式相同，使用 `visibility` 隐藏（不改变布局）。`visible=true` 表示显示，`visible=false`（默认）表示隐藏。
+
+```ruby
+automation "hide-sidebar" {
+  match "https://example.com/*"
+  stage "load"
+}
+  apply HIDE_SHOW with (visible=false) on ".sidebar"
+end
+```
+
 ## 文法（v0.2.0 草案）
  ```
 Script ::= *empty*

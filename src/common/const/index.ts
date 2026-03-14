@@ -37,6 +37,7 @@ const local_i18n = {
     style: "Style",
     common_action: "Common action",
     require: "Require",
+    hide_show: "Hide / Show",
     read_mode_desc: "Highlight main content, hide clutter",
     dark_mode_desc: "Apply dark theme to the page",
     reload_desc: "Reload the page at an interval",
@@ -47,6 +48,7 @@ const local_i18n = {
     note_desc: "Create a note or comment",
     kill_element_desc: "Hide or remove elements by selector",
     common_action_desc: "Run a common action (e.g. scroll, copy)",
+    hide_show_desc: "Hide or show elements by selector (visibility, like Read Mode)",
   },
   zh_CN: {
     read_mode: "阅读模式",
@@ -86,6 +88,7 @@ const local_i18n = {
     style: "样式",
     common_action: "常用操作",
     require: "判断",
+    hide_show: "隐藏 / 显示",
     read_mode_desc: "高亮主内容、隐藏干扰区",
     dark_mode_desc: "为页面应用深色主题",
     reload_desc: "按间隔刷新页面",
@@ -96,6 +99,7 @@ const local_i18n = {
     note_desc: "创建笔记或评论",
     kill_element_desc: "按选择器隐藏或移除元素",
     common_action_desc: "执行常用动作（如滚动、复制）",
+    hide_show_desc: "按选择器隐藏或显示元素（与阅读模式同用 visibility）",
   },
 };
 
@@ -214,6 +218,7 @@ export const BUILTIN_ACTIONS = {
   CLOSE_PAGE: "closePage",
   TEXT_REAPLCING: "textReplacing",
   STYLE: "style",
+  HIDE_SHOW: "hideShow",
 };
 
 type CommandContext = "all";
@@ -312,6 +317,12 @@ export const BUILTIN_ACTION_CONFIGS: BuildInActionConfig[] = [
   {
     name: "STYLE",
     title: t("style"),
+    contexts: ["all"],
+    asCommand: false,
+  },
+  {
+    name: "HIDE_SHOW",
+    title: t("hide_show"),
     contexts: ["all"],
     asCommand: false,
   },
@@ -482,7 +493,7 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
   },
   {
     value: BUILTIN_ACTIONS.REQUIRE,
-    label: t("read_mode"),
+    label: t("require"),
     args: [
       {
         tips: "Expression",
@@ -601,6 +612,20 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
   {
     value: BUILTIN_ACTIONS.CLICK,
     label: t("click"),
+  },
+  {
+    value: BUILTIN_ACTIONS.HIDE_SHOW,
+    label: t("hide_show"),
+    description: t("hide_show_desc"),
+    args: [
+      {
+        name: "visible",
+        type: "boolean",
+        value: false,
+        defaultValue: false,
+        tips: "true = show elements, false = hide elements (visibility, same as Read Mode)",
+      },
+    ],
   },
   {
     value: BUILTIN_ACTIONS.STYLE,

@@ -110,6 +110,12 @@
     "common_action_desc": {
         "message": "Run a common action (e.g. scroll, copy)"
     },
+    "hide_show": {
+        "message": "Hide / Show"
+    },
+    "hide_show_desc": {
+        "message": "Hide or show elements by selector (visibility, like Read Mode)"
+    },
     "scripts" : {
         "message": "Scripts"
     },

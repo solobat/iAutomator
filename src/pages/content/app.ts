@@ -48,6 +48,7 @@ import { Wait } from "@src/builtin/Wait";
 import { ClosePage } from "@src/builtin/ClosePage";
 import { TextReplacing } from "@src/builtin/TextReplacing";
 import { SetStyle } from "@src/builtin/Style";
+import { HideShow } from "@src/builtin/HideShow";
 import { CommonAction } from "@src/builtin/Common";
 import { RequireExp } from "@src/builtin/Require";
 
@@ -134,6 +135,7 @@ function init() {
     new ClosePage(helper);
     new TextReplacing(helper);
     new SetStyle(helper);
+    new HideShow(helper);
     new CommonAction(helper);
     new RequireExp(helper);
   });

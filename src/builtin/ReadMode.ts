@@ -57,6 +57,7 @@ export class ReadMode extends Base {
     }
   }
 
+  /** Hide using visibility (not display:none) so layout stays stable and the reading block position does not jump. */
   private hideEl($el) {
     $el
       .css({

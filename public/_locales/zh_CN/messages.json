@@ -110,6 +110,12 @@
     "common_action_desc": {
         "message": "执行常用动作（如滚动、复制）"
     },
+    "hide_show": {
+        "message": "隐藏 / 显示"
+    },
+    "hide_show_desc": {
+        "message": "按选择器隐藏或显示元素（与阅读模式同用 visibility）"
+    },
     "scripts" : {
         "message": "脚本"
     }, 
