@@ -8,10 +8,14 @@ rm -fr dist/
 echo "Compiling....."
 pnpm build || { echo "Compilation failed, please check and try again"; exit 1; }
 
-zip -r iautomator.zip dist/
+# 从 package.json 读取版本号并带入文件名
+VERSION=$(node -e "console.log(JSON.parse(require('fs').readFileSync('./package.json','utf8')).version)")
+ZIP_NAME="iautomator-${VERSION}.zip"
 
-echo "Packaged done"
+zip -r "$ZIP_NAME" dist/
 
-mv -f iautomator.zip ~/Downloads/
+echo "Packaged done: $ZIP_NAME"
+
+mv -f "$ZIP_NAME" ~/Downloads/
 
 echo "Move to Download"
