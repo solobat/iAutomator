@@ -202,5 +202,20 @@
     },
     "set_value": {
         "message": "设值"
+    },
+    "export_automation": {
+        "message": "导出"
+    },
+    "export_all_automations": {
+        "message": "导出全部自动化"
+    },
+    "import_automations": {
+        "message": "导入自动化"
+    },
+    "import_automations_success": {
+        "message": "已导入 $1 条自动化。"
+    },
+    "import_automations_failed": {
+        "message": "导入失败：文件或格式无效。"
     }
 }

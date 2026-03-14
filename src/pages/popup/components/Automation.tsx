@@ -18,6 +18,7 @@ import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 import {
   DeleteOutlined,
+  DownloadOutlined,
   EditFilled,
   EditOutlined,
   MacCommandOutlined,
@@ -37,6 +38,7 @@ import {
   stringifyInstructions,
 } from "@src/helper/instruction";
 import { parseIscript } from "@src/helper/script";
+import { downloadJson } from "@src/helper/file.helper";
 import { getURLPatterns } from "@src/helper/url";
 import { IAutomation } from "@src/server/db/database";
 import Automation from "@src/server/model/Automation";
@@ -992,6 +994,18 @@ function RunAt(props: any) {
   );
 }
 
+function exportOneAutomation(record: IAutomation) {
+  const item = {
+    name: record.name,
+    pattern: record.pattern,
+    instructions: record.instructions ?? "",
+    scripts: record.scripts ?? "",
+    runAt: record.runAt ?? 1,
+  };
+  const name = (record.name || "automation").replace(/[^\w\u4e00-\u9fa5-]/g, "_");
+  downloadJson({ version: 1, automation: item }, `automation-${name}.json`);
+}
+
 function OpBtns(props: any) {
   return (
     <div
@@ -1000,6 +1014,13 @@ function OpBtns(props: any) {
     >
       <SwitchBtn record={props.record} />
       <EditBtn record={props.record} />
+      <span
+        onClick={() => exportOneAutomation(props.record)}
+        style={{ cursor: "pointer" }}
+        title={t("export_automation")}
+      >
+        <DownloadOutlined translate="no" />
+      </span>
       <ShareBtn item={props.record} />
       <ShortcutBtn item={props.record} />
       <DeleteBtn record={props.record} />

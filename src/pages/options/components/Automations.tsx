@@ -3,17 +3,77 @@ import Response from "@src/server/common/response";
 import * as automationsController from "@src/server/controller/automations.controller";
 import { APP_ACTIONS, PAGE_ACTIONS } from "@src/common/const";
 import { noticeBg } from "@src/helper/event";
+import { readFileAsText, downloadJson } from "@src/helper/file.helper";
 import Select from "antd/es/select";
 import Table from "antd/es/table";
+import Button from "antd/es/button";
+import Upload from "antd/es/upload";
+import message from "antd/es/message";
 import { useEffect, useState } from "react";
-import { DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined, DownloadOutlined, UploadOutlined } from "@ant-design/icons";
 import { IAutomation } from "@src/server/db/database";
 import Column from "antd/es/table/Column";
 import Search from "antd/es/input/Search";
 
 const Option = Select.Option;
+
+const EXPORT_VERSION = 1;
+
+function toExportItem(record: IAutomation) {
+  return {
+    name: record.name,
+    pattern: record.pattern,
+    instructions: record.instructions ?? "",
+    scripts: record.scripts ?? "",
+    runAt: record.runAt ?? 1,
+  };
+}
+
+function exportOne(record: IAutomation) {
+  const name = (record.name || "automation").replace(/[^\w\u4e00-\u9fa5-]/g, "_");
+  downloadJson(
+    { version: EXPORT_VERSION, automation: toExportItem(record) },
+    `automation-${name}.json`
+  );
+}
+
+function exportAll(list: IAutomation[]) {
+  downloadJson(
+    { version: EXPORT_VERSION, automations: list.map(toExportItem) },
+    "automations.json"
+  );
+}
+
+async function importFromFile(file: File): Promise<number> {
+  const text = await readFileAsText(file);
+  const data = JSON.parse(text);
+  let items: Array<{ name?: string; pattern: string; instructions: string; scripts: string; runAt?: number }>;
+  if (Array.isArray(data)) {
+    items = data;
+  } else if (data.automations && Array.isArray(data.automations)) {
+    items = data.automations;
+  } else if (data.automation && typeof data.automation === "object") {
+    items = [data.automation];
+  } else {
+    throw new Error("Invalid format");
+  }
+  let count = 0;
+  for (const item of items) {
+    if (!item || typeof item.pattern !== "string") continue;
+    await automationsController.saveAutomation(
+      item.instructions ?? "",
+      item.scripts ?? "",
+      item.pattern,
+      (item.runAt as 0 | 1 | 2) ?? 1,
+      item.name
+    );
+    count++;
+  }
+  return count;
+}
+
 export function Automations() {
-  const [list, setList] = useState([]);
+  const [list, setList] = useState<IAutomation[]>([]);
   const onSearch = (domain: string) => {
     fetchList().then((list) =>
       setList(
@@ -30,7 +90,36 @@ export function Automations() {
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "flex-end" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
+        <div style={{ display: "flex", gap: 8 }}>
+          <Button
+            icon={<DownloadOutlined translate="no" />}
+            onClick={() => exportAll(list)}
+            disabled={list.length === 0}
+          >
+            {t("export_all_automations")}
+          </Button>
+          <Upload
+            accept=".json,application/json"
+            showUploadList={false}
+            beforeUpload={(file) => {
+              importFromFile(file)
+                .then((count) => {
+                  fetchList().then(setList);
+                  noticeBg({ action: PAGE_ACTIONS.REFRESH_AUTOMATIONS });
+                  message.success(chrome.i18n.getMessage("import_automations_success", [String(count)]));
+                })
+                .catch(() => {
+                  message.error(t("import_automations_failed"));
+                });
+              return false;
+            }}
+          >
+            <Button icon={<UploadOutlined translate="no" />}>
+              {t("import_automations")}
+            </Button>
+          </Upload>
+        </div>
         <Search
           onSearch={onSearch}
           style={{ width: "500px" }}
@@ -60,9 +149,9 @@ export function Automations() {
         <Column<IAutomation>
           title={t("operation")}
           dataIndex="operation"
-          width="50px"
+          width="80px"
           render={(text, record) => (
-            <OpBtns onDeleted={onDeleted} record={record} />
+            <OpBtns onDeleted={onDeleted} record={record} exportOne={exportOne} />
           )}
         />
       </Table>
@@ -86,9 +175,20 @@ function RunAt(props: { record: IAutomation }) {
   );
 }
 
-function OpBtns(props: { onDeleted: () => void; record: IAutomation }) {
+function OpBtns(props: {
+  onDeleted: () => void;
+  record: IAutomation;
+  exportOne: (record: IAutomation) => void;
+}) {
   return (
-    <div className="op-btns" style={{ minWidth: "120px" }}>
+    <div className="op-btns" style={{ minWidth: "120px", display: "flex", gap: 8, alignItems: "center" }}>
+      <span
+        onClick={() => props.exportOne(props.record)}
+        style={{ cursor: "pointer" }}
+        title={t("export_automation")}
+      >
+        <DownloadOutlined translate="no" />
+      </span>
       <DeleteBtn onDeleted={props.onDeleted} record={props.record} />
     </div>
   );

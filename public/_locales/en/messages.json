@@ -202,5 +202,20 @@
     },
     "set_value": {
         "message": "Set value"
+    },
+    "export_automation": {
+        "message": "Export"
+    },
+    "export_all_automations": {
+        "message": "Export all automations"
+    },
+    "import_automations": {
+        "message": "Import automations"
+    },
+    "import_automations_success": {
+        "message": "Imported $1 automation(s)."
+    },
+    "import_automations_failed": {
+        "message": "Import failed: invalid file or format."
     }
 }

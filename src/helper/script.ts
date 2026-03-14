@@ -144,7 +144,7 @@ function parseIscriptArgs(text: string, env: Env): ExecOptions {
       const key = rawKey;
       const v = rawValue;
 
-      if (!key) return;
+      if (!key || key.startsWith("#")) return;
 
       if (v === "true" || v === "false") {
         opts[key] = v === "true";
@@ -217,13 +217,33 @@ export const parseIscript = withCache((script: string) => {
 
     const runAt = stage2runAt(stage);
     const instructions: ScriptInstruction[] = [];
+    const bodyLines = block.bodyLines;
+    let idx = 0;
 
-    block.bodyLines.forEach((line) => {
+    while (idx < bodyLines.length) {
+      let line = bodyLines[idx];
+      // Merge multi-line apply: "apply X with (" without ") on " → collect until ") on "
+      if (
+        /^apply\s+[A-Z_][A-Z0-9_]*\s+with\s*\(/.test(line) &&
+        !/\)\s+on\s+/.test(line)
+      ) {
+        const parts = [line];
+        idx++;
+        while (
+          idx < bodyLines.length &&
+          !/\)\s+on\s+/.test(parts.join(" "))
+        ) {
+          parts.push(bodyLines[idx]);
+          idx++;
+        }
+        line = parts.join(" ");
+      }
       const inst = parseIscriptStatement(line, env);
       if (inst) {
         instructions.push(inst);
       }
-    });
+      idx++;
+    }
 
     return {
       name: block.meta.name,
