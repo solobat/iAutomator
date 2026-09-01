@@ -13,7 +13,7 @@ import {
   PAGE_ACTIONS,
   WEB_ACTIONS,
 } from "../../common/const";
-import { BackMsg, PageMsg } from "../../common/types";
+import { BackMsg, ExecStepEvent, PageMsg } from "../../common/types";
 import { installAutomation, matchAutomations } from "../../helper/automations";
 import { create as createNotice } from "../../helper/notifications";
 import { highlightEnglish } from "../../helper/others";
@@ -32,12 +32,18 @@ const state: {
   automations: IAutomation[];
   shortcuts: IShortcut[];
   sync: ReturnType<ExtLibs["Sync"]["getSync"]>;
+  execEvents: ExecStepEvent[];
+  execRunningCount: number;
 } = {
   libs: null,
   automations: [],
   shortcuts: [],
   sync: null,
+  execEvents: [],
+  execRunningCount: 0,
 };
+
+const MAX_EXEC_EVENTS = 100;
 
 interface BadgeItem {
   url: string;
@@ -130,6 +136,7 @@ function onEventEmitted(
 function onRefreshAutmations(handler: MsgHandlerFn) {
   loadAutomations().then(() => {
     updateBadgeByCurrentTab();
+    rebuildContextMenus();
   });
   handler("");
 }
@@ -260,6 +267,32 @@ function onCreateNote(data, handler: MsgHandlerFn) {
 
 type MsgHandlerFn<T = any> = (results: T, isAsync?: boolean) => void;
 
+function onExecStep(data: ExecStepEvent, handler: MsgHandlerFn) {
+  state.execEvents.push(data);
+  if (state.execEvents.length > MAX_EXEC_EVENTS) {
+    state.execEvents.shift();
+  }
+  if (data.status === "run_start") {
+    state.execRunningCount++;
+  } else if (data.status === "run_end") {
+    state.execRunningCount = Math.max(0, state.execRunningCount - 1);
+  }
+  // relay to extension pages (popup/options)
+  try {
+    chrome.runtime.sendMessage({ action: PAGE_ACTIONS.EXEC_STEP, data });
+  } catch (error) {
+    // no-op
+  }
+  handler("");
+}
+
+function onExecState(handler: MsgHandlerFn) {
+  handler({
+    running: state.execRunningCount > 0,
+    history: state.execEvents,
+  });
+}
+
 function msgHandler(
   req: PageMsg,
   sender: chrome.runtime.MessageSender,
@@ -334,6 +367,10 @@ function msgHandler(
     onHightlighting(data, handler);
   } else if (action === PAGE_ACTIONS.CREATE_NOTE) {
     onCreateNote(data, handler);
+  } else if (action === PAGE_ACTIONS.EXEC_STEP) {
+    onExecStep(data, handler);
+  } else if (action === PAGE_ACTIONS.EXEC_STATE) {
+    onExecState(handler);
   } else if (action === PAGE_ACTIONS.CONNECT) {
     onPingpong(sender.tab, handler);
   } else if (action === PAGE_ACTIONS.PING) {
@@ -403,10 +440,40 @@ function runMethod(tabId: number, method, data?) {
   });
 }
 
+const MENU_RUN_AUTOMATION = "run-automation";
+const MENU_PREFIX = "am-";
+
+function getContextFromInfo(info: chrome.contextMenus.OnClickData) {
+  return {
+    selection: info.selectionText ?? "",
+    link: info.linkUrl ?? "",
+    src: info.srcUrl ?? "",
+    page: info.pageUrl ?? "",
+  };
+}
+
 function onContextMenuClicked(info: chrome.contextMenus.OnClickData) {
   if (chrome.runtime.lastError) {
     return;
   }
+  const menuItemId = String(info.menuItemId);
+
+  if (menuItemId.startsWith(MENU_PREFIX)) {
+    const id = Number(menuItemId.slice(MENU_PREFIX.length));
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      if (chrome.runtime.lastError) {
+        return;
+      }
+      if (tabs[0] && tabs[0].id != null) {
+        runMethod(tabs[0].id, PAGE_ACTIONS.EXEC_AUTOMATION_BY_ID, {
+          id,
+          context: getContextFromInfo(info),
+        });
+      }
+    });
+    return;
+  }
+
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
     if (chrome.runtime.lastError) {
       return;
@@ -415,13 +482,49 @@ function onContextMenuClicked(info: chrome.contextMenus.OnClickData) {
   });
 }
 
+let rebuildMenuTimer: ReturnType<typeof setTimeout> | undefined;
+
+function rebuildContextMenus() {
+  if (rebuildMenuTimer !== undefined) {
+    clearTimeout(rebuildMenuTimer);
+  }
+  rebuildMenuTimer = setTimeout(() => {
+    initCommands();
+  }, 300);
+}
+
 function initCommands() {
-  chrome.contextMenus.removeAll();
-  BUILTIN_ACTION_CONFIGS.filter((item) => item.asCommand).forEach((item) => {
-    chrome.contextMenus.create({
-      id: item.name,
-      title: item.title,
-      contexts: item.contexts,
+  chrome.contextMenus.removeAll(() => {
+    BUILTIN_ACTION_CONFIGS.filter((item) => item.asCommand).forEach((item) => {
+      chrome.contextMenus.create({
+        id: item.name,
+        title: item.title,
+        contexts: item.contexts,
+      });
+    });
+
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      if (chrome.runtime.lastError) {
+        return;
+      }
+      const url = tabs[0]?.url;
+      const list = url ? matchAutomations(state.automations, url) : [];
+
+      if (list.length) {
+        chrome.contextMenus.create({
+          id: MENU_RUN_AUTOMATION,
+          title: "__MSG_run_automation__",
+          contexts: ["page", "selection", "link", "image"],
+        });
+        list.forEach((item) => {
+          chrome.contextMenus.create({
+            id: `${MENU_PREFIX}${item.id}`,
+            parentId: MENU_RUN_AUTOMATION,
+            title: item.name || `Automation ${item.id}`,
+            contexts: ["page", "selection", "link", "image"],
+          });
+        });
+      }
     });
   });
   chrome.contextMenus.onClicked.removeListener(onContextMenuClicked);
@@ -471,6 +574,7 @@ chrome.tabs.onUpdated.addListener(function () {
     if (tabs[0] && tabs[0].url) {
       // URL 变化时，重新计算当前页面匹配的自动化数量
       updateBadgeByURL(tabs[0].url);
+      rebuildContextMenus();
     }
   });
 });
@@ -510,6 +614,7 @@ async function init() {
       return;
     }
     updateBadgeByCurrentTab();
+    rebuildContextMenus();
     runMethod(tab.tabId, PAGE_ACTIONS.RECONNECT);
   });
 }

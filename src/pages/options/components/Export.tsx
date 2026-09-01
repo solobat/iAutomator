@@ -1,10 +1,9 @@
-import Button from "antd/es/button";
-import message from "antd/es/message";
-import Upload from "antd/es/upload";
-import { useCallback } from "react";
+import Button from "@mui/material/Button";
+import { useCallback, useRef } from "react";
 
 import { useExtlibsContext } from "@src/context/ExtlibsContext";
 import { t } from "@src/helper/i18n.helper";
+import { useMessage } from "@src/helper/message";
 
 import { APP_ACTIONS } from "../../../common/const";
 import { PageMsg } from "../../../common/types";
@@ -23,36 +22,47 @@ function reload() {
 
 export default function Export() {
   const { libs } = useExtlibsContext();
+  const message = useMessage();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const onExportClick = useCallback(() => {
     libs.DB.exportAndDownload();
   }, []);
-  const onImportFileBeforeUpload = useCallback((file) => {
-    convertFile2Blob(file)
-      .then(libs.DB.importDBFile)
-      .then((blob) => {
-        reload();
-        message.success("Import done!");
-      })
-      .catch((err) => {
-        message.error("Import failed!");
-      });
-
-    return false;
-  }, []);
+  const onImportFileChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) {
+        return;
+      }
+      convertFile2Blob(file)
+        .then(libs.DB.importDBFile)
+        .then((blob) => {
+          reload();
+          message.success("Import done!");
+        })
+        .catch((err) => {
+          message.error("Import failed!");
+        });
+      e.target.value = "";
+    },
+    []
+  );
 
   return (
     <div className="btns">
-      <Button type="primary" onClick={onExportClick}>
+      <Button variant="contained" onClick={onExportClick}>
         {t("export")}
       </Button>
-      <Upload
+      <Button variant="contained" onClick={() => fileInputRef.current?.click()}>
+        {t("import")}
+      </Button>
+      <input
+        ref={fileInputRef}
+        type="file"
         name="file"
         accept="application/json"
-        showUploadList={false}
-        beforeUpload={onImportFileBeforeUpload}
-      >
-        <Button type="primary">{t("import")}</Button>
-      </Upload>
+        style={{ display: "none" }}
+        onChange={onImportFileChange}
+      />
     </div>
   );
 }

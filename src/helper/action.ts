@@ -15,6 +15,7 @@ import {
 import { IAutomation, IShortcut } from "@src/server/db/database";
 import { SimpleEvent } from "@src/utils/event";
 import { show } from "@src/utils/log";
+import { ExecStepEvent, ExecStepStatus } from "@src/common/types";
 
 import { Base } from "../builtin/Base";
 import { PAGE_ACTIONS, REDO_DELAY, ROUTE_CHANGE_TYPE } from "../common/const";
@@ -67,6 +68,72 @@ function serializeOptions(options?: ExecOptions): string {
   } else {
     return "";
   }
+}
+
+interface ExecMeta {
+  id?: number;
+  name?: string;
+}
+
+function reportExec(
+  status: ExecStepStatus,
+  data: Omit<ExecStepEvent, "status" | "ts">
+) {
+  try {
+    noticeBg({
+      action: PAGE_ACTIONS.EXEC_STEP,
+      data: {
+        ...data,
+        status,
+        ts: Date.now(),
+      } as ExecStepEvent,
+    });
+  } catch (error) {
+    // ignore reporting errors
+  }
+}
+
+const TEMPLATE_RE = /\{\{\s*([\w.-]+)\s*\}\}/g;
+
+function resolveTemplate(value: unknown, vars: Record<string, unknown>) {
+  if (typeof value !== "string") {
+    return value;
+  }
+
+  return value.replace(TEMPLATE_RE, (match, key: string) => {
+    const v = vars[key];
+
+    return v === undefined || v === null ? match : String(v);
+  });
+}
+
+function buildRuntimeVars(options: ExecOptions): Record<string, unknown> {
+  const vars: Record<string, unknown> = { ...(options.vars || {}) };
+  const context = options.context || {};
+
+  Object.assign(vars, context);
+  vars.url = window.location.href;
+  vars.host = window.location.host;
+  vars.title = document.title;
+  vars.time = new Date().toLocaleTimeString();
+  vars.date = new Date().toLocaleDateString();
+
+  return vars;
+}
+
+function resolveInstructionTemplates(
+  args: ExecOptions,
+  scope: string,
+  vars: Record<string, unknown>
+) {
+  const resolved: ExecOptions = {};
+
+  for (const key in args) {
+    resolved[key] = resolveTemplate(args[key], vars);
+  }
+  resolved.scope = resolveTemplate(scope, vars) as string;
+
+  return resolved;
 }
 
 function getAction(
@@ -159,15 +226,37 @@ export function exceScriptAutomation(
   instructions: ScriptInstruction[],
   times = 0,
   runAt: RunAt,
-  runtimeOptions: ExecOptions = { index: 0, mode: "single" }
+  runtimeOptions: ExecOptions = { index: 0, mode: "single" },
+  meta: ExecMeta = {}
 ) {
   const instruction = instructions[runtimeOptions.index];
+  const total = instructions.length;
+  const base = {
+    automationId: meta.id ?? 0,
+    automationName: meta.name ?? "",
+    index: runtimeOptions.index ?? 0,
+    total,
+    action: instruction?.action ?? "",
+  };
 
   if (!instruction) {
+    reportExec("run_end", base);
     show("current is the latest instruction, group is done", runtimeOptions);
     return;
   }
-  const scope = instruction.scope ?? "body";
+
+  if (times === 0) {
+    if (runtimeOptions.index === 0) {
+      reportExec("run_start", base);
+    }
+    reportExec("step_start", base);
+  }
+
+  if (!runtimeOptions.vars) {
+    runtimeOptions.vars = {};
+  }
+  const vars = buildRuntimeVars(runtimeOptions);
+  const scope = resolveTemplate(instruction.scope ?? "body", vars) as string;
   const elem = getElem(scope);
 
   instruction.args.scope = scope;
@@ -177,7 +266,13 @@ export function exceScriptAutomation(
       const delay = runAt === RunAt.START ? 16 : 1000;
 
       setTimeout(() => {
-        exceScriptAutomation(instructions, times + 1, runAt, runtimeOptions);
+        exceScriptAutomation(
+          instructions,
+          times + 1,
+          runAt,
+          runtimeOptions,
+          meta
+        );
       }, delay);
     }
   }
@@ -192,25 +287,43 @@ export function exceScriptAutomation(
       console.log(error);
     }
 
-    const staticOptions: ExecOptions = instruction.args;
-    const options = Object.assign(staticOptions, runtimeOptions, {
-      silent: true,
-      next:
-        runtimeOptions.mode === "group"
-          ? runtimeOptions.next
-          : staticOptions.next,
-    });
+    try {
+      const resolvedArgs = resolveInstructionTemplates(
+        instruction.args,
+        scope,
+        vars
+      );
+      const staticOptions: ExecOptions = resolvedArgs;
+      const options = Object.assign(staticOptions, runtimeOptions, {
+        silent: true,
+        next:
+          runtimeOptions.mode === "group"
+            ? runtimeOptions.next
+            : staticOptions.next,
+      });
 
-    if (instance.options.shouldRedo) {
-      instance.reExecute = (type: string) => {
-        const delay = getDelayByRouteChangeType(type);
+      if (instance.options.shouldRedo) {
+        instance.reExecute = (type: string) => {
+          const delay = getDelayByRouteChangeType(type);
 
-        setTimeout(() => {
-          instance.makeExecution(elem, options, instruction.effect);
-        }, delay);
-      };
+          setTimeout(() => {
+            instance.makeExecution(elem, options, instruction.effect);
+          }, delay);
+        };
+      }
+      instance.makeExecution(elem, options, instruction.effect);
+
+      if (instance.output) {
+        Object.assign(vars, instance.output);
+        if (runtimeOptions.vars) {
+          Object.assign(runtimeOptions.vars, instance.output);
+        }
+      }
+      reportExec("step_done", base);
+    } catch (error) {
+      reportExec("error", { ...base, error: String(error) });
+      console.log(error);
     }
-    instance.makeExecution(elem, options, instruction.effect);
   }
 
   if (elem) {
@@ -228,16 +341,38 @@ export function exceAutomation(
   instructions: InstructionData[],
   times = 0,
   runAt: RunAt,
-  runtimeOptions: ExecOptions = { index: 0, mode: "single" }
+  runtimeOptions: ExecOptions = { index: 0, mode: "single" },
+  meta: ExecMeta = {}
 ) {
   const instruction = instructions[runtimeOptions.index];
+  const total = instructions.length;
+  const base = {
+    automationId: meta.id ?? 0,
+    automationName: meta.name ?? "",
+    index: runtimeOptions.index ?? 0,
+    total,
+    action: instruction?.action ?? "",
+  };
 
   if (!instruction) {
+    reportExec("run_end", base);
     show("current is the latest instruction, group is done", runtimeOptions);
     return;
   }
 
-  const elem = getElem(instruction.scope);
+  if (times === 0) {
+    if (runtimeOptions.index === 0) {
+      reportExec("run_start", base);
+    }
+    reportExec("step_start", base);
+  }
+
+  if (!runtimeOptions.vars) {
+    runtimeOptions.vars = {};
+  }
+  const vars = buildRuntimeVars(runtimeOptions);
+  const scope = resolveTemplate(instruction.scope, vars) as string;
+  const elem = getElem(scope);
 
   instruction.args.scope = instruction.scope;
 
@@ -246,7 +381,7 @@ export function exceAutomation(
       const delay = runAt === RunAt.START ? 16 : 1000;
 
       setTimeout(() => {
-        exceAutomation(instructions, times + 1, runAt, runtimeOptions);
+        exceAutomation(instructions, times + 1, runAt, runtimeOptions, meta);
       }, delay);
     }
   }
@@ -255,25 +390,42 @@ export function exceAutomation(
       times = 0;
       tryAgain();
     };
-    const staticOptions: ExecOptions = instruction.args;
-    const options = Object.assign(staticOptions, runtimeOptions, {
-      silent: true,
-      next:
-        runtimeOptions.mode === "group"
-          ? runtimeOptions.next
-          : staticOptions.next,
-    });
+    try {
+      const staticOptions: ExecOptions = resolveInstructionTemplates(
+        instruction.args,
+        scope,
+        vars
+      );
+      const options = Object.assign(staticOptions, runtimeOptions, {
+        silent: true,
+        next:
+          runtimeOptions.mode === "group"
+            ? runtimeOptions.next
+            : staticOptions.next,
+      });
 
-    if (instance.options.shouldRedo) {
-      instance.reExecute = (type: string) => {
-        const delay = getDelayByRouteChangeType(type);
+      if (instance.options.shouldRedo) {
+        instance.reExecute = (type: string) => {
+          const delay = getDelayByRouteChangeType(type);
 
-        setTimeout(() => {
-          instance.makeExecution(elem, options);
-        }, delay);
-      };
+          setTimeout(() => {
+            instance.makeExecution(elem, options);
+          }, delay);
+        };
+      }
+      instance.makeExecution(elem, options);
+
+      if (instance.output) {
+        Object.assign(vars, instance.output);
+        if (runtimeOptions.vars) {
+          Object.assign(runtimeOptions.vars, instance.output);
+        }
+      }
+      reportExec("step_done", base);
+    } catch (error) {
+      reportExec("error", { ...base, error: String(error) });
+      console.log(error);
     }
-    instance.makeExecution(elem, options);
   }
 
   if (elem) {
@@ -627,7 +779,8 @@ function execAutomationScripts(
   scripts: string,
   aIndex: number,
   id: number,
-  options?: ExecOptions
+  options?: ExecOptions,
+  meta: ExecMeta = {}
 ) {
   try {
     const automations = parseIscript(scripts);
@@ -640,7 +793,8 @@ function execAutomationScripts(
         automation.instructions,
         0,
         automation.runAt,
-        getScriptAutomationOptions(automation, options)
+        getScriptAutomationOptions(automation, options),
+        { id: automation.id, name: automation.name || meta.name }
       );
     });
   } catch (error) {
@@ -658,17 +812,22 @@ function execAutomationItem(
   item: IAutomation,
   aIndex: number,
   runAt: RunAt,
-  options?: ExecOptions
+  options?: ExecOptions,
+  meta: ExecMeta = {}
 ) {
   if (item.instructions) {
     exceAutomation(
       parseInstructions(item.instructions),
       0,
       runAt,
-      getOptions(item, options)
+      getOptions(item, options),
+      { id: item.id, name: item.name, ...meta }
     );
   } else if (item.scripts) {
-    execAutomationScripts(item.scripts, aIndex, item.id, options);
+    execAutomationScripts(item.scripts, aIndex, item.id, options, {
+      id: item.id,
+      name: item.name,
+    });
   }
 }
 
@@ -688,7 +847,10 @@ export function exceAutomationById(id: number, options?: ExecOptions) {
   const item = automations.find((a) => a.id === aid);
 
   if (item) {
-    execAutomationItem(item, aIndex, item.runAt, options);
+    execAutomationItem(item, aIndex, item.runAt, options, {
+      id: item.id,
+      name: item.name,
+    });
   }
 }
 

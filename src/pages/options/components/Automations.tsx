@@ -4,20 +4,37 @@ import * as automationsController from "@src/server/controller/automations.contr
 import { APP_ACTIONS, PAGE_ACTIONS } from "@src/common/const";
 import { noticeBg } from "@src/helper/event";
 import { readFileAsText, downloadJson } from "@src/helper/file.helper";
-import Select from "antd/es/select";
-import Table from "antd/es/table";
-import Button from "antd/es/button";
-import Upload from "antd/es/upload";
-import message from "antd/es/message";
-import { useEffect, useState } from "react";
-import { DeleteOutlined, DownloadOutlined, UploadOutlined } from "@ant-design/icons";
+import {
+  Box,
+  Button,
+  IconButton,
+  InputAdornment,
+  MenuItem,
+  Paper,
+  Select,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
+  Tooltip,
+} from "@mui/material";
+import { Delete, Download, Search, Upload } from "@mui/icons-material";
+import { useMessage } from "@src/helper/message";
+import { useEffect, useRef, useState } from "react";
 import { IAutomation } from "@src/server/db/database";
-import Column from "antd/es/table/Column";
-import Search from "antd/es/input/Search";
-
-const Option = Select.Option;
+import { RunAt as RunAtEnum } from "@src/server/enum/Automation.enum";
 
 const EXPORT_VERSION = 1;
+
+const RUN_AT_OPTIONS = [
+  { value: RunAtEnum.START, label: t("run_at_immediately") },
+  { value: RunAtEnum.END, label: t("run_at_dom_ready") },
+  { value: RunAtEnum.IDLE, label: t("run_at_delayed") },
+];
 
 function toExportItem(record: IAutomation) {
   return {
@@ -30,7 +47,10 @@ function toExportItem(record: IAutomation) {
 }
 
 function exportOne(record: IAutomation) {
-  const name = (record.name || "automation").replace(/[^\w\u4e00-\u9fa5-]/g, "_");
+  const name = (record.name || "automation").replace(
+    /[^\w\u4e00-\u9fa5-]/g,
+    "_"
+  );
   downloadJson(
     { version: EXPORT_VERSION, automation: toExportItem(record) },
     `automation-${name}.json`
@@ -47,7 +67,13 @@ function exportAll(list: IAutomation[]) {
 async function importFromFile(file: File): Promise<number> {
   const text = await readFileAsText(file);
   const data = JSON.parse(text);
-  let items: Array<{ name?: string; pattern: string; instructions: string; scripts: string; runAt?: number }>;
+  let items: Array<{
+    name?: string;
+    pattern: string;
+    instructions: string;
+    scripts: string;
+    runAt?: number;
+  }>;
   if (Array.isArray(data)) {
     items = data;
   } else if (data.automations && Array.isArray(data.automations)) {
@@ -73,7 +99,10 @@ async function importFromFile(file: File): Promise<number> {
 }
 
 export function Automations() {
+  const message = useMessage();
   const [list, setList] = useState<IAutomation[]>([]);
+  const [searchValue, setSearchValue] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const onSearch = (domain: string) => {
     fetchList().then((list) =>
       setList(
@@ -84,77 +113,130 @@ export function Automations() {
   const onDeleted = () => {
     fetchList().then(setList);
   };
+  const onImportFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      return;
+    }
+    importFromFile(file)
+      .then((count) => {
+        fetchList().then(setList);
+        noticeBg({ action: PAGE_ACTIONS.REFRESH_AUTOMATIONS });
+        message.success(
+          chrome.i18n.getMessage("import_automations_success", [String(count)])
+        );
+      })
+      .catch(() => {
+        message.error(t("import_automations_failed"));
+      });
+    e.target.value = "";
+  };
   useEffect(() => {
     fetchList().then(setList);
   }, []);
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
-        <div style={{ display: "flex", gap: 8 }}>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        flexWrap="wrap"
+        spacing={1}
+        sx={{ marginBottom: 1 }}
+      >
+        <Stack direction="row" spacing={1}>
           <Button
-            icon={<DownloadOutlined translate="no" />}
+            startIcon={<Download />}
             onClick={() => exportAll(list)}
             disabled={list.length === 0}
           >
             {t("export_all_automations")}
           </Button>
-          <Upload
-            accept=".json,application/json"
-            showUploadList={false}
-            beforeUpload={(file) => {
-              importFromFile(file)
-                .then((count) => {
-                  fetchList().then(setList);
-                  noticeBg({ action: PAGE_ACTIONS.REFRESH_AUTOMATIONS });
-                  message.success(chrome.i18n.getMessage("import_automations_success", [String(count)]));
-                })
-                .catch(() => {
-                  message.error(t("import_automations_failed"));
-                });
-              return false;
-            }}
+          <Button
+            startIcon={<Upload />}
+            onClick={() => fileInputRef.current?.click()}
           >
-            <Button icon={<UploadOutlined translate="no" />}>
-              {t("import_automations")}
-            </Button>
-          </Upload>
-        </div>
-        <Search
-          onSearch={onSearch}
-          style={{ width: "500px" }}
+            {t("import_automations")}
+          </Button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".json,application/json"
+            style={{ display: "none" }}
+            onChange={onImportFileChange}
+          />
+        </Stack>
+        <TextField
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              onSearch(searchValue);
+            }
+          }}
+          size="small"
+          sx={{ width: "500px", maxWidth: "100%" }}
           placeholder="twitter.com"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Search fontSize="small" />
+              </InputAdornment>
+            ),
+          }}
         />
-      </div>
-      <Table<IAutomation> dataSource={list} rowKey="id" size="small">
-        <Column title="ID" dataIndex="id" width="50px" />
-        <Column
-          title={t("instructions")}
-          dataIndex="instructions"
-          width="180px"
-          ellipsis
-        />
-        <Column
-          title={t("pattern")}
-          dataIndex="pattern"
-          width="180px"
-          ellipsis
-        />
-        <Column<IAutomation>
-          title={t("run_at")}
-          dataIndex="runAt"
-          width="50px"
-          render={(runAt, record) => <RunAt record={record} />}
-        />
-        <Column<IAutomation>
-          title={t("operation")}
-          dataIndex="operation"
-          width="80px"
-          render={(text, record) => (
-            <OpBtns onDeleted={onDeleted} record={record} exportOne={exportOne} />
-          )}
-        />
-      </Table>
+      </Stack>
+      <TableContainer component={Paper} variant="outlined">
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell sx={{ width: "50px" }}>ID</TableCell>
+              <TableCell sx={{ width: "180px" }}>{t("instructions")}</TableCell>
+              <TableCell sx={{ width: "180px" }}>{t("pattern")}</TableCell>
+              <TableCell sx={{ width: "50px" }}>{t("run_at")}</TableCell>
+              <TableCell sx={{ width: "80px" }}>{t("operation")}</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {list.map((record) => (
+              <TableRow key={record.id}>
+                <TableCell>{record.id}</TableCell>
+                <TableCell
+                  sx={{
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    maxWidth: 180,
+                  }}
+                >
+                  {record.instructions}
+                </TableCell>
+                <TableCell
+                  sx={{
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    maxWidth: 180,
+                  }}
+                >
+                  {record.pattern}
+                </TableCell>
+                <TableCell>
+                  <RunAt record={record} />
+                </TableCell>
+                <TableCell>
+                  <OpBtns
+                    onDeleted={onDeleted}
+                    record={record}
+                    exportOne={exportOne}
+                  />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </div>
   );
 }
@@ -167,10 +249,12 @@ function fetchList(): Promise<IAutomation[]> {
 
 function RunAt(props: { record: IAutomation }) {
   return (
-    <Select value={props.record.runAt} disabled>
-      <Option value={0}>{t("run_at_immediately")}</Option>
-      <Option value={1}>{t("run_at_dom_ready")}</Option>
-      <Option value={2}>{t("run_at_delayed")}</Option>
+    <Select value={props.record.runAt ?? RunAtEnum.END} disabled size="small">
+      {RUN_AT_OPTIONS.map((opt) => (
+        <MenuItem key={opt.value} value={opt.value}>
+          {opt.label}
+        </MenuItem>
+      ))}
     </Select>
   );
 }
@@ -181,16 +265,17 @@ function OpBtns(props: {
   exportOne: (record: IAutomation) => void;
 }) {
   return (
-    <div className="op-btns" style={{ minWidth: "120px", display: "flex", gap: 8, alignItems: "center" }}>
-      <span
-        onClick={() => props.exportOne(props.record)}
-        style={{ cursor: "pointer" }}
-        title={t("export_automation")}
-      >
-        <DownloadOutlined translate="no" />
-      </span>
+    <Box
+      className="op-btns"
+      sx={{ display: "flex", gap: 0.5, alignItems: "center" }}
+    >
+      <Tooltip title={t("export_automation")}>
+        <IconButton size="small" onClick={() => props.exportOne(props.record)}>
+          <Download fontSize="small" />
+        </IconButton>
+      </Tooltip>
       <DeleteBtn onDeleted={props.onDeleted} record={props.record} />
-    </div>
+    </Box>
   );
 }
 
@@ -212,8 +297,8 @@ function DeleteBtn(props: { record: IAutomation; onDeleted: () => void }) {
   };
 
   return (
-    <span onClick={onClick}>
-      <DeleteOutlined translate="no" />
-    </span>
+    <IconButton size="small" onClick={onClick}>
+      <Delete fontSize="small" />
+    </IconButton>
   );
 }

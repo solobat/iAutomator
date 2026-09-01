@@ -1,36 +1,53 @@
 import {
   Alert,
-  AutoComplete,
+  Autocomplete,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  CircularProgress,
+  FormControlLabel,
+  IconButton,
+  InputAdornment,
+  ListItemButton,
+  ListItemText,
+  MenuItem,
+  Paper,
   Popover,
-  Radio,
-  RadioChangeEvent,
+  Select,
+  Stack,
+  Switch,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
+  ToggleButton,
+  ToggleButtonGroup,
   Tooltip,
-} from "antd";
-import Button from "antd/es/button";
-import ButtonGroup from "antd/es/button/button-group";
-import message from "antd/es/message";
-import Input from "antd/es/input";
-import Select from "antd/es/select";
-import Switch from "antd/es/switch";
-import Table from "antd/es/table";
+  Typography,
+} from "@mui/material";
+import {
+  AddBox,
+  Delete,
+  Download,
+  DragIndicator,
+  Edit,
+  ExpandLess,
+  ExpandMore,
+  HelpOutline,
+  KeyboardCommandKey,
+  Search,
+  Share,
+} from "@mui/icons-material";
 import * as React from "react";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 
-import {
-  DeleteOutlined,
-  DownloadOutlined,
-  EditFilled,
-  EditOutlined,
-  MacCommandOutlined,
-  MinusSquareOutlined,
-  PlusSquareOutlined,
-  QuestionCircleOutlined,
-  SearchOutlined,
-  ShareAltOutlined,
-} from "@ant-design/icons";
-import { PlayCircleOutlined } from "@ant-design/icons";
-import { list2options } from "@src/helper/antd";
 import { t } from "@src/helper/i18n.helper";
+import { useMessage } from "@src/helper/message";
 import {
   InstructionAST,
   basicArgsHandler,
@@ -66,11 +83,8 @@ import {
 import { parseScript, iscript } from "@src/helper/script";
 import Editor from "react-simple-code-editor";
 import { Grammar, highlight } from "prismjs";
-import Form from "antd/es/form";
 import { ExecOptions } from "@src/builtin/types";
-import { useToggle } from "ahooks";
 
-const { Option } = Select;
 const hightlightWithLineNumbers = (
   input: string,
   grammar: Grammar,
@@ -80,6 +94,14 @@ const hightlightWithLineNumbers = (
     .split("\n")
     .map((line, i) => `<span class='editorLineNumber'>${i + 1}</span>${line}`)
     .join("\n");
+
+const RUN_AT_OPTIONS = [
+  { value: RunAtEnum.START, label: t("run_at_immediately") },
+  { value: RunAtEnum.END, label: t("run_at_dom_ready") },
+  { value: RunAtEnum.IDLE, label: t("run_at_delayed") },
+];
+
+const RUNNING_STATUSES = new Set(["run_start", "step_start", "step_done"]);
 
 export function AutomationsPanel() {
   const { state } = useContext(PageContext);
@@ -112,7 +134,8 @@ function QuickAddContent(props: {
     if (!cfg) return;
     const defaultArgs: Record<string, unknown> = {};
     cfg.args?.forEach((a) => {
-      defaultArgs[a.name] = a.defaultValue !== undefined ? a.defaultValue : a.value;
+      defaultArgs[a.name] =
+        a.defaultValue !== undefined ? a.defaultValue : a.value;
     });
     const rawArgs = basicArgsHandler.stringify(
       defaultArgs as import("@src/builtin/types").ExecOptions,
@@ -137,62 +160,72 @@ function QuickAddContent(props: {
   };
 
   return (
-    <div className="am-quick-add-content" style={{ width: 280 }}>
-      <div style={{ marginBottom: 8 }}>
-        <div style={{ marginBottom: 4, fontSize: 12 }}>
+    <Box className="am-quick-add-content" sx={{ width: 280 }}>
+      <Box sx={{ marginBottom: 1 }}>
+        <Typography
+          variant="caption"
+          display="block"
+          sx={{ marginBottom: 0.5 }}
+        >
           {t("quick_add_action_label")}
-        </div>
-        <Select
-          placeholder={t("quick_add_action_label")}
-          value={actionValue || undefined}
-          onChange={setActionValue}
-          style={{ width: "100%" }}
-          options={BUILDIN_ACTION_FIELD_CONFIGS.map((c) => {
+        </Typography>
+        <TextField
+          select
+          label={t("quick_add_action_label")}
+          value={actionValue}
+          onChange={(e) => setActionValue(e.target.value)}
+          size="small"
+          fullWidth
+        >
+          {BUILDIN_ACTION_FIELD_CONFIGS.map((c) => {
             // Hide description when it looks like an untranslated i18n key (e.g. read_mode_desc)
             const desc =
               c.description && !/^[a-z0-9_]+_desc$/i.test(c.description)
                 ? c.description
                 : "";
-            return {
-              value: c.value,
-              label: desc ? `${c.label} — ${desc}` : c.label,
-            };
+            return (
+              <MenuItem key={c.value} value={c.value}>
+                {desc ? `${c.label} — ${desc}` : c.label}
+              </MenuItem>
+            );
           })}
-        />
-      </div>
-      <div style={{ marginBottom: 12 }}>
-        <div style={{ marginBottom: 4, fontSize: 12 }}>
+        </TextField>
+      </Box>
+      <Box sx={{ marginBottom: 1.5 }}>
+        <Typography
+          variant="caption"
+          display="block"
+          sx={{ marginBottom: 0.5 }}
+        >
           {t("quick_add_site_label")}
-        </div>
-        <Input
+        </Typography>
+        <TextField
           value={pattern}
           onChange={(e) => setPattern(e.target.value)}
           placeholder="https://example.com/*"
+          size="small"
+          fullWidth
         />
-      </div>
-      <Button type="primary" block onClick={onCreate} disabled={!cfg}>
+      </Box>
+      <Button variant="contained" fullWidth onClick={onCreate} disabled={!cfg}>
         {t("quick_add_create_btn")}
       </Button>
-    </div>
+    </Box>
   );
 }
 
 function Buttons() {
   const { state, dispatch } = useContext(PageContext);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
+  const quickAddAnchor = React.useRef<HTMLButtonElement>(null);
 
   return (
-    <ButtonGroup style={{ marginBottom: "10px" }}>
+    <Stack direction="row" spacing={1} sx={{ marginBottom: "10px" }}>
       <MenuBtn
         onClick={() =>
           chrome.tabs.create({ url: "https://iautomator.xyz/automations" })
         }
-        icon={
-          <SearchOutlined
-            style={{ fontSize: "20px", cursor: "pointer" }}
-            translate="no"
-          />
-        }
+        icon={<Search sx={{ fontSize: "20px", cursor: "pointer" }} />}
         label={t("get_new_automations")}
       />
 
@@ -203,35 +236,33 @@ function Buttons() {
             payload: { instructions: "", pattern: "" },
           })
         }
-        icon={
-          <PlusSquareOutlined
-            style={{ fontSize: "20px", cursor: "pointer" }}
-            translate="no"
-          />
-        }
-        styles={{ marginLeft: "10px" }}
+        icon={<AddBox sx={{ fontSize: "20px", cursor: "pointer" }} />}
         label={t("add_automation")}
       />
 
+      <Button
+        ref={quickAddAnchor}
+        onClick={() => setQuickAddOpen(true)}
+        startIcon={<AddBox />}
+      >
+        {t("quick_add")}
+      </Button>
       <Popover
-        content={
+        open={quickAddOpen}
+        anchorEl={quickAddAnchor.current}
+        onClose={() => setQuickAddOpen(false)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+      >
+        <Box sx={{ p: 2 }}>
+          <Typography variant="subtitle1" sx={{ marginBottom: 1 }}>
+            {t("quick_add")}
+          </Typography>
           <QuickAddContent
             state={state}
             dispatch={dispatch}
             onClose={() => setQuickAddOpen(false)}
           />
-        }
-        title={t("quick_add")}
-        trigger="click"
-        open={quickAddOpen}
-        onOpenChange={setQuickAddOpen}
-      >
-        <Button
-          style={{ marginLeft: "6px" }}
-          icon={<PlusSquareOutlined translate="no" />}
-        >
-          {t("quick_add")}
-        </Button>
+        </Box>
       </Popover>
 
       <MenuBtn
@@ -243,15 +274,11 @@ function Buttons() {
           })
         }
         icon={
-          <MacCommandOutlined
-            style={{ fontSize: "18px", cursor: "pointer" }}
-            translate="no"
-          />
+          <KeyboardCommandKey sx={{ fontSize: "18px", cursor: "pointer" }} />
         }
-        styles={{ marginLeft: "6px" }}
         label={t("use_script_instead")}
       />
-    </ButtonGroup>
+    </Stack>
   );
 }
 
@@ -264,13 +291,8 @@ function MenuBtn(props: {
   return (
     <Button
       onClick={props.onClick}
-      style={{
-        display: "flex",
-        borderRadius: "6px",
-        alignItems: "center",
-        ...props.styles,
-      }}
-      icon={props.icon}
+      startIcon={props.icon}
+      sx={{ display: "flex", borderRadius: "6px", ...props.styles }}
     >
       {props.label}
     </Button>
@@ -380,10 +402,14 @@ function ScriptsEditor() {
       <div className="am-editor-template-hint" style={{ marginBottom: 6 }}>
         {t("template_script_hint")}
       </div>
-      <Select
-        placeholder="Generate script from action template"
-        style={{ width: "100%", marginBottom: 8 }}
-        onChange={(actionValue: string) => {
+      <TextField
+        select
+        label="Generate script from action template"
+        size="small"
+        fullWidth
+        sx={{ marginBottom: 1 }}
+        onChange={(e) => {
+          const actionValue = e.target.value;
           const cfg = BUILDIN_ACTION_FIELD_CONFIGS.find(
             (item) => item.value === actionValue
           );
@@ -443,21 +469,22 @@ function ScriptsEditor() {
           setError("");
           setSuccess("");
         }}
-        options={BUILDIN_ACTION_FIELD_CONFIGS.map((cfg) => ({
-          label: `${cfg.value} - ${cfg.label}`,
-          value: cfg.value,
-        }))}
-      />
+      >
+        {BUILDIN_ACTION_FIELD_CONFIGS.map((cfg) => (
+          <MenuItem key={cfg.value} value={cfg.value}>
+            {`${cfg.value} - ${cfg.label}`}
+          </MenuItem>
+        ))}
+      </TextField>
       {error && (
-        <Alert message={error} type="error" closable onClose={onCloseAlert} />
+        <Alert severity="error" onClose={onCloseAlert}>
+          {error}
+        </Alert>
       )}
       {success && (
-        <Alert
-          message={success}
-          type="success"
-          closable
-          onClose={onCloseAlert}
-        />
+        <Alert severity="success" onClose={onCloseAlert}>
+          {success}
+        </Alert>
       )}
       <Editor
         value={scripts}
@@ -509,6 +536,9 @@ function AutomationEditor() {
   const initialDataRef = React.useRef(state.automationForm);
   const [saving, setSaving] = useState(false);
   const [allAutomations, setAllAutomations] = useState<IAutomation[]>([]);
+  const [libraryAnchor, setLibraryAnchor] = React.useState<null | HTMLElement>(
+    null
+  );
   const urlPatterns = getURLPatterns(state.tab.host, state.tab.pathname);
   const boxRef = React.useRef<HTMLDivElement>(null);
 
@@ -576,9 +606,13 @@ function AutomationEditor() {
   return (
     <div className="am-editor" ref={boxRef}>
       <div className="am-editor-copy">
-        <Select
-          placeholder="Copy from existing automation"
-          onChange={(id: number) => {
+        <TextField
+          select
+          label="Copy from existing automation"
+          size="small"
+          fullWidth
+          onChange={(e) => {
+            const id = Number(e.target.value);
             const source = allAutomations.find((item) => item.id === id);
             if (!source) {
               return;
@@ -617,17 +651,21 @@ function AutomationEditor() {
                 : AmFormEditing.Instruction,
             });
           }}
-          options={allAutomations.map((item) => ({
-            label: `${item.name || "Automation"} (${item.pattern})`,
-            value: item.id,
-          }))}
-        />
+        >
+          {allAutomations.map((item) => (
+            <MenuItem key={item.id} value={item.id}>
+              {`${item.name || "Automation"} (${item.pattern})`}
+            </MenuItem>
+          ))}
+        </TextField>
       </div>
       <div className="am-editor-fields">
-        <Input
+        <TextField
           value={form.name}
           placeholder={t("name")}
           className="ipt-name"
+          size="small"
+          fullWidth
           onChange={(event) => {
             onAmFormChange(
               {
@@ -648,36 +686,70 @@ function AutomationEditor() {
           />
         ))}
       </div>
+      <Button
+        size="small"
+        startIcon={<AddBox />}
+        onClick={(e) => setLibraryAnchor(e.currentTarget)}
+      >
+        {t("add_action")}
+      </Button>
+      <Popover
+        open={Boolean(libraryAnchor)}
+        anchorEl={libraryAnchor}
+        onClose={() => setLibraryAnchor(null)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+      >
+        <ActionLibrary
+          onAdd={(value) => {
+            dispatch({
+              type: ACTIONS.AUTOMATION_FORM_NEW_INS,
+              payload: { index: form.data.length, action: value },
+            });
+            setLibraryAnchor(null);
+          }}
+        />
+      </Popover>
       <div className="am-editor-fields">
-        <AutoComplete
-          placeholder={t("pattern")}
+        <Autocomplete
+          freeSolo
+          options={urlPatterns}
           value={form.pattern}
-          className="ipt-pattern"
-          onChange={(value) => {
+          onChange={(_, value) => {
             onAmFormChange(
               {
-                pattern: value,
+                pattern: value ?? "",
               },
               dispatch
             );
           }}
-          options={list2options(urlPatterns)}
-        ></AutoComplete>
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              placeholder={t("pattern")}
+              size="small"
+              className="ipt-pattern"
+            />
+          )}
+          sx={{ width: 400, marginRight: "10px" }}
+        />
         <Select
           value={form.runAt}
-          onChange={(value) => {
+          size="small"
+          sx={{ minWidth: 160 }}
+          onChange={(e) => {
             onAmFormChange(
               {
-                runAt: value,
+                runAt: e.target.value,
               },
               dispatch
             );
           }}
-          suffixIcon={<PlayCircleOutlined />}
         >
-          <Option value={0}>{t("run_at_immediately")}</Option>
-          <Option value={1}>{t("run_at_dom_ready")}</Option>
-          <Option value={2}>{t("run_at_delayed")}</Option>
+          {RUN_AT_OPTIONS.map((opt) => (
+            <MenuItem key={opt.value} value={opt.value}>
+              {opt.label}
+            </MenuItem>
+          ))}
         </Select>
       </div>
       <div className="am-editor-btns">
@@ -711,20 +783,26 @@ function ActionArgsForm(props: {
   onChange: (changedValues: any, values: any) => void;
 }) {
   const { config: args = [], onChange, defaultValues } = props;
-  const [form] = Form.useForm();
+  const [values, setValues] =
+    React.useState<Record<string, any>>(defaultValues);
+
+  const handleFieldChange = (name: string, value: any) => {
+    const next = { ...values, [name]: value };
+    setValues(next);
+    onChange({ [name]: value }, next);
+  };
 
   return (
-    <Form
-      layout="horizontal"
-      form={form}
-      onValuesChange={onChange}
-      initialValues={defaultValues}
-      style={{ width: "326px" }}
-    >
+    <Box sx={{ width: "326px" }}>
       {args.map((arg) => (
-        <ActionArgField arg={arg} key={arg.name} />
+        <ActionArgField
+          arg={arg}
+          key={arg.name}
+          value={values[arg.name]}
+          onChange={(value) => handleFieldChange(arg.name, value)}
+        />
       ))}
-    </Form>
+    </Box>
   );
 }
 
@@ -735,60 +813,82 @@ function ArgLabel(props: { name: string; tips?: string }) {
     <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
       {name}
       <Tooltip title={tips}>
-        <QuestionCircleOutlined className="am-arg-tip-icon" translate="no" />
+        <HelpOutline className="am-arg-tip-icon" fontSize="inherit" />
       </Tooltip>
     </span>
   );
 }
 
-function ActionArgField(props: { arg: ActionArg }) {
-  const { arg } = props;
+function ActionArgField(props: {
+  arg: ActionArg;
+  value: any;
+  onChange: (value: any) => void;
+}) {
+  const { arg, value, onChange } = props;
   const label = <ArgLabel name={arg.name} tips={arg.tips} />;
 
-  return (
-    <>
-      {arg.type === "boolean" && (
-        <Form.Item
-          label={label}
-          name={arg.name}
-          valuePropName="checked"
-          required={arg.required}
-        >
-          <Switch title={arg.tips} defaultChecked={arg.defaultValue === true} />
-        </Form.Item>
-      )}
-      {arg.type === "string" &&
-        (arg.optionalValues ? (
-          <Form.Item label={label} name={arg.name} required={arg.required}>
-            <Select>
-              {arg.optionalValues.map((item, index) => (
-                <Option value={item} key={index}>
-                  {item}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
-        ) : (
-          <Form.Item label={label} name={arg.name} required={arg.required}>
-            <Input
-              placeholder={arg.tips}
-              defaultValue={arg.defaultValue as string}
-              suffix={arg.suffix}
-            />
-          </Form.Item>
-        ))}
-      {arg.type === "number" && (
-        <Form.Item label={label} name={arg.name} required={arg.required}>
-          <Input
-            type="number"
-            placeholder={arg.tips}
-            defaultValue={arg.defaultValue as number}
-            suffix={arg.suffix}
+  if (arg.type === "boolean") {
+    return (
+      <FormControlLabel
+        control={
+          <Switch
+            checked={value === true}
+            onChange={(e) => onChange(e.target.checked)}
           />
-        </Form.Item>
-      )}
-    </>
+        }
+        label={label}
+      />
+    );
+  }
+
+  if (arg.type === "string" && arg.optionalValues) {
+    return (
+      <TextField
+        select
+        label={label}
+        size="small"
+        fullWidth
+        margin="dense"
+        value={value ?? arg.defaultValue ?? ""}
+        onChange={(e) => onChange(e.target.value)}
+      >
+        {arg.optionalValues.map((item, index) => (
+          <MenuItem key={index} value={item as string}>
+            {item}
+          </MenuItem>
+        ))}
+      </TextField>
+    );
+  }
+
+  return (
+    <TextField
+      label={label}
+      type={arg.type === "number" ? "number" : undefined}
+      size="small"
+      fullWidth
+      margin="dense"
+      placeholder={arg.tips}
+      value={value ?? arg.defaultValue ?? ""}
+      onChange={(e) => onChange(e.target.value)}
+    />
   );
+}
+
+function extractTemplateVars(values: unknown[]): string[] {
+  const vars = new Set<string>();
+  const re = /\{\{\s*([\w.-]+)\s*\}\}/g;
+
+  values.forEach((value) => {
+    if (typeof value === "string") {
+      let match: RegExpExecArray | null;
+      while ((match = re.exec(value))) {
+        vars.add(match[1]);
+      }
+    }
+  });
+
+  return Array.from(vars);
 }
 
 function InstructionEditor(props: {
@@ -797,6 +897,9 @@ function InstructionEditor(props: {
   dispatch;
 }) {
   const { form, dispatch } = props;
+  const [expanded, setExpanded] = useState(false);
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const actionItem = BUILDIN_ACTION_FIELD_CONFIGS.find(
     (item) => item.value === form.action
   );
@@ -828,107 +931,239 @@ function InstructionEditor(props: {
     .filter((key) => key !== "silent")
     .map((key) => `${key}=${String(parsedArgs[key])}`)
     .join(", ");
+  const inputVars = extractTemplateVars([
+    ...Object.values(parsedArgs),
+    form.scope,
+  ]);
+  const outputNames = actionItem?.outputs?.map((item) => item.name) ?? [];
+
+  const dragging = dragIndex === props.index;
+  const dragOver =
+    dragOverIndex === props.index && dragIndex !== null && !dragging;
 
   return (
-    <Input.Group compact className="am-ins-editor">
-      <Select
-        style={{ width: 150 }}
-        value={form.action}
-        defaultValue={BUILTIN_ACTIONS.READ_MODE}
-        onChange={(value) => {
-          onAmFormInsChange(
-            {
-              action: value,
-              rawArgs: "",
-            },
-            props.index,
-            dispatch
-          );
-        }}
-      >
-        {BUILDIN_ACTION_FIELD_CONFIGS.map((item) => (
-          <Option value={item.value} key={item.value}>
-            {item.label}
-          </Option>
-        ))}
-      </Select>
-      <Input
-        placeholder={t("arguments")}
-        value={argSummary}
-        className="ipt-ins"
-        readOnly
-        style={{ width: 370 }}
-        suffix={
-          <Popover
-            placement={"bottomRight"}
-            title="Arguments"
-            trigger="click"
-            content={
-              <ActionArgsForm
-                config={actionItem?.args}
-                defaultValues={parsedArgs}
-                onChange={(_, values) =>
-                  onArgsChange(actionItem?.value, values)
-                }
-              />
-            }
-          >
-            <EditOutlined />
-          </Popover>
+    <Card
+      variant="outlined"
+      className="am-ins-editor"
+      draggable={false}
+      onDragOver={(e) => {
+        e.preventDefault();
+        setDragOverIndex(props.index);
+      }}
+      onDrop={(e) => {
+        e.preventDefault();
+        if (dragIndex !== null && dragIndex !== props.index) {
+          dispatch({
+            type: ACTIONS.AUTOMATION_FORM_MOVE_INS,
+            payload: { from: dragIndex, to: props.index },
+          });
         }
-      />
-      <Input
-        prefix="@"
-        placeholder="scope"
-        onChange={(event) => {
-          onAmFormInsChange(
-            {
-              scope: event.target.value,
-            },
-            props.index,
-            dispatch
-          );
-        }}
-        value={form.scope}
-        style={{ width: 150 }}
-      />
-      <div className="am-ins-editor-btns">
-        <PlusSquareOutlined size={25} onClick={onAddNewInsClick} />
-        <MinusSquareOutlined
-          size={25}
-          onClick={onDelInsClick}
-          style={{ marginLeft: "5px" }}
-        />
-      </div>
-    </Input.Group>
+        setDragIndex(null);
+        setDragOverIndex(null);
+      }}
+      sx={{
+        marginBottom: 1,
+        opacity: dragging ? 0.4 : 1,
+        borderColor: dragOver ? "primary.main" : undefined,
+        borderWidth: dragOver ? 2 : 1,
+      }}
+    >
+      <CardContent sx={{ p: 1.5, "&:last-child": { pb: 1.5 } }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <IconButton
+            size="small"
+            draggable
+            onDragStart={(e) => {
+              setDragIndex(props.index);
+              e.dataTransfer.effectAllowed = "move";
+            }}
+            onDragEnd={() => {
+              setDragIndex(null);
+              setDragOverIndex(null);
+            }}
+            sx={{ cursor: "grab" }}
+          >
+            <DragIndicator fontSize="small" />
+          </IconButton>
+          <TextField
+            select
+            size="small"
+            sx={{ width: 180 }}
+            value={form.action}
+            defaultValue={BUILTIN_ACTIONS.READ_MODE}
+            onChange={(e) => {
+              onAmFormInsChange(
+                {
+                  action: e.target.value,
+                  rawArgs: "",
+                },
+                props.index,
+                dispatch
+              );
+            }}
+          >
+            {BUILDIN_ACTION_FIELD_CONFIGS.map((item) => (
+              <MenuItem key={item.value} value={item.value}>
+                {item.label}
+              </MenuItem>
+            ))}
+          </TextField>
+          <TextField
+            placeholder={t("arguments")}
+            value={argSummary}
+            className="ipt-ins"
+            size="small"
+            sx={{ flex: 1, minWidth: 120 }}
+            inputProps={{ readOnly: true }}
+          />
+          <TextField
+            size="small"
+            sx={{ width: 130 }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">@</InputAdornment>
+              ),
+            }}
+            placeholder="scope"
+            onChange={(event) => {
+              onAmFormInsChange(
+                {
+                  scope: event.target.value,
+                },
+                props.index,
+                dispatch
+              );
+            }}
+            value={form.scope}
+          />
+          <Tooltip title={expanded ? t("hide_args") : t("show_args")}>
+            <IconButton size="small" onClick={() => setExpanded(!expanded)}>
+              {expanded ? (
+                <ExpandLess fontSize="small" />
+              ) : (
+                <ExpandMore fontSize="small" />
+              )}
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={t("insert_below")}>
+            <IconButton size="small" onClick={onAddNewInsClick}>
+              <AddBox fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={t("delete")}>
+            <IconButton size="small" onClick={onDelInsClick}>
+              <Delete fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
+        {(inputVars.length > 0 || outputNames.length > 0) && (
+          <Stack
+            direction="row"
+            spacing={0.5}
+            sx={{ marginTop: 1, flexWrap: "wrap", gap: 0.5 }}
+          >
+            {outputNames.map((name) => {
+              const output = actionItem?.outputs?.find(
+                (item) => item.name === name
+              );
+              return (
+                <Tooltip key={name} title={output?.description ?? name}>
+                  <Chip
+                    size="small"
+                    color="primary"
+                    variant="outlined"
+                    label={`→ ${name}`}
+                  />
+                </Tooltip>
+              );
+            })}
+            {inputVars.map((name) => (
+              <Tooltip key={name} title={t("variable_hint")}>
+                <Chip size="small" label={`{{${name}}}`} />
+              </Tooltip>
+            ))}
+          </Stack>
+        )}
+        {expanded && (
+          <Box
+            sx={{
+              marginTop: 1,
+              paddingTop: 1,
+              borderTop: "1px solid",
+              borderColor: "divider",
+            }}
+          >
+            <ActionArgsForm
+              config={actionItem?.args}
+              defaultValues={parsedArgs}
+              onChange={(_, values) => onArgsChange(actionItem?.value, values)}
+            />
+          </Box>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 
-const AutomationsColumns = [
-  {
-    title: t("id"),
-    dataIndex: "id",
-    width: "50px",
-  },
-  {
-    title: t("name"),
-    dataIndex: "name",
-    width: "180px",
-    textWrap: "word-break",
-    ellipsis: true,
-    render: (runAt, record) => <ItemName record={record} />,
-  },
-  {
-    title: t("run_at"),
-    dataIndex: "runAt",
-    render: (runAt, record) => <RunAt record={record} />,
-  },
-  {
-    title: t("operation"),
-    width: "120px",
-    render: (text, record) => <OpBtns record={record} />,
-  },
-];
+function ActionLibrary(props: { onAdd: (value: string) => void }) {
+  const [keyword, setKeyword] = useState("");
+
+  const list = BUILDIN_ACTION_FIELD_CONFIGS.filter((cfg) => {
+    const kw = keyword.trim().toLowerCase();
+    if (!kw) {
+      return true;
+    }
+
+    return (
+      cfg.label.toLowerCase().includes(kw) ||
+      cfg.value.toLowerCase().includes(kw) ||
+      (cfg.description || "").toLowerCase().includes(kw)
+    );
+  });
+
+  return (
+    <Box sx={{ width: 340 }}>
+      <Typography variant="subtitle2" sx={{ px: 2, pt: 1.5 }}>
+        {t("action_library")}
+      </Typography>
+      <TextField
+        autoFocus
+        size="small"
+        fullWidth
+        placeholder={t("search_actions")}
+        value={keyword}
+        onChange={(e) => setKeyword(e.target.value)}
+        sx={{ p: 1, pb: 0.5 }}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <Search fontSize="small" />
+            </InputAdornment>
+          ),
+        }}
+      />
+      <Box sx={{ maxHeight: 320, overflow: "auto", p: 0.5 }}>
+        {list.map((cfg) => (
+          <ListItemButton
+            key={cfg.value}
+            onClick={() => props.onAdd(cfg.value)}
+          >
+            <ListItemText primary={cfg.label} secondary={cfg.description} />
+          </ListItemButton>
+        ))}
+        {list.length === 0 && (
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{ p: 2, textAlign: "center" }}
+          >
+            No results
+          </Typography>
+        )}
+      </Box>
+    </Box>
+  );
+}
 
 function ItemName(props: any) {
   const { state, dispatch } = useModel();
@@ -951,13 +1186,25 @@ function ItemName(props: any) {
   };
 
   return (
-    <Input
+    <TextField
       value={name}
       disabled={!editable}
+      size="small"
+      fullWidth
       onChange={onChange}
-      suffix={!editable && <EditFilled onClick={() => setEditable(true)} />}
-      onPressEnter={onEnter}
-    ></Input>
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          onEnter();
+        }
+      }}
+      InputProps={{
+        endAdornment: !editable && (
+          <IconButton size="small" onClick={() => setEditable(true)}>
+            <Edit fontSize="small" />
+          </IconButton>
+        ),
+      }}
+    />
   );
 }
 
@@ -986,10 +1233,17 @@ function RunAt(props: any) {
   }, []);
 
   return (
-    <Select value={props.record.runAt} onChange={onChange}>
-      <Option value={0}>{t("run_at_immediately")}</Option>
-      <Option value={1}>{t("run_at_dom_ready")}</Option>
-      <Option value={2}>{t("run_at_delayed")}</Option>
+    <Select
+      value={props.record.runAt ?? RunAtEnum.END}
+      size="small"
+      sx={{ minWidth: 140 }}
+      onChange={(e) => onChange(e.target.value)}
+    >
+      {RUN_AT_OPTIONS.map((opt) => (
+        <MenuItem key={opt.value} value={opt.value}>
+          {opt.label}
+        </MenuItem>
+      ))}
     </Select>
   );
 }
@@ -1002,7 +1256,10 @@ function exportOneAutomation(record: IAutomation) {
     scripts: record.scripts ?? "",
     runAt: record.runAt ?? 1,
   };
-  const name = (record.name || "automation").replace(/[^\w\u4e00-\u9fa5-]/g, "_");
+  const name = (record.name || "automation").replace(
+    /[^\w\u4e00-\u9fa5-]/g,
+    "_"
+  );
   downloadJson({ version: 1, automation: item }, `automation-${name}.json`);
 }
 
@@ -1014,13 +1271,14 @@ function OpBtns(props: any) {
     >
       <SwitchBtn record={props.record} />
       <EditBtn record={props.record} />
-      <span
-        onClick={() => exportOneAutomation(props.record)}
-        style={{ cursor: "pointer" }}
-        title={t("export_automation")}
-      >
-        <DownloadOutlined translate="no" />
-      </span>
+      <Tooltip title={t("export_automation")}>
+        <IconButton
+          size="small"
+          onClick={() => exportOneAutomation(props.record)}
+        >
+          <Download fontSize="small" />
+        </IconButton>
+      </Tooltip>
       <ShareBtn item={props.record} />
       <ShortcutBtn item={props.record} />
       <DeleteBtn record={props.record} />
@@ -1051,7 +1309,11 @@ function SwitchBtn(props: any) {
   }, []);
 
   return (
-    <Switch size="small" checked={props.record.active} onChange={onChange} />
+    <Switch
+      size="small"
+      checked={props.record.active === true}
+      onChange={(e) => onChange(e.target.checked)}
+    />
   );
 }
 
@@ -1081,9 +1343,9 @@ function EditBtn(props: { record: IAutomation }) {
   }, []);
 
   return (
-    <span onClick={onClick}>
-      <EditOutlined translate="no" />
-    </span>
+    <IconButton size="small" onClick={onClick}>
+      <Edit fontSize="small" />
+    </IconButton>
   );
 }
 
@@ -1102,9 +1364,9 @@ function ShareBtn(props: { item: Automation }) {
   };
 
   return (
-    <span onClick={onClick}>
-      <ShareAltOutlined translate="no" />
-    </span>
+    <IconButton size="small" onClick={onClick}>
+      <Share fontSize="small" />
+    </IconButton>
   );
 }
 
@@ -1120,9 +1382,12 @@ function ShortcutBtn(props: { item: Automation }) {
   const { dispatch } = useModel();
 
   return (
-    <span onClick={() => onShortcutBtnClick(props.item, dispatch)}>
-      <MacCommandOutlined translate="no" />
-    </span>
+    <IconButton
+      size="small"
+      onClick={() => onShortcutBtnClick(props.item, dispatch)}
+    >
+      <KeyboardCommandKey fontSize="small" />
+    </IconButton>
   );
 }
 
@@ -1142,9 +1407,9 @@ function DeleteBtn(props: any) {
   }, []);
 
   return (
-    <span onClick={onClick}>
-      <DeleteOutlined translate="no" />
-    </span>
+    <IconButton size="small" onClick={onClick}>
+      <Delete fontSize="small" />
+    </IconButton>
   );
 }
 
@@ -1175,6 +1440,7 @@ function EmptyAutomationsState(props: {
   dispatch: React.Dispatch<any>;
 }) {
   const { state, dispatch } = props;
+  const message = useMessage();
   const [adding, setAdding] = useState(false);
   const onAddExample = () => {
     setAdding(true);
@@ -1208,12 +1474,15 @@ function EmptyAutomationsState(props: {
       <div className="am-empty-state-desc">{t("empty_automations_desc")}</div>
       <div className="am-empty-state-actions">
         <Button
-          type="primary"
+          variant="contained"
           size="small"
-          loading={adding}
+          disabled={adding}
           onClick={onAddExample}
           style={{ marginRight: 8 }}
         >
+          {adding && (
+            <CircularProgress size={14} color="inherit" sx={{ mr: 1 }} />
+          )}
           {t("add_example_automation")}
         </Button>
         <Button size="small" onClick={onAddAutomation}>
@@ -1228,9 +1497,8 @@ function Automations(props: any) {
   const { host } = props;
   const { state, dispatch } = useContext(PageContext);
   const [scope, setScope] = useState<"local" | "global">("local");
-  const onChange = ({ target: { value } }: RadioChangeEvent) => {
-    setScope(value);
-  };
+  const ev = state.execEvent;
+  const isRunning = ev && RUNNING_STATUSES.has(ev.status);
   const list = useMemo(() => {
     return state.automations.filter((item) => {
       if (scope === "local") {
@@ -1247,24 +1515,64 @@ function Automations(props: any) {
 
   return (
     <div>
-      <Radio.Group
+      <ToggleButtonGroup
         value={scope}
-        options={scopeOptions}
-        onChange={onChange}
-        optionType="button"
-      />
-      <Table
-        columns={AutomationsColumns}
-        dataSource={list}
-        rowKey="id"
-        pagination={false}
+        exclusive
         size="small"
-        locale={{
-          emptyText: (
-            <EmptyAutomationsState state={state} dispatch={dispatch} />
-          ),
-        }}
-      />
+        onChange={(_, value) => value && setScope(value)}
+        sx={{ marginBottom: 1 }}
+      >
+        {scopeOptions.map((opt) => (
+          <ToggleButton key={opt.value} value={opt.value}>
+            {opt.label}
+          </ToggleButton>
+        ))}
+      </ToggleButtonGroup>
+      <TableContainer component={Paper} variant="outlined">
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell sx={{ width: "50px" }}>{t("id")}</TableCell>
+              <TableCell sx={{ width: "180px" }}>{t("name")}</TableCell>
+              <TableCell>{t("run_at")}</TableCell>
+              <TableCell sx={{ width: "120px" }}>{t("operation")}</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {list.map((record) => {
+              const active = isRunning && ev.automationId === record.id;
+              return (
+                <TableRow
+                  key={record.id}
+                  sx={active ? { bgcolor: "action.selected" } : undefined}
+                >
+                  <TableCell>
+                    {active
+                      ? `${record.id} · ${ev.index + 1}/${ev.total}`
+                      : record.id}
+                  </TableCell>
+                  <TableCell>
+                    <ItemName record={record} />
+                  </TableCell>
+                  <TableCell>
+                    <RunAt record={record} />
+                  </TableCell>
+                  <TableCell>
+                    <OpBtns record={record} />
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+            {list.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={4}>
+                  <EmptyAutomationsState state={state} dispatch={dispatch} />
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </div>
   );
 }

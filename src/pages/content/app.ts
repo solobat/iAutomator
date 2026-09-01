@@ -28,6 +28,7 @@ import { ModifyAttributes } from "../../builtin/Attributes";
 import { APP_ACTIONS, PAGE_ACTIONS, WEB_ACTIONS } from "../../common/const";
 import {
   exceAutomation,
+  exceAutomationById,
   fetchPageDataAndApply,
   install,
   mount,
@@ -59,7 +60,11 @@ function bindAppEvents() {
     if (method === WEB_ACTIONS.INSTALL_DONE) {
       noticeWeb(method, data);
     } else if (method === PAGE_ACTIONS.EXEC_INSTRUCTIONS) {
-      exceAutomation(data.instructions, 0, RunAt.END);
+      exceAutomation(data.instructions, 0, RunAt.END, undefined, {
+        name: data.name ?? "",
+      });
+    } else if (method === PAGE_ACTIONS.EXEC_AUTOMATION_BY_ID) {
+      exceAutomationById(data.id, { context: data.context });
     } else if (method === PAGE_ACTIONS.GLOBAL_EVENT_RECEIVED) {
       receiveGlobalEvent(data);
     } else if (method === APP_ACTIONS.MSG_RESP) {

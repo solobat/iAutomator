@@ -46,6 +46,12 @@ export abstract class Base<T extends ExecOptions = ExecOptions> {
 
   lastExec?: () => void;
 
+  /**
+   * Outputs produced by the last execution, collected as {{name}} variables
+   * for later steps of the same run.
+   */
+  output?: Record<string, unknown>;
+
   constructor(
     helper: ActionHelper<Base, T>,
     options: ActionOptions<T> = {

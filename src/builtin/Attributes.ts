@@ -108,6 +108,9 @@ export class ModifyAttributes extends Base<ModifyAttributesExecOptions> {
 
   execute(elem, options: Partial<ModifyAttributesExecOptions>) {
     this.modify(elem, options);
+    if (options.attrs) {
+      this.output = { attrs: options.attrs };
+    }
     this.callNext(options, options);
 
     return true;

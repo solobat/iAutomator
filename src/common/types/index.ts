@@ -25,3 +25,24 @@ export interface AutomationForm {
   data: Array<{ action?: string; rawArgs?: string; scope?: string }>;
   pattern: string;
 }
+
+export type ExecStepStatus =
+  | "run_start"
+  | "step_start"
+  | "step_done"
+  | "run_end"
+  | "error";
+
+/**
+ * Execution progress event reported by the content script and relayed to UI pages
+ */
+export interface ExecStepEvent {
+  automationId: number;
+  automationName: string;
+  index: number;
+  total: number;
+  action: string;
+  status: ExecStepStatus;
+  error?: string;
+  ts: number;
+}

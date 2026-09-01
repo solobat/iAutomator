@@ -2,7 +2,6 @@ import { ExecOptions } from "@src/builtin/types";
 import { BUILTIN_ACTIONS } from "@src/common/const";
 import { RunAt } from "@src/server/enum/Automation.enum";
 import { withCache } from "@src/utils/cache";
-import { valueType } from "antd/lib/statistic/utils";
 import Tokenizr, { Token } from "tokenizr";
 
 // 旧版 iscript 解析入口（暂保留，后续可删除或仅用于向后兼容）
@@ -164,14 +163,15 @@ function parseIscriptArgs(text: string, env: Env): ExecOptions {
   return opts;
 }
 
-function parseIscriptStatement(line: string, env: Env): ScriptInstruction | void {
+function parseIscriptStatement(
+  line: string,
+  env: Env
+): ScriptInstruction | void {
   const applyMatch =
     line.match(
       /^apply\s+([A-Z_][A-Z0-9_]*)\s+with\s*\((.*)\)\s+on\s+"([^"]+)"/
     ) ||
-    line.match(
-      /^apply\s+([A-Z_][A-Z0-9_]*)\s+with\s*\((.*)\)\s+on\s+(.+)$/
-    );
+    line.match(/^apply\s+([A-Z_][A-Z0-9_]*)\s+with\s*\((.*)\)\s+on\s+(.+)$/);
 
   if (applyMatch) {
     const [, actionName, argsText, scopeRaw] = applyMatch;
@@ -229,10 +229,7 @@ export const parseIscript = withCache((script: string) => {
       ) {
         const parts = [line];
         idx++;
-        while (
-          idx < bodyLines.length &&
-          !/\)\s+on\s+/.test(parts.join(" "))
-        ) {
+        while (idx < bodyLines.length && !/\)\s+on\s+/.test(parts.join(" "))) {
           parts.push(bodyLines[idx]);
           idx++;
         }
@@ -258,7 +255,7 @@ export const parseIscript = withCache((script: string) => {
 });
 
 type ValueType = string | number | boolean;
-type EnvValueType = ValueType | ((env: Env) => valueType) | null;
+type EnvValueType = ValueType | ((env: Env) => ValueType) | null;
 type EnvContent = [string, EnvValueType];
 export class Env {
   private prev: Env;

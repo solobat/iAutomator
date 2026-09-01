@@ -1,6 +1,7 @@
 import { createContext, useContext } from "react";
 
 import { BUILTIN_ACTIONS } from "@src/common/const";
+import { ExecStepEvent } from "@src/common/types";
 import { InstructionData } from "@src/helper/instruction";
 import { IShortcut } from "@src/server/db/database";
 
@@ -13,11 +14,13 @@ export const ACTIONS = {
   AUTOMATION_FORM_UPDATE_INS: "initAutomationFormIns",
   AUTOMATION_FORM_NEW_INS: "automationFormNewIns",
   AUTOMATION_FORM_DEL_INS: "automationFormDelIns",
+  AUTOMATION_FORM_MOVE_INS: "automationFormMoveIns",
   AUTOMATION_FORM_CLOSE: "automationFormClose",
   AUTOMATIONS: "AUTOMATIONS",
   SHORTCUT_FORM_UPDATE: "initShortcutForm",
   SHORTCUT_FORM_CLOSE: "shortcutFormClose",
   SHORTCUTS: "SHORTCUTS",
+  EXEC_UPDATE: "execUpdate",
 };
 
 export enum AmFormEditing {
@@ -48,7 +51,10 @@ export function pageReducer(state: PageState, action) {
       newState.automationForm = {
         ...(state.automationForm || ({} as AutomationForm)),
       };
-      newState.automationForm.data.splice(payload.index, 0, getDefaultNewIns());
+      newState.automationForm.data.splice(payload.index, 0, {
+        ...getDefaultNewIns(),
+        ...(payload.action ? { action: payload.action } : {}),
+      });
       break;
     case ACTIONS.AUTOMATION_FORM_DEL_INS:
       newState.automationForm = {
@@ -70,6 +76,19 @@ export function pageReducer(state: PageState, action) {
       );
 
       break;
+    case ACTIONS.AUTOMATION_FORM_MOVE_INS:
+      newState.automationForm = {
+        ...(state.automationForm || ({} as AutomationForm)),
+      };
+      {
+        const data = [...newState.automationForm.data];
+        const [moved] = data.splice(payload.from, 1);
+        if (moved) {
+          data.splice(payload.to, 0, moved);
+        }
+        newState.automationForm.data = data;
+      }
+      break;
     case ACTIONS.AUTOMATION_FORM_CLOSE:
       newState.amFormEditing = AmFormEditing.False;
       newState.automationForm = getDefaultAutomationForm() as AutomationForm;
@@ -90,6 +109,9 @@ export function pageReducer(state: PageState, action) {
       break;
     case ACTIONS.SHORTCUTS:
       newState.shortcuts = payload;
+      break;
+    case ACTIONS.EXEC_UPDATE:
+      newState.execEvent = payload;
       break;
     default:
       break;
@@ -159,6 +181,7 @@ end
     shortcutForm: getDefaultShortcutForm(),
     scFormEditing: false,
     shortcuts: [] as IShortcut[],
+    execEvent: null as ExecStepEvent | null,
   };
 }
 

@@ -89,6 +89,16 @@ export interface ExecOptions {
    */
   scope?: string;
 
+  /**
+   * Runtime context injected from outside (e.g. context menu selection/link/image)
+   */
+  context?: Record<string, string>;
+
+  /**
+   * Variables available for {{name}} template resolution
+   */
+  vars?: Record<string, unknown>;
+
   [prop: string]: any;
 }
 

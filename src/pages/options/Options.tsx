@@ -1,4 +1,7 @@
-import Tabs from "antd/es/tabs";
+import CssBaseline from "@mui/material/CssBaseline";
+import Tab from "@mui/material/Tab";
+import Tabs from "@mui/material/Tabs";
+import { ThemeProvider } from "@mui/material/styles";
 import Export from "./components/Export";
 import "./Options.scss";
 import { t } from "@src/helper/i18n.helper";
@@ -6,39 +9,53 @@ import { Notes } from "./components/Notes";
 import { ExtLibs } from "chrome-extension-libs";
 import { ExtlibsContextProvider } from "@src/context/ExtlibsContext";
 import { Automations } from "./components/Automations";
-import { ConfigProvider, theme } from "antd";
+import { Templates } from "./components/Templates";
+import { MessageProvider } from "@src/helper/message";
+import { buildTheme } from "@src/helper/theme";
 import { ThemeContext } from "@src/context/ThemeContext";
-import React from "react";
+import React, { ReactNode } from "react";
 import { Settings } from "./components/Settings";
 
-const { TabPane } = Tabs;
+function TabPanel(props: { active: boolean; children: ReactNode }) {
+  if (!props.active) {
+    return null;
+  }
+  return <div>{props.children}</div>;
+}
 
 export function Options(props: { libs: ExtLibs }) {
   const { mode } = React.useContext(ThemeContext);
+  const theme = React.useMemo(() => buildTheme(mode), [mode]);
+  const [tabKey, setTabKey] = React.useState("1");
 
   return (
-    <ConfigProvider
-      theme={{
-        algorithm:
-          mode === "dark" ? theme.darkAlgorithm : theme.defaultAlgorithm,
-      }}
-    >
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
       <ExtlibsContextProvider libs={props.libs}>
-        <div className={`container theme-${mode}`}>
-          <Tabs defaultActiveKey="1">
-            <TabPane tab={t("settings_notion_basic")} key="1">
+        <MessageProvider>
+          <div className={`container theme-${mode}`}>
+            <Tabs value={tabKey} onChange={(_, value) => setTabKey(value)}>
+              <Tab label={t("settings_notion_basic")} value="1" />
+              <Tab label={t("settings_notion_export")} value="2" />
+              <Tab label={t("settings_notion_note")} value="3" />
+              <Tab label={t("templates")} value="4" />
+            </Tabs>
+            <TabPanel active={tabKey === "1"}>
               <Settings />
-            </TabPane>
-            <TabPane tab={t("settings_notion_export")} key="2">
+            </TabPanel>
+            <TabPanel active={tabKey === "2"}>
               <Automations />
               <Export />
-            </TabPane>
-            <TabPane tab={t("settings_notion_note")} key="3">
+            </TabPanel>
+            <TabPanel active={tabKey === "3"}>
               <Notes />
-            </TabPane>
-          </Tabs>
-        </div>
+            </TabPanel>
+            <TabPanel active={tabKey === "4"}>
+              <Templates onInstalled={() => setTabKey("2")} />
+            </TabPanel>
+          </div>
+        </MessageProvider>
       </ExtlibsContextProvider>
-    </ConfigProvider>
+    </ThemeProvider>
   );
 }

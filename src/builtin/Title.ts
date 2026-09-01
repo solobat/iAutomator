@@ -20,6 +20,7 @@ export class SetTitle extends Base {
 
     const originTitle = document.title;
     document.title = title;
+    this.output = { title };
     this.registerUnload(() => {
       document.title = originTitle;
     });

@@ -1,16 +1,21 @@
-import Button from "antd/es/button";
-import ButtonGroup from "antd/es/button/button-group";
-import Input from "antd/es/input";
-import Select from "antd/es/select";
-import Table from "antd/es/table";
+import {
+  Button,
+  IconButton,
+  Paper,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
+  Tooltip,
+} from "@mui/material";
+import { AddBox, Delete, Edit } from "@mui/icons-material";
 import * as React from "react";
 import { useCallback, useContext, useEffect, useState } from "react";
 
-import {
-  DeleteOutlined,
-  EditOutlined,
-  PlusSquareOutlined,
-} from "@ant-design/icons";
 import { t } from "@src/helper/i18n.helper";
 import { matchAutomations } from "../../../helper/automations";
 import { noticeBg } from "../../../helper/event";
@@ -32,7 +37,7 @@ export function ShortcutsPanel() {
       {scFormEditing ? (
         <ShortcutEditor />
       ) : (
-        <ButtonGroup style={{ marginBottom: "10px" }}>
+        <Stack direction="row" spacing={1} sx={{ marginBottom: "10px" }}>
           <MenuBtn
             onClick={() =>
               dispatch({
@@ -46,16 +51,10 @@ export function ShortcutsPanel() {
                 },
               })
             }
-            icon={
-              <PlusSquareOutlined
-                style={{ fontSize: "20px", cursor: "pointer" }}
-                translate="no"
-              />
-            }
-            styles={{ marginLeft: "10px" }}
+            icon={<AddBox sx={{ fontSize: "20px", cursor: "pointer" }} />}
             label={t("add_new_shortcut")}
           />
-        </ButtonGroup>
+        </Stack>
       )}
       <Shortcuts />
     </div>
@@ -71,8 +70,8 @@ function MenuBtn(props: {
   return (
     <Button
       onClick={props.onClick}
-      style={{ display: "flex", alignItems: "center", ...props.styles }}
-      icon={props.icon}
+      startIcon={props.icon}
+      sx={{ display: "flex", borderRadius: "6px", ...props.styles }}
     >
       {props.label}
     </Button>
@@ -124,50 +123,51 @@ function ShortcutEditor() {
 
   return (
     <div className="am-editor">
-      <div>
-        <Input.Group compact>
-          <Input
-            placeholder={"such as: a + b"}
-            value={form.shortcut}
-            className="ipt-shortcut"
-            style={{ width: 150 }}
-            onChange={(event) => {
-              onScFormChange(
-                {
-                  shortcut: event.target.value,
-                },
-                dispatch
-              );
-            }}
-          />
-          <Input
-            placeholder="ID of automation"
-            style={{ width: 150 }}
-            onChange={(event) => {
-              onScFormChange(
-                {
-                  aid: event.target.value,
-                },
-                dispatch
-              );
-            }}
-            value={form.aid}
-          />
-          <Input
-            placeholder="name"
-            style={{ width: 150 }}
-            onChange={(event) => {
-              onScFormChange(
-                {
-                  name: event.target.value,
-                },
-                dispatch
-              );
-            }}
-            value={form.name}
-          />
-        </Input.Group>
-      </div>
+      <Stack direction="row" spacing={1}>
+        <TextField
+          placeholder={"such as: a + b"}
+          value={form.shortcut}
+          className="ipt-shortcut"
+          size="small"
+          sx={{ width: 150 }}
+          onChange={(event) => {
+            onScFormChange(
+              {
+                shortcut: event.target.value,
+              },
+              dispatch
+            );
+          }}
+        />
+        <TextField
+          placeholder="ID of automation"
+          size="small"
+          sx={{ width: 150 }}
+          onChange={(event) => {
+            onScFormChange(
+              {
+                aid: event.target.value,
+              },
+              dispatch
+            );
+          }}
+          value={form.aid}
+        />
+        <TextField
+          placeholder="name"
+          size="small"
+          sx={{ width: 150 }}
+          onChange={(event) => {
+            onScFormChange(
+              {
+                name: event.target.value,
+              },
+              dispatch
+            );
+          }}
+          value={form.name}
+        />
+      </Stack>
       <div className="am-editor-btns">
         <Button
           onClick={() => onScEditorCancleClick()}
@@ -183,27 +183,12 @@ function ShortcutEditor() {
   );
 }
 
-const ShortcutsColumns = [
-  {
-    title: t("shortcut"),
-    dataIndex: "shortcut",
-    width: "180px",
-  },
-  {
-    title: t("id_of_automation"),
-    dataIndex: "aid",
-  },
-  {
-    title: t("name"),
-    dataIndex: "name",
-    width: "180px",
-  },
-  {
-    title: t("operation"),
-    width: "120px",
-    render: (text, record) => <OpBtns record={record} />,
-  },
-];
+const ellipsisCell = {
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+  maxWidth: 260,
+} as const;
 
 function DeleteBtn(props: { record: IShortcut }) {
   const { state, dispatch } = useModel();
@@ -214,9 +199,9 @@ function DeleteBtn(props: { record: IShortcut }) {
   }, []);
 
   return (
-    <span onClick={onClick}>
-      <DeleteOutlined translate="no" />
-    </span>
+    <IconButton size="small" onClick={onClick} title={t("operation")}>
+      <Delete fontSize="small" />
+    </IconButton>
   );
 }
 
@@ -237,9 +222,11 @@ function EditBtn(props: { record: IShortcut }) {
   }, []);
 
   return (
-    <span onClick={onClick}>
-      <EditOutlined translate="no" />
-    </span>
+    <Tooltip title={t("operation")}>
+      <IconButton size="small" onClick={onClick}>
+        <Edit fontSize="small" />
+      </IconButton>
+    </Tooltip>
   );
 }
 
@@ -267,12 +254,30 @@ function Shortcuts(props: any) {
 
   return (
     <div>
-      <Table
-        columns={ShortcutsColumns}
-        dataSource={state.shortcuts}
-        pagination={false}
-        size="small"
-      ></Table>
+      <TableContainer component={Paper} variant="outlined">
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell sx={{ width: "180px" }}>{t("shortcut")}</TableCell>
+              <TableCell>{t("id_of_automation")}</TableCell>
+              <TableCell sx={{ width: "180px" }}>{t("name")}</TableCell>
+              <TableCell sx={{ width: "120px" }}>{t("operation")}</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {state.shortcuts.map((record) => (
+              <TableRow key={record.id}>
+                <TableCell sx={ellipsisCell}>{record.shortcut}</TableCell>
+                <TableCell>{record.aid}</TableCell>
+                <TableCell sx={ellipsisCell}>{record.name}</TableCell>
+                <TableCell>
+                  <OpBtns record={record} />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </div>
   );
 }

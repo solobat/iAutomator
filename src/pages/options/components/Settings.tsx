@@ -3,7 +3,7 @@ import {
   deleteAll,
   totalSize,
 } from "@src/server/controller/records.controller";
-import { Button, Switch } from "antd";
+import { Button, FormControlLabel, Switch } from "@mui/material";
 import { useContext } from "react";
 import { useQuery } from "react-query";
 
@@ -26,19 +26,22 @@ export function Settings() {
 
   return (
     <div>
-      <Switch
+      <FormControlLabel
+        control={
+          <Switch
+            checked={mode === "dark"}
+            onChange={() => {
+              setMode(mode === "dark" ? "light" : "dark");
+            }}
+          />
+        }
+        label={mode === "dark" ? "Dark" : "Light"}
         title="Dark Theme"
-        checkedChildren="Dark"
-        unCheckedChildren="Light"
-        defaultChecked={mode === "dark"}
-        onChange={() => {
-          setMode(mode === "dark" ? "light" : "dark");
-        }}
       />
       <div style={{ marginTop: "10px" }}>
         <Button
-          type="primary"
-          danger
+          variant="contained"
+          color="error"
           disabled={isLoading || cacheSize === 0}
           onClick={handleCleanCache}
         >

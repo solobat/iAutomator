@@ -27,6 +27,7 @@ export class SetValue extends Base {
         }
       });
 
+      this.output = { value: options.value };
       this.callNext(options, options);
     }
 

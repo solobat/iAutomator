@@ -35,7 +35,7 @@ body {
   display: flex;
   justify-content: space-evenly;
 
-  .anticon {
+  svg {
     cursor: pointer;
   }
 }
@@ -95,20 +95,12 @@ body {
 
 .am-editor-copy {
   margin-top: 5px;
-
-  .ant-select {
-    width: 100%;
-  }
 }
 
 .am-editor-fields {
   margin-top: 5px;
   display: flex;
-
-  .ant-select-auto-complete {
-    width: 400px;
-    margin-right: 10px;
-  }
+  gap: 10px;
 }
 
 .am-editor-btns {
@@ -117,18 +109,10 @@ body {
 
 .am-ins-editor-box {
   margin-top: 5px;
-  border: 1px solid #424242;
-  border-radius: 6px;
-  padding: 5px;
 }
 
 .am-ins-editor {
   margin-bottom: 5px;
-}
-
-.am-ins-editor-btns {
-  line-height: 32px;
-  margin-left: 5px;
 }
 
 .editor {

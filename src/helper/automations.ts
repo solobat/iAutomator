@@ -20,7 +20,9 @@ export function matchAutomations(
 export async function installAutomation(
   instructions,
   pattern,
-  runAt = RunAt.END
+  runAt = RunAt.END,
+  name?: string,
+  scripts = ""
 ) {
   const list = await getAll();
   const hasOne = list.find(
@@ -30,6 +32,6 @@ export async function installAutomation(
   if (hasOne) {
     return Response.error(EXISTS);
   } else {
-    return saveAutomation(instructions, "", pattern, runAt);
+    return saveAutomation(instructions, scripts, pattern, runAt, name);
   }
 }

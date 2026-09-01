@@ -116,9 +116,9 @@
     "hide_show_desc": {
         "message": "按选择器隐藏或显示元素（与阅读模式同用 visibility）"
     },
-    "scripts" : {
+    "scripts": {
         "message": "脚本"
-    }, 
+    },
     "automations": {
         "message": "自动操作"
     },
@@ -145,7 +145,7 @@
     },
     "test": {
         "message": "测试"
-    }, 
+    },
     "run_at_immediately": {
         "message": "立即"
     },
@@ -223,5 +223,68 @@
     },
     "import_automations_failed": {
         "message": "导入失败：文件或格式无效。"
+    },
+    "running": {
+        "message": "运行中"
+    },
+    "scope": {
+        "message": "作用域"
+    },
+    "search_actions": {
+        "message": "搜索动作"
+    },
+    "add_action": {
+        "message": "添加动作"
+    },
+    "action_library": {
+        "message": "动作库"
+    },
+    "delete": {
+        "message": "删除"
+    },
+    "hide_args": {
+        "message": "收起参数"
+    },
+    "show_args": {
+        "message": "展开参数"
+    },
+    "insert_below": {
+        "message": "在下方插入一步"
+    },
+    "variable_hint": {
+        "message": "变量：替换为前一步的输出或触发上下文（如选中文本、链接）"
+    },
+    "install_from_link": {
+        "message": "从分享链接安装"
+    },
+    "install_from_link_placeholder": {
+        "message": "粘贴分享链接，例如 https://iautomator.xyz/create?instructions=..."
+    },
+    "install": {
+        "message": "安装"
+    },
+    "installed_ok": {
+        "message": "自动化安装成功"
+    },
+    "install_failed": {
+        "message": "安装失败，请检查链接后重试"
+    },
+    "templates": {
+        "message": "模板"
+    },
+    "templates_desc": {
+        "message": "由内置动作生成的一键模板"
+    },
+    "template_added": {
+        "message": "模板已添加到自动化"
+    },
+    "duplicated": {
+        "message": "该自动化已存在"
+    },
+    "share_link_import": {
+        "message": "粘贴来自 iautomator.xyz 的分享链接以安装自动化"
+    },
+    "run_automation": {
+        "message": "运行自动化"
     }
 }

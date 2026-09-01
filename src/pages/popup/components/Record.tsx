@@ -1,9 +1,18 @@
-import { Tooltip } from "antd";
-import Table, { ColumnsType } from "antd/es/table";
+import {
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Tooltip,
+  Typography,
+} from "@mui/material";
+import { AddCircleOutline, PlayCircleOutline } from "@mui/icons-material";
 import * as React from "react";
 import { useContext, useEffect, useState } from "react";
 
-import { PlayCircleOutlined, PlusCircleOutlined } from "@ant-design/icons";
 import { t } from "@src/helper/i18n.helper";
 import { basicInstruction } from "@src/helper/instruction";
 
@@ -29,21 +38,6 @@ function onRecordRunClick(item, tabId) {
   });
 }
 
-const RecordsColumns: ColumnsType = [
-  { title: t("action"), dataIndex: "content", ellipsis: true },
-  {
-    title: t("path"),
-    dataIndex: "url",
-    render: (text) => <span>{getPath(text)}</span>,
-    ellipsis: true,
-  },
-  {
-    title: t("operation"),
-    width: "100px",
-    render: (text, record) => <RecordOpBtns record={record} />,
-  },
-];
-
 function RecordOpBtns(props: any) {
   return (
     <div className="record-op-btns">
@@ -59,10 +53,7 @@ function RunBtn(props: any) {
 
   return (
     <Tooltip title={t("redo")}>
-      <PlayCircleOutlined
-        translate="no"
-        onClick={() => onRecordRunClick(props.record, id)}
-      />
+      <PlayCircleOutline onClick={() => onRecordRunClick(props.record, id)} />
     </Tooltip>
   );
 }
@@ -83,13 +74,19 @@ function AddAmBtn(props: any) {
 
   return (
     <Tooltip title={t("as_automation")}>
-      <PlusCircleOutlined
-        translate="no"
+      <AddCircleOutline
         onClick={() => onRecordAddAmClick(props.record, dispatch)}
       />
     </Tooltip>
   );
 }
+
+const ellipsisCell = {
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+  maxWidth: 260,
+} as const;
 
 export function Records(props: RecordsProps) {
   const { host } = props;
@@ -104,12 +101,37 @@ export function Records(props: RecordsProps) {
   }, [host]);
   return (
     <div>
-      <Table
-        columns={RecordsColumns}
-        dataSource={list}
-        pagination={false}
-        size="small"
-      ></Table>
+      <TableContainer component={Paper} variant="outlined">
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell>{t("action")}</TableCell>
+              <TableCell>{t("path")}</TableCell>
+              <TableCell sx={{ width: 100 }}>{t("operation")}</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {list.map((record, index) => (
+              <TableRow key={index}>
+                <TableCell sx={ellipsisCell}>{record.content}</TableCell>
+                <TableCell sx={ellipsisCell}>{getPath(record.url)}</TableCell>
+                <TableCell>
+                  <RecordOpBtns record={record} />
+                </TableCell>
+              </TableRow>
+            ))}
+            {list.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={3} align="center">
+                  <Typography variant="body2" color="text.secondary">
+                    No data
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </div>
   );
 }

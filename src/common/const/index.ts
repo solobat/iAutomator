@@ -48,7 +48,8 @@ const local_i18n = {
     note_desc: "Create a note or comment",
     kill_element_desc: "Hide or remove elements by selector",
     common_action_desc: "Run a common action (e.g. scroll, copy)",
-    hide_show_desc: "Hide or show elements by selector (visibility, like Read Mode)",
+    hide_show_desc:
+      "Hide or show elements by selector (visibility, like Read Mode)",
   },
   zh_CN: {
     read_mode: "阅读模式",
@@ -132,6 +133,9 @@ export const PAGE_ACTIONS = {
   CREATE_NOTE: "createNote",
   DISCARD_TAB: "discardTab",
   AUTOMATION_UPDATED: "automationUpdated",
+  EXEC_STEP: "execStep",
+  EXEC_STATE: "execState",
+  EXEC_AUTOMATION_BY_ID: "execAutomationById",
 };
 
 export const WEB_ACTIONS = {
@@ -432,12 +436,20 @@ export interface ActionArg {
   suffix?: string;
 }
 
+export interface ActionOutput {
+  name: string;
+  type: string;
+  description?: string;
+}
+
 export interface BUILDIN_ACTION_FIELD_CONFIG {
   value: string;
   label: string;
   /** Short description for guided creation and tooltips */
   description?: string;
   args?: ActionArg[];
+  /** Outputs produced by this action, can be referenced as {{name}} by later actions */
+  outputs?: ActionOutput[];
 }
 
 export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
@@ -696,6 +708,13 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         required: true,
       },
     ],
+    outputs: [
+      {
+        name: "title",
+        type: "string",
+        description: "Title text of the page or element",
+      },
+    ],
   },
   {
     value: BUILTIN_ACTIONS.ATTRIBUTES,
@@ -707,6 +726,13 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         name: "attrs",
         type: "string",
         required: true,
+      },
+    ],
+    outputs: [
+      {
+        name: "attrs",
+        type: "string",
+        description: "Attributes applied to the target element",
       },
     ],
   },
@@ -787,6 +813,13 @@ export const BUILDIN_ACTION_FIELD_CONFIGS: BUILDIN_ACTION_FIELD_CONFIG[] = [
         value: "",
         defaultValue: "",
         required: true,
+      },
+    ],
+    outputs: [
+      {
+        name: "value",
+        type: "string",
+        description: "Value applied to the target element",
       },
     ],
   },
